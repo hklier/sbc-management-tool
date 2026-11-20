@@ -141,7 +141,8 @@
         "HF_HUB_OFFLINE": "1",
         "TRANSFORMERS_OFFLINE": "1",
         "OMP_NUM_THREADS": "1",
-        "OPENBLAS_NUM_THREADS": "1"
+        "OPENBLAS_NUM_THREADS": "1",
+        "SIPREC_WORKDIR": "/opt/sbc-console"
       }
     },
     {
@@ -403,7 +404,17 @@
                   "periodSeconds": 15,
                   "timeoutSeconds": 5,
                   "failureThreshold": 6
-                }
+                },
+                "env": [
+                  {
+                    "name": "INTERNAL_IP",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "fieldPath": "status.podIP"
+                      }
+                    }
+                  }
+                ]
               },
               {
                 "name": "transcription",

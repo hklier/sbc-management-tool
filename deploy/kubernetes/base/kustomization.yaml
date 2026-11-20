@@ -9,7 +9,7 @@
     {
       "name": "sbc-console",
       "newName": "192.168.2.240:5000/sbc-management-tool/console",
-      "newTag": "0.1.0"
+      "digest": "sha256:46e8d64fcd78075f515cfb245d72db16661588a6239a0cf8fc7225bba86836dd"
     },
     {
       "name": "sbc-recorder",
@@ -19,7 +19,7 @@
     {
       "name": "sbc-transcription",
       "newName": "192.168.2.240:5000/sbc-management-tool/transcription",
-      "newTag": "0.1.0"
+      "digest": "sha256:67fc3824baa33f101cf4354d823e3197378d570dbfe362eca4c3bb3406b62402"
     }
   ]
 }
