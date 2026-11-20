@@ -13,7 +13,7 @@ Oracle SBC HTTPS console, SIPREC recorder, offline transcription worker, and SNM
 
 ## Git and deployment
 
-`deploy/kubernetes/base` contains Kustomize resources; `deploy/kubernetes/argocd-application.json` connects Argo CD to the `main` branch. Image references are pinned to published digests. Argo CD automatically reconciles changes to Git. The three images are built with `deploy/Dockerfile` and stored in the existing private-LAN registry.
+`deploy/kubernetes/base` contains Kustomize resources; `deploy/kubernetes/argocd-application.json` connects Argo CD to the `main` branch. Image references are pinned to published digests. Argo CD automatically reconciles changes to Git. `deploy/Dockerfile` defines the three image builds; images are stored in the existing private-LAN registry. The initial recorder image packages the validated GitHub Actions binary on the console runtime, with its source revision recorded in OCI image labels.
 
 GitHub Actions runs the console tests, Oracle metadata/re-INVITE regression tests, and a Linux recorder build, with the recorder binary available as a downloadable artifact. A manual Actions run also builds all three images and provides downloadable image archives. GitHub-hosted runners have no access to the private cluster or LAN registry.
 
