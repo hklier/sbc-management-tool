@@ -166,6 +166,10 @@
           "metadata": {
             "labels": {
               "app": "sbc-console"
+            },
+            "annotations": {
+              "sbc-console/settings-sha256": "a3c127f94ce60dfe7b57ffd180633eeed8805306a3ac33c2f3ef1a513c396292",
+              "sbc-console/secret-revision": "4576a171cc274f6e899d9fa033db8031"
             }
           },
           "spec": {

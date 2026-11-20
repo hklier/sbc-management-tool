@@ -1,0 +1,53 @@
+# Copy OUTSIDE the repository; the completed file contains credentials.
+version: 1
+sbc:
+  host: "192.0.2.51"                 # Numeric IPv4 address (also the trap-source filter).
+  username: "admin"
+  password: "REPLACE_ME"
+  https:
+    certificate_sha256: "REPLACE_WITH_64_HEX_CHARACTERS"
+    # Optional trusted root CA: ca_file: "sbc-ca.crt" or ca_pem: |...
+  ssh:
+    port: 22
+    host_key_sha256: "SHA256:REPLACE_ME"
+snmp:
+  version: "3"                       # "3" or "2c"
+  port: 161
+  username: "REPLACE_ME"
+  auth_protocol: "SHA512"             # SHA256 or SHA512
+  auth_password: "REPLACE_ME"
+  priv_protocol: "AES128"
+  priv_password: "REPLACE_ME"
+  # community: "REPLACE_ME"           # Required for v2c polling.
+  trap_communities: generate           # Or a list: ["private-community"]
+console:
+  username: "admin"
+  password: generate                  # Or a quoted password; password_hash is also supported.
+  tls:
+    mode: self-signed                  # supplied or self-signed
+    days: 365
+    dns_names: ["sbc-management-tool"]
+    # supplied mode accepts certificate_file/private_key_file (relative to this YAML)
+    # or inline certificate_pem/private_key_pem multiline strings.
+endpoint:
+  address: "192.0.2.241"              # Reserved MetalLB address.
+  https_port: 443
+  trap_port: 162
+recording:
+  advertised_ip: "192.0.2.241"        # Address reachable from the SBC.
+  bind_ip: "0.0.0.0"
+  sip_port: 5060
+  rtp_port_min: 20000
+  rtp_port_max: 20199
+  max_concurrent_calls: 10
+  max_duration_hours: 4
+  retention_days: 36500                # Preserve existing behavior; agree retention before live use.
+  codecs: [PCMU, PCMA]
+management:
+  transport: local                    # local kubectl or ssh
+  # kubectl_context: "my-cluster"
+  # ssh:
+  #   host: "192.0.2.5"
+  #   username: "hkl"
+  #   private_key_file: "path/to/key"  # OpenSSH key, or .ppk with PuTTY on Windows.
+  #   host_key: "SHA256:..."           # Optional explicit PuTTY host-key pin; otherwise cached trust.

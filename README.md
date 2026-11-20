@@ -30,7 +30,38 @@ git push origin main
 
 The registry currently uses HTTP on a private LAN; `REGISTRY_TLS_VERIFY=false` matches its existing configuration. Configure TLS and set `REGISTRY_TLS_VERIFY=true` when upgrading the registry. Revert the deployment image-reference commit to roll back software; a Git revert does not restore application data.
 
-## Private bootstrap
+## Configure with one private YAML file
+
+Use Python 3.12 or newer and install the helper dependencies:
+
+```sh
+python -m pip install -r deploy/requirements-config.txt
+```
+
+Copy `deploy/config.example.yaml` **outside the repository**, for example to `../deployment-private/config.private.yaml`. Restrict access to that directory. The completed YAML includes SBC credentials, HTTPS/SSH fingerprints, the trusted CA, SNMP settings, trap communities, console login, console TLS, the MetalLB endpoint, and SIPREC addresses/ports. Inline PEM certificates/keys and paths relative to the YAML are supported. The existing deployment's populated private YAML is stored outside this checkout.
+
+Validate, render, and apply private settings:
+
+```sh
+python deploy/configure.py --config ../deployment-private/config.private.yaml --check
+python deploy/configure.py --config ../deployment-private/config.private.yaml --apply-private
+git diff -- deploy/kubernetes/base/resources.json
+git add deploy/kubernetes/base/resources.json
+git commit -m 'Update SBC Console configuration'
+git push origin main
+```
+
+`--check` validates without writing or contacting Kubernetes. `--apply-private` creates/updates the three named Kubernetes Secrets, then the Git commit allows Argo CD to roll out the new settings. The namespace must already exist for private bootstrap. Use local `kubectl` or configure `management.transport: ssh` to use the control node; PuTTY `.ppk` keys use `plink` in batch mode, with cached host trust or an explicit `host_key`. SSH keys and Git authentication are read from your local environment/files and are never copied into the public render.
+
+The helper renders `deploy/kubernetes/base/resources.json` from `deploy/kubernetes/template/resources.json`. **Edit the private YAML, not the generated base file.** Image versions stay managed separately in `kustomization.yaml`. Deployment placement, persistent volumes, and resource limits remain infrastructure settings in the template; the helper does not move data or change SBC configuration.
+
+Private outputs are stored next to the YAML in `<filename-without-extension>.generated/`. They include the Secret manifest, rendering state, public console certificate, and console password when available. Back up both the YAML and that directory when using `generate` for passwords, trap communities, or certificates. The input and generated private files are refused inside the checkout. Do not commit them to any repository. The renderer emits only non-secret settings and an opaque Secret revision into Git.
+
+Changing credentials or TLS generates a new opaque revision; changing public settings updates a public configuration hash. Argo CD restarts the single-instance workload after the rendered change is pushed. Re-rendering unchanged YAML reuses hashes, generated passwords/communities, and certificates and does not cause another rollout. Configuration changes interrupt sessions and active recordings; apply them between calls. The YAML configures only the application: SNMP allowlists, CDR generation, SIPREC routing, and trap-version compatibility still need SBC-side setup.
+
+Use `console.password` for a quoted password or `generate`; alternatively use `console.password_hash` in the application's PBKDF2 format. Use `console.tls.mode: supplied` for inline/file-based certificate material, or `self-signed` to generate a certificate with the endpoint IP in its SAN. SNMPv3 accepts SHA256/SHA512 with AES128; traps remain v1/v2c.
+
+## Manual private bootstrap reference
 
 Before applying the Argo CD Application, create the namespace and the following Secrets through a trusted administrative channel:
 

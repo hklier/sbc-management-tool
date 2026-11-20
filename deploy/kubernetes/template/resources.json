@@ -1,0 +1,1892 @@
+{
+  "apiVersion": "v1",
+  "kind": "List",
+  "items": [
+    {
+      "apiVersion": "v1",
+      "kind": "Namespace",
+      "metadata": {
+        "name": "sbc-management-tool"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolume",
+      "metadata": {
+        "name": "sbc-management-tool-worker2",
+        "annotations": {
+          "argocd.argoproj.io/sync-options": "Prune=false,Delete=false"
+        }
+      },
+      "spec": {
+        "capacity": {
+          "storage": "50Gi"
+        },
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "persistentVolumeReclaimPolicy": "Retain",
+        "storageClassName": "",
+        "volumeMode": "Filesystem",
+        "claimRef": {
+          "name": "sbc-console-data",
+          "namespace": "sbc-management-tool"
+        },
+        "hostPath": {
+          "path": "/var/lib/sbc-management-tool",
+          "type": "DirectoryOrCreate"
+        },
+        "nodeAffinity": {
+          "required": {
+            "nodeSelectorTerms": [
+              {
+                "matchExpressions": [
+                  {
+                    "key": "kubernetes.io/hostname",
+                    "operator": "In",
+                    "values": [
+                      "k8s-worker2"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "PersistentVolumeClaim",
+      "metadata": {
+        "name": "sbc-console-data",
+        "annotations": {
+          "argocd.argoproj.io/sync-options": "Prune=false,Delete=false"
+        }
+      },
+      "spec": {
+        "accessModes": [
+          "ReadWriteOnce"
+        ],
+        "storageClassName": "",
+        "volumeName": "sbc-management-tool-worker2",
+        "resources": {
+          "requests": {
+            "storage": "50Gi"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "ConfigMap",
+      "metadata": {
+        "name": "sbc-console-config"
+      },
+      "data": {
+        "BIND_HOST": "0.0.0.0",
+        "PORT": "8443",
+        "APP_USER": "admin",
+        "STATE_DIR": "/var/lib/sbc-console",
+        "RECORDING_DIR": "/var/lib/sbc-console/recordings",
+        "TLS_CERT": "/etc/sbc-console/tls/tls.crt",
+        "TLS_KEY": "/etc/sbc-console/tls/tls.key",
+        "SBC_CA": "/etc/sbc-console/trust/sbc-ca.crt",
+        "SBC_SSH_PORT": "22",
+        "SNMP_VERSION": "3",
+        "SNMP_AUTH_PROTOCOL": "SHA512",
+        "SNMP_PRIV_PROTOCOL": "AES128",
+        "SNMP_PORT": "161",
+        "TRAP_BIND_HOST": "0.0.0.0",
+        "TRAP_PORT": "1162",
+        "SIP_HOST": "0.0.0.0",
+        "INTERNAL_IP": "0.0.0.0",
+        "EXTERNAL_IP": "192.168.0.241",
+        "RTP_BIND_IP": "0.0.0.0",
+        "PORTS": "5060",
+        "UDP_PORTS": "5060",
+        "TCP_PORTS": "5060",
+        "RTP_PORT_MIN": "20000",
+        "RTP_PORT_MAX": "20199",
+        "SIP_IP_ACCESS_ENABLED": "false",
+        "SIP_IP_DEFAULT_ALLOW": "true",
+        "ENABLE_TLS": "false",
+        "ENABLE_SRTP": "false",
+        "BEHIND_NAT": "true",
+        "HTTP_ENABLED": "false",
+        "RECORDING_COMBINE_LEGS": "true",
+        "RECORDING_FORMAT": "wav",
+        "RECORDING_MAX_DURATION_HOURS": "4",
+        "RECORDING_CLEANUP_DAYS": "36500",
+        "RECORDING_STORAGE_ENABLED": "false",
+        "MAX_CONCURRENT_CALLS": "10",
+        "SUPPORTED_CODECS": "PCMU,PCMA",
+        "SUPPORTED_VENDORS": "mock",
+        "DEFAULT_SPEECH_VENDOR": "mock",
+        "STT_DEFAULT_VENDOR": "mock",
+        "GOOGLE_STT_ENABLED": "false",
+        "STT_ASYNC_ENABLED": "false",
+        "ENABLE_AUDIO_PROCESSING": "false",
+        "AUDIO_PROCESSING_ENABLED": "false",
+        "AUDIO_ENHANCEMENT_ENABLED": "false",
+        "ENABLE_REDUNDANCY": "false",
+        "DATABASE_ENABLED": "false",
+        "CLUSTER_ENABLED": "false",
+        "TRACING_ENABLED": "false",
+        "LOG_LEVEL": "warn",
+        "LOG_FORMAT": "json",
+        "GOMEMLIMIT": "256MiB",
+        "TRANSCRIPTION_PYTHON": "/usr/local/bin/python",
+        "TRANSCRIPTION_MODEL": "/opt/sbc-transcription/model",
+        "HF_HUB_OFFLINE": "1",
+        "TRANSFORMERS_OFFLINE": "1",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1",
+        "SIPREC_WORKDIR": "/opt/sbc-console"
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "Deployment",
+      "metadata": {
+        "name": "sbc-console"
+      },
+      "spec": {
+        "replicas": 1,
+        "strategy": {
+          "type": "Recreate"
+        },
+        "revisionHistoryLimit": 3,
+        "selector": {
+          "matchLabels": {
+            "app": "sbc-console"
+          }
+        },
+        "template": {
+          "metadata": {
+            "labels": {
+              "app": "sbc-console"
+            }
+          },
+          "spec": {
+            "automountServiceAccountToken": false,
+            "nodeSelector": {
+              "kubernetes.io/hostname": "k8s-worker2"
+            },
+            "securityContext": {
+              "seccompProfile": {
+                "type": "RuntimeDefault"
+              }
+            },
+            "terminationGracePeriodSeconds": 90,
+            "initContainers": [
+              {
+                "name": "data-permissions",
+                "image": "sbc-console",
+                "command": [
+                  "python",
+                  "-c",
+                  "import os; p='/var/lib/sbc-console'; os.makedirs(p+'/recordings',exist_ok=True); [(os.chown(x,10001,10001),os.chmod(x,0o700)) for x in (p,p+'/recordings')]"
+                ],
+                "securityContext": {
+                  "runAsUser": 0,
+                  "runAsNonRoot": false,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ],
+                    "add": [
+                      "CHOWN",
+                      "FOWNER",
+                      "DAC_OVERRIDE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "data",
+                    "mountPath": "/var/lib/sbc-console"
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ]
+              }
+            ],
+            "containers": [
+              {
+                "name": "console",
+                "image": "sbc-console",
+                "imagePullPolicy": "IfNotPresent",
+                "command": [
+                  "python",
+                  "server.py"
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "sbc-console-config"
+                    }
+                  },
+                  {
+                    "secretRef": {
+                      "name": "sbc-console-credentials"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "data",
+                    "mountPath": "/var/lib/sbc-console"
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  },
+                  {
+                    "name": "tls",
+                    "mountPath": "/etc/sbc-console/tls",
+                    "readOnly": true
+                  },
+                  {
+                    "name": "sbc-ca",
+                    "mountPath": "/etc/sbc-console/trust",
+                    "readOnly": true
+                  }
+                ],
+                "securityContext": {
+                  "runAsUser": 10001,
+                  "runAsGroup": 10001,
+                  "runAsNonRoot": true,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "128Mi"
+                  },
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "512Mi"
+                  }
+                },
+                "startupProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "web"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 20
+                },
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "web"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 4
+                },
+                "livenessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "web"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 6
+                },
+                "ports": [
+                  {
+                    "name": "https",
+                    "containerPort": 8443
+                  }
+                ]
+              },
+              {
+                "name": "recorder",
+                "image": "sbc-recorder",
+                "imagePullPolicy": "IfNotPresent",
+                "command": [
+                  "python",
+                  "recordings_supervisor.py"
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "sbc-console-config"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "data",
+                    "mountPath": "/var/lib/sbc-console"
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ],
+                "securityContext": {
+                  "runAsUser": 10001,
+                  "runAsGroup": 10001,
+                  "runAsNonRoot": true,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "200m",
+                    "memory": "256Mi"
+                  },
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "768Mi"
+                  }
+                },
+                "startupProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "recorder"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 20
+                },
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "recorder"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 4
+                },
+                "livenessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "recorder"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 6
+                },
+                "env": [
+                  {
+                    "name": "INTERNAL_IP",
+                    "valueFrom": {
+                      "fieldRef": {
+                        "fieldPath": "status.podIP"
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "transcription",
+                "image": "sbc-transcription",
+                "imagePullPolicy": "IfNotPresent",
+                "command": [
+                  "python",
+                  "transcription_worker.py"
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "sbc-console-config"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "data",
+                    "mountPath": "/var/lib/sbc-console"
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ],
+                "securityContext": {
+                  "runAsUser": 10001,
+                  "runAsGroup": 10001,
+                  "runAsNonRoot": true,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "200m",
+                    "memory": "512Mi"
+                  },
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "1Gi"
+                  }
+                },
+                "startupProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "transcription"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 20
+                },
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "transcription"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 4
+                },
+                "livenessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "transcription"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 6
+                }
+              },
+              {
+                "name": "traps",
+                "image": "sbc-console",
+                "imagePullPolicy": "IfNotPresent",
+                "command": [
+                  "python",
+                  "trap_tools.py"
+                ],
+                "envFrom": [
+                  {
+                    "configMapRef": {
+                      "name": "sbc-console-config"
+                    }
+                  }
+                ],
+                "volumeMounts": [
+                  {
+                    "name": "data",
+                    "mountPath": "/var/lib/sbc-console"
+                  },
+                  {
+                    "name": "tmp",
+                    "mountPath": "/tmp"
+                  }
+                ],
+                "securityContext": {
+                  "runAsUser": 10001,
+                  "runAsGroup": 10001,
+                  "runAsNonRoot": true,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ]
+                  }
+                },
+                "resources": {
+                  "requests": {
+                    "cpu": "50m",
+                    "memory": "64Mi"
+                  },
+                  "limits": {
+                    "cpu": "1",
+                    "memory": "256Mi"
+                  }
+                },
+                "startupProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "traps"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 20
+                },
+                "readinessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "traps"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 4
+                },
+                "livenessProbe": {
+                  "exec": {
+                    "command": [
+                      "python",
+                      "/opt/healthcheck.py",
+                      "traps"
+                    ]
+                  },
+                  "periodSeconds": 15,
+                  "timeoutSeconds": 5,
+                  "failureThreshold": 6
+                },
+                "env": [
+                  {
+                    "name": "SBC_HOST",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-console-credentials",
+                        "key": "SBC_HOST"
+                      }
+                    }
+                  },
+                  {
+                    "name": "SNMP_TRAP_COMMUNITIES",
+                    "valueFrom": {
+                      "secretKeyRef": {
+                        "name": "sbc-console-credentials",
+                        "key": "SNMP_TRAP_COMMUNITIES"
+                      }
+                    }
+                  }
+                ],
+                "ports": [
+                  {
+                    "name": "traps",
+                    "containerPort": 1162,
+                    "protocol": "UDP"
+                  }
+                ]
+              }
+            ],
+            "volumes": [
+              {
+                "name": "data",
+                "persistentVolumeClaim": {
+                  "claimName": "sbc-console-data"
+                }
+              },
+              {
+                "name": "tmp",
+                "emptyDir": {
+                  "sizeLimit": "512Mi"
+                }
+              },
+              {
+                "name": "tls",
+                "secret": {
+                  "secretName": "sbc-console-tls",
+                  "defaultMode": 292
+                }
+              },
+              {
+                "name": "sbc-ca",
+                "secret": {
+                  "secretName": "sbc-console-trust",
+                  "defaultMode": 292
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Service",
+      "metadata": {
+        "name": "sbc-console",
+        "annotations": {
+          "metallb.io/loadBalancerIPs": "192.168.0.241"
+        }
+      },
+      "spec": {
+        "type": "LoadBalancer",
+        "externalTrafficPolicy": "Local",
+        "allocateLoadBalancerNodePorts": false,
+        "selector": {
+          "app": "sbc-console"
+        },
+        "ports": [
+          {
+            "name": "https",
+            "port": 443,
+            "targetPort": 8443,
+            "protocol": "TCP"
+          },
+          {
+            "name": "sip-udp",
+            "port": 5060,
+            "targetPort": 5060,
+            "protocol": "UDP"
+          },
+          {
+            "name": "sip-tcp",
+            "port": 5060,
+            "targetPort": 5060,
+            "protocol": "TCP"
+          },
+          {
+            "name": "traps",
+            "port": 162,
+            "targetPort": 1162,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20000",
+            "port": 20000,
+            "targetPort": 20000,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20001",
+            "port": 20001,
+            "targetPort": 20001,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20002",
+            "port": 20002,
+            "targetPort": 20002,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20003",
+            "port": 20003,
+            "targetPort": 20003,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20004",
+            "port": 20004,
+            "targetPort": 20004,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20005",
+            "port": 20005,
+            "targetPort": 20005,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20006",
+            "port": 20006,
+            "targetPort": 20006,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20007",
+            "port": 20007,
+            "targetPort": 20007,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20008",
+            "port": 20008,
+            "targetPort": 20008,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20009",
+            "port": 20009,
+            "targetPort": 20009,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20010",
+            "port": 20010,
+            "targetPort": 20010,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20011",
+            "port": 20011,
+            "targetPort": 20011,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20012",
+            "port": 20012,
+            "targetPort": 20012,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20013",
+            "port": 20013,
+            "targetPort": 20013,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20014",
+            "port": 20014,
+            "targetPort": 20014,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20015",
+            "port": 20015,
+            "targetPort": 20015,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20016",
+            "port": 20016,
+            "targetPort": 20016,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20017",
+            "port": 20017,
+            "targetPort": 20017,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20018",
+            "port": 20018,
+            "targetPort": 20018,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20019",
+            "port": 20019,
+            "targetPort": 20019,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20020",
+            "port": 20020,
+            "targetPort": 20020,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20021",
+            "port": 20021,
+            "targetPort": 20021,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20022",
+            "port": 20022,
+            "targetPort": 20022,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20023",
+            "port": 20023,
+            "targetPort": 20023,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20024",
+            "port": 20024,
+            "targetPort": 20024,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20025",
+            "port": 20025,
+            "targetPort": 20025,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20026",
+            "port": 20026,
+            "targetPort": 20026,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20027",
+            "port": 20027,
+            "targetPort": 20027,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20028",
+            "port": 20028,
+            "targetPort": 20028,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20029",
+            "port": 20029,
+            "targetPort": 20029,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20030",
+            "port": 20030,
+            "targetPort": 20030,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20031",
+            "port": 20031,
+            "targetPort": 20031,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20032",
+            "port": 20032,
+            "targetPort": 20032,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20033",
+            "port": 20033,
+            "targetPort": 20033,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20034",
+            "port": 20034,
+            "targetPort": 20034,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20035",
+            "port": 20035,
+            "targetPort": 20035,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20036",
+            "port": 20036,
+            "targetPort": 20036,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20037",
+            "port": 20037,
+            "targetPort": 20037,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20038",
+            "port": 20038,
+            "targetPort": 20038,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20039",
+            "port": 20039,
+            "targetPort": 20039,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20040",
+            "port": 20040,
+            "targetPort": 20040,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20041",
+            "port": 20041,
+            "targetPort": 20041,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20042",
+            "port": 20042,
+            "targetPort": 20042,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20043",
+            "port": 20043,
+            "targetPort": 20043,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20044",
+            "port": 20044,
+            "targetPort": 20044,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20045",
+            "port": 20045,
+            "targetPort": 20045,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20046",
+            "port": 20046,
+            "targetPort": 20046,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20047",
+            "port": 20047,
+            "targetPort": 20047,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20048",
+            "port": 20048,
+            "targetPort": 20048,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20049",
+            "port": 20049,
+            "targetPort": 20049,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20050",
+            "port": 20050,
+            "targetPort": 20050,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20051",
+            "port": 20051,
+            "targetPort": 20051,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20052",
+            "port": 20052,
+            "targetPort": 20052,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20053",
+            "port": 20053,
+            "targetPort": 20053,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20054",
+            "port": 20054,
+            "targetPort": 20054,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20055",
+            "port": 20055,
+            "targetPort": 20055,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20056",
+            "port": 20056,
+            "targetPort": 20056,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20057",
+            "port": 20057,
+            "targetPort": 20057,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20058",
+            "port": 20058,
+            "targetPort": 20058,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20059",
+            "port": 20059,
+            "targetPort": 20059,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20060",
+            "port": 20060,
+            "targetPort": 20060,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20061",
+            "port": 20061,
+            "targetPort": 20061,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20062",
+            "port": 20062,
+            "targetPort": 20062,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20063",
+            "port": 20063,
+            "targetPort": 20063,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20064",
+            "port": 20064,
+            "targetPort": 20064,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20065",
+            "port": 20065,
+            "targetPort": 20065,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20066",
+            "port": 20066,
+            "targetPort": 20066,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20067",
+            "port": 20067,
+            "targetPort": 20067,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20068",
+            "port": 20068,
+            "targetPort": 20068,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20069",
+            "port": 20069,
+            "targetPort": 20069,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20070",
+            "port": 20070,
+            "targetPort": 20070,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20071",
+            "port": 20071,
+            "targetPort": 20071,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20072",
+            "port": 20072,
+            "targetPort": 20072,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20073",
+            "port": 20073,
+            "targetPort": 20073,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20074",
+            "port": 20074,
+            "targetPort": 20074,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20075",
+            "port": 20075,
+            "targetPort": 20075,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20076",
+            "port": 20076,
+            "targetPort": 20076,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20077",
+            "port": 20077,
+            "targetPort": 20077,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20078",
+            "port": 20078,
+            "targetPort": 20078,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20079",
+            "port": 20079,
+            "targetPort": 20079,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20080",
+            "port": 20080,
+            "targetPort": 20080,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20081",
+            "port": 20081,
+            "targetPort": 20081,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20082",
+            "port": 20082,
+            "targetPort": 20082,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20083",
+            "port": 20083,
+            "targetPort": 20083,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20084",
+            "port": 20084,
+            "targetPort": 20084,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20085",
+            "port": 20085,
+            "targetPort": 20085,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20086",
+            "port": 20086,
+            "targetPort": 20086,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20087",
+            "port": 20087,
+            "targetPort": 20087,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20088",
+            "port": 20088,
+            "targetPort": 20088,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20089",
+            "port": 20089,
+            "targetPort": 20089,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20090",
+            "port": 20090,
+            "targetPort": 20090,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20091",
+            "port": 20091,
+            "targetPort": 20091,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20092",
+            "port": 20092,
+            "targetPort": 20092,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20093",
+            "port": 20093,
+            "targetPort": 20093,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20094",
+            "port": 20094,
+            "targetPort": 20094,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20095",
+            "port": 20095,
+            "targetPort": 20095,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20096",
+            "port": 20096,
+            "targetPort": 20096,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20097",
+            "port": 20097,
+            "targetPort": 20097,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20098",
+            "port": 20098,
+            "targetPort": 20098,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20099",
+            "port": 20099,
+            "targetPort": 20099,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20100",
+            "port": 20100,
+            "targetPort": 20100,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20101",
+            "port": 20101,
+            "targetPort": 20101,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20102",
+            "port": 20102,
+            "targetPort": 20102,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20103",
+            "port": 20103,
+            "targetPort": 20103,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20104",
+            "port": 20104,
+            "targetPort": 20104,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20105",
+            "port": 20105,
+            "targetPort": 20105,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20106",
+            "port": 20106,
+            "targetPort": 20106,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20107",
+            "port": 20107,
+            "targetPort": 20107,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20108",
+            "port": 20108,
+            "targetPort": 20108,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20109",
+            "port": 20109,
+            "targetPort": 20109,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20110",
+            "port": 20110,
+            "targetPort": 20110,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20111",
+            "port": 20111,
+            "targetPort": 20111,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20112",
+            "port": 20112,
+            "targetPort": 20112,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20113",
+            "port": 20113,
+            "targetPort": 20113,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20114",
+            "port": 20114,
+            "targetPort": 20114,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20115",
+            "port": 20115,
+            "targetPort": 20115,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20116",
+            "port": 20116,
+            "targetPort": 20116,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20117",
+            "port": 20117,
+            "targetPort": 20117,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20118",
+            "port": 20118,
+            "targetPort": 20118,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20119",
+            "port": 20119,
+            "targetPort": 20119,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20120",
+            "port": 20120,
+            "targetPort": 20120,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20121",
+            "port": 20121,
+            "targetPort": 20121,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20122",
+            "port": 20122,
+            "targetPort": 20122,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20123",
+            "port": 20123,
+            "targetPort": 20123,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20124",
+            "port": 20124,
+            "targetPort": 20124,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20125",
+            "port": 20125,
+            "targetPort": 20125,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20126",
+            "port": 20126,
+            "targetPort": 20126,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20127",
+            "port": 20127,
+            "targetPort": 20127,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20128",
+            "port": 20128,
+            "targetPort": 20128,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20129",
+            "port": 20129,
+            "targetPort": 20129,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20130",
+            "port": 20130,
+            "targetPort": 20130,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20131",
+            "port": 20131,
+            "targetPort": 20131,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20132",
+            "port": 20132,
+            "targetPort": 20132,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20133",
+            "port": 20133,
+            "targetPort": 20133,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20134",
+            "port": 20134,
+            "targetPort": 20134,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20135",
+            "port": 20135,
+            "targetPort": 20135,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20136",
+            "port": 20136,
+            "targetPort": 20136,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20137",
+            "port": 20137,
+            "targetPort": 20137,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20138",
+            "port": 20138,
+            "targetPort": 20138,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20139",
+            "port": 20139,
+            "targetPort": 20139,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20140",
+            "port": 20140,
+            "targetPort": 20140,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20141",
+            "port": 20141,
+            "targetPort": 20141,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20142",
+            "port": 20142,
+            "targetPort": 20142,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20143",
+            "port": 20143,
+            "targetPort": 20143,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20144",
+            "port": 20144,
+            "targetPort": 20144,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20145",
+            "port": 20145,
+            "targetPort": 20145,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20146",
+            "port": 20146,
+            "targetPort": 20146,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20147",
+            "port": 20147,
+            "targetPort": 20147,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20148",
+            "port": 20148,
+            "targetPort": 20148,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20149",
+            "port": 20149,
+            "targetPort": 20149,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20150",
+            "port": 20150,
+            "targetPort": 20150,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20151",
+            "port": 20151,
+            "targetPort": 20151,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20152",
+            "port": 20152,
+            "targetPort": 20152,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20153",
+            "port": 20153,
+            "targetPort": 20153,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20154",
+            "port": 20154,
+            "targetPort": 20154,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20155",
+            "port": 20155,
+            "targetPort": 20155,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20156",
+            "port": 20156,
+            "targetPort": 20156,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20157",
+            "port": 20157,
+            "targetPort": 20157,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20158",
+            "port": 20158,
+            "targetPort": 20158,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20159",
+            "port": 20159,
+            "targetPort": 20159,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20160",
+            "port": 20160,
+            "targetPort": 20160,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20161",
+            "port": 20161,
+            "targetPort": 20161,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20162",
+            "port": 20162,
+            "targetPort": 20162,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20163",
+            "port": 20163,
+            "targetPort": 20163,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20164",
+            "port": 20164,
+            "targetPort": 20164,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20165",
+            "port": 20165,
+            "targetPort": 20165,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20166",
+            "port": 20166,
+            "targetPort": 20166,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20167",
+            "port": 20167,
+            "targetPort": 20167,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20168",
+            "port": 20168,
+            "targetPort": 20168,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20169",
+            "port": 20169,
+            "targetPort": 20169,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20170",
+            "port": 20170,
+            "targetPort": 20170,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20171",
+            "port": 20171,
+            "targetPort": 20171,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20172",
+            "port": 20172,
+            "targetPort": 20172,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20173",
+            "port": 20173,
+            "targetPort": 20173,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20174",
+            "port": 20174,
+            "targetPort": 20174,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20175",
+            "port": 20175,
+            "targetPort": 20175,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20176",
+            "port": 20176,
+            "targetPort": 20176,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20177",
+            "port": 20177,
+            "targetPort": 20177,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20178",
+            "port": 20178,
+            "targetPort": 20178,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20179",
+            "port": 20179,
+            "targetPort": 20179,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20180",
+            "port": 20180,
+            "targetPort": 20180,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20181",
+            "port": 20181,
+            "targetPort": 20181,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20182",
+            "port": 20182,
+            "targetPort": 20182,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20183",
+            "port": 20183,
+            "targetPort": 20183,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20184",
+            "port": 20184,
+            "targetPort": 20184,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20185",
+            "port": 20185,
+            "targetPort": 20185,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20186",
+            "port": 20186,
+            "targetPort": 20186,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20187",
+            "port": 20187,
+            "targetPort": 20187,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20188",
+            "port": 20188,
+            "targetPort": 20188,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20189",
+            "port": 20189,
+            "targetPort": 20189,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20190",
+            "port": 20190,
+            "targetPort": 20190,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20191",
+            "port": 20191,
+            "targetPort": 20191,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20192",
+            "port": 20192,
+            "targetPort": 20192,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20193",
+            "port": 20193,
+            "targetPort": 20193,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20194",
+            "port": 20194,
+            "targetPort": 20194,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20195",
+            "port": 20195,
+            "targetPort": 20195,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20196",
+            "port": 20196,
+            "targetPort": 20196,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20197",
+            "port": 20197,
+            "targetPort": 20197,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20198",
+            "port": 20198,
+            "targetPort": 20198,
+            "protocol": "UDP"
+          },
+          {
+            "name": "rtp-20199",
+            "port": 20199,
+            "targetPort": 20199,
+            "protocol": "UDP"
+          }
+        ]
+      }
+    }
+  ]
+}

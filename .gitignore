@@ -27,4 +27,9 @@ bin/
 dist/
 model/
 wheels/
+# Completed deployment input and renderer caches must stay outside this checkout.
+config.yaml
+config.private.yaml
+*.private.yaml
+*.generated/
 # Upstream test fixtures already in the source package are intentional.
