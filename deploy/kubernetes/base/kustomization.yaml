@@ -14,7 +14,7 @@
     {
       "name": "sbc-recorder",
       "newName": "192.168.2.240:5000/sbc-management-tool/recorder",
-      "newTag": "0.1.0"
+      "digest": "sha256:37c93d836841568794ee62b502462d6a25c96e03780fa79b4bfcfb796d2ffeac"
     },
     {
       "name": "sbc-transcription",
