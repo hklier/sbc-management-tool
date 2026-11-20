@@ -22,6 +22,15 @@ jobs:
       - run: pip install -r deploy/requirements-config.txt
       - name: Private YAML configuration regression tests
         run: python -m unittest discover -s deploy -p 'test_configure.py'
+      - name: Build deployable console image
+        run: |
+          docker build --target console -f deploy/Dockerfile --label org.opencontainers.image.source=https://github.com/hklier/sbc-management-tool --label org.opencontainers.image.revision=${{ github.sha }} -t sbc-console:${{ github.sha }} .
+          docker save sbc-console:${{ github.sha }} | gzip > /tmp/sbc-console-image.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: console-image-linux-amd64
+          path: /tmp/sbc-console-image.tar.gz
+          retention-days: 7
   recorder:
     runs-on: ubuntu-latest
     defaults:

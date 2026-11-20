@@ -10,6 +10,8 @@ import json
 from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 import server as app
+import users_tools
+TEST_LOGIN_HASH = users_tools.password_hash('test-admin-password')
 
 ELEMENT = '<configElement><elementType>session-agent</elementType><attribute><name>hostname</name><value>agent1</value></attribute><attribute><name>port</name><value>5060</value></attribute><attribute><name>description</name><value>Original</value></attribute></configElement>'
 META = [dict(name='hostname', key=True, ranges=[], choices=[]), dict(name='port', key=False, ranges=[dict(min='1025', max='65535')], choices=[])]
@@ -162,6 +164,13 @@ class LockTests(unittest.TestCase):
 
 class UpdateRouteTests(unittest.TestCase):
     def setUp(self):
+        user_directory = tempfile.TemporaryDirectory(prefix='console-user-tests-')
+        self.addCleanup(user_directory.cleanup)
+        user_store = users_tools.Store(app.Path(user_directory.name) / 'users.sqlite3')
+        user_store.initialize('admin', TEST_LOGIN_HASH)
+        user_patch = patch.object(app, 'USERS', user_store)
+        user_patch.start()
+        self.addCleanup(user_patch.stop)
         self.original = app.SBC_CLIENT
         self.sbc = app.SBC()
         app.SBC_CLIENT = self.sbc
@@ -176,7 +185,7 @@ class UpdateRouteTests(unittest.TestCase):
         self.sbc.raw = self.sbc.call
         self.sbc.operation = lambda method, path: self.events.append((method, path, None)) or app.xml('<response/>')
         self.sbc.get = lambda path: app.xml('<response><data>' + app.serial(app.xml(self.current)) + '</data></response>')
-        app.SESSIONS['test-cookie'] = dict(csrf='test-csrf', expires=time.time()+60)
+        app.SESSIONS['test-cookie'] = dict(csrf='test-csrf', expires=time.time()+60, username='admin', auth_version=1)
         app.SNAPSHOTS['snapshot'] = dict(session='test-cookie', expires=time.time()+60, xml=ELEMENT, kind='session-agent', meta=META)
         self.http = app.ThreadingHTTPServer(('127.0.0.1', 0), app.Handler)
         self.thread = threading.Thread(target=self.http.serve_forever, daemon=True)

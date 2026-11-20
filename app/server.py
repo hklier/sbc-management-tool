@@ -19,6 +19,7 @@ import tempfile
 import time
 import xml.etree.ElementTree as ET
 import rest_activity
+import users_tools
 from contextlib import contextmanager
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -30,6 +31,8 @@ STATE.mkdir(parents=True, exist_ok=True)
 os.chmod(str(STATE), 0o700)
 GATE = threading.RLock()
 SESSIONS = {}
+AUTH_GATE = threading.RLock()
+USERS = users_tools.Store(STATE / 'users.sqlite3')
 SNAPSHOTS = {}
 ATTEMPTS = {}
 LRT_CACHE = {}
@@ -948,6 +951,10 @@ class Handler(BaseHTTPRequestHandler):
         item = SESSIONS.get(sid)
         if not item or item['expires'] < time.time():
             raise Problem('Your session has expired.', 401)
+        user = USERS.current(item.get('username'), item.get('auth_version'))
+        if not user:
+            raise Problem('Your session has expired. Sign in again.', 401)
+        item['user'] = user
         rest_activity.CONTEXT.session=sid
         rest_activity.CONTEXT.source=urlsplit(self.path).path
         return sid, item
@@ -958,18 +965,42 @@ class Handler(BaseHTTPRequestHandler):
             raise Problem('Invalid request size.', 413)
         if not self.headers.get('Content-Type', '').startswith('application/json'):
             raise Problem('JSON is required.', 415)
-        return json.loads(self.rfile.read(length))
+        try:
+            result = json.loads(self.rfile.read(length))
+        except (ValueError, UnicodeError):
+            raise Problem('The JSON request is invalid.', 400) from None
+        if not isinstance(result, dict):raise Problem('A JSON object is required.', 400)
+        return result
+
+    def issue_session(self, user, previous=None):
+        with AUTH_GATE:
+            if previous:SESSIONS.pop(previous, None)
+            sid = secrets.token_urlsafe(32)
+            csrf = secrets.token_urlsafe(32)
+            SESSIONS[sid] = dict(csrf=csrf, expires=time.time()+8*3600, username=user['username'], auth_version=user['version'], user=user)
+        secure = '; Secure' if isinstance(self.connection, ssl.SSLSocket) else ''
+        return csrf, 'sbc_session='+sid+'; Path=/; HttpOnly; SameSite=Strict'+secure
+
+    def auth_attempt(self, key):
+        with AUTH_GATE:
+            now = time.time()
+            attempts = [t for t in ATTEMPTS.get(key, []) if t > now-300]
+            if len(attempts) >= 10:raise Problem('Too many attempts. Wait five minutes.', 429)
+            ATTEMPTS[key] = attempts+[now]
 
     def do_GET(self):
         try:
             parsed = urlsplit(self.path)
             p = parsed.path
-            if p in ('/', '/app.js', '/rest-activity.js', '/lrt.js', '/diagnostics.js', '/diagnostic-charts.js', '/traces.js', '/snmp.js', '/traps.js', '/cdr.js', '/recordings.js', '/style.css'):
+            if p in ('/', '/app.js', '/rest-activity.js', '/lrt.js', '/diagnostics.js', '/diagnostic-charts.js', '/traces.js', '/snmp.js', '/traps.js', '/cdr.js', '/recordings.js', '/users.js', '/style.css'):
                 name = 'index.html' if p == '/' else p[1:]
-                mime = {'index.html': 'text/html', 'app.js': 'text/javascript', 'rest-activity.js':'text/javascript', 'lrt.js': 'text/javascript', 'diagnostics.js': 'text/javascript', 'diagnostic-charts.js': 'text/javascript', 'traces.js': 'text/javascript', 'snmp.js': 'text/javascript', 'traps.js': 'text/javascript', 'cdr.js': 'text/javascript', 'recordings.js': 'text/javascript', 'style.css': 'text/css'}[name]
+                mime = {'index.html': 'text/html', 'app.js': 'text/javascript', 'rest-activity.js':'text/javascript', 'lrt.js': 'text/javascript', 'diagnostics.js': 'text/javascript', 'diagnostic-charts.js': 'text/javascript', 'traces.js': 'text/javascript', 'snmp.js': 'text/javascript', 'traps.js': 'text/javascript', 'cdr.js': 'text/javascript', 'recordings.js': 'text/javascript', 'users.js': 'text/javascript', 'style.css': 'text/css'}[name]
                 return self.send(200, (BASE / 'static' / name).read_bytes(), content_type=mime + '; charset=utf-8')
             sid, session = self.session()
             q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
+            if p == '/api/users':
+                if session['user']['role'] != 'admin':raise Problem('Only administrators can manage users.', 403)
+                return self.send(200, dict(users=USERS.listing()))
             if p == '/api/rest-activity':
                 try:after=int(q.get('after','0'))
                 except ValueError:raise Problem('Invalid activity cursor.',400)
@@ -1061,7 +1092,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200,data)
             with GATE:
                 if p == '/api/session':
-                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host, user=os.environ.get('APP_USER', 'admin'))
+                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host, user=session['user']['username'], role=session['user']['role'])
                 elif p == '/api/status':
                     versions = SBC_CLIENT.get('configuration/versions')
                     data = dict(version=serial(SBC_CLIENT.get('system/version')), versions=serial(versions), workflow=configuration_workflow(versions), pending=SBC_CLIENT.pending, blocked=SBC_CLIENT.blocked)
@@ -1134,28 +1165,46 @@ class Handler(BaseHTTPRequestHandler):
             if path == '/api/login':
                 address = self.client_address[0]
                 now = time.time()
-                attempts = [t for t in ATTEMPTS.get(address, []) if t > now - 300]
-                ATTEMPTS[address] = attempts
-                if len(attempts) >= 10:
-                    raise Problem('Too many attempts. Wait five minutes.', 429)
-                attempts.append(now)
-                stored = os.environ['APP_PASSWORD_HASH']
-                salt, correct = stored.split(':')
-                candidate = hashlib.pbkdf2_hmac('sha256', str(body.get('password', '')).encode(), bytes.fromhex(salt), 600000).hex()
-                if not (hmac.compare_digest(str(body.get('username', '')), os.environ.get('APP_USER', 'admin')) and hmac.compare_digest(candidate, correct)):
+                self.auth_attempt(address)
+                user = USERS.authenticate(body.get('username'), body.get('password'))
+                if not user:
                     raise Problem('Incorrect username or password.', 401)
-                ATTEMPTS[address] = []
-                for s, v in list(SESSIONS.items()):
-                    if v['expires'] < now:
-                        del SESSIONS[s]
-                sid = secrets.token_urlsafe(32)
-                SESSIONS[sid] = dict(csrf=secrets.token_urlsafe(32), expires=now + 8 * 3600)
-                secure = '; Secure' if isinstance(self.connection, ssl.SSLSocket) else ''
-                audit('login', 'success', address=address)
-                return self.send(200, {'ok': True}, cookie='sbc_session=' + sid + '; Path=/; HttpOnly; SameSite=Strict' + secure)
+                with AUTH_GATE:
+                    ATTEMPTS[address] = []
+                    for s,v in list(SESSIONS.items()):
+                        if v['expires'] < now:SESSIONS.pop(s,None)
+                _, cookie = self.issue_session(user)
+                audit('login', 'success', address=address, user=user['username'])
+                return self.send(200, {'ok': True}, cookie=cookie)
             sid, session = self.session()
             if not hmac.compare_digest(self.headers.get('X-CSRF-Token', ''), session['csrf']):
                 raise Problem('Your editing session is not valid. Reload the page.', 403)
+            if path in ('/api/users','/api/users/password','/api/users/reset-password'):
+                actor = session['user']
+                try:
+                    if path == '/api/users':
+                        if actor['role'] != 'admin':raise Problem('Only administrators can add users.',403)
+                        user = USERS.create(body.get('username'),body.get('password'),body.get('role','user'))
+                        audit('user.create','success',user=actor['username'],target=user['username'],role=user['role'])
+                        return self.send(201,dict(user=user))
+                    if path == '/api/users/reset-password' and actor['role'] != 'admin':
+                        raise Problem('Only administrators can reset other users\' passwords.',403)
+                    attempt_key = 'password:'+actor['username']+':'+self.client_address[0]
+                    self.auth_attempt(attempt_key)
+                    if path == '/api/users/password':
+                        user = USERS.change_password(actor['username'],body.get('current_password'),body.get('new_password'))
+                    else:
+                        if not USERS.authenticate(actor['username'],body.get('current_password')):
+                            raise Problem('Your current administrator password is incorrect.',400)
+                        user = USERS.set_password(body.get('username'),body.get('new_password'))
+                    with AUTH_GATE:ATTEMPTS.pop(attempt_key,None)
+                    audit('user.password','success',user=actor['username'],target=user['username'])
+                    if user['username'] == actor['username']:
+                        token,cookie = self.issue_session(user,previous=sid)
+                        return self.send(200,dict(ok=True,csrf=token),cookie=cookie)
+                    return self.send(200,dict(ok=True))
+                except users_tools.UserError as exc:
+                    raise Problem(str(exc),exc.code) from exc
             if path == '/api/rest-activity/clear':
                 return self.send(200,rest_activity.clear(sid))
             if path == '/api/recordings/delete':
@@ -1167,7 +1216,7 @@ class Handler(BaseHTTPRequestHandler):
                 except recordings.RecordingError as exc:raise Problem(str(exc),exc.code) from exc
             with GATE:
                 if path == '/api/logout':
-                    del SESSIONS[sid]
+                    SESSIONS.pop(sid,None)
                     result = {'ok': True}
                 elif path == '/api/lrt/preview':
                     result = prepare_lrt_change(sid, body)
@@ -1282,6 +1331,7 @@ def main():
     for required in ('APP_PASSWORD_HASH', 'SBC_PASSWORD'):
         if not os.environ.get(required):
             raise SystemExit('Missing environment variable ' + required)
+    USERS.initialize(os.environ.get('APP_USER','admin'),os.environ['APP_PASSWORD_HASH'])
     host = os.environ.get('BIND_HOST', '127.0.0.1')
     cert = os.environ.get('TLS_CERT')
     if host not in ('127.0.0.1', 'localhost') and not cert:

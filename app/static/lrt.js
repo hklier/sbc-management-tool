@@ -3,9 +3,9 @@ let lrtTables=[],lrtSelected='',lrtOffset=0,lrtFiltered=0,lrtRequest=0,lrtSearch
 let lrtCurrent=null,lrtChange=null,lrtOverviewRequest=0;
 
 function showWorkspace(view){
-  ['config','history','lrt','diagnostics','traces','snmp','traps','cdr','recordings'].forEach(name=>{$(name+'-view').hidden=name!==view;$('nav-'+name).classList.toggle('active',name===view)});
-  $('config-actions').hidden=view==='lrt'||view==='diagnostics'||view==='traces'||view==='snmp'||view==='traps'||view==='cdr'||view==='recordings';
-  $('page-title').textContent={config:'Configuration',history:'History',lrt:'Local route tables',diagnostics:'Diagnostics',traces:'Packet captures',snmp:'SNMP diagnosis',traps:'SNMP traps',cdr:'Call detail records',recordings:'Recordings'}[view];
+  ['config','history','lrt','diagnostics','traces','snmp','traps','cdr','recordings','users'].forEach(name=>{$(name+'-view').hidden=name!==view;$('nav-'+name).classList.toggle('active',name===view)});
+  $('config-actions').hidden=view==='lrt'||view==='diagnostics'||view==='traces'||view==='snmp'||view==='traps'||view==='cdr'||view==='recordings'||view==='users';
+  $('page-title').textContent={config:'Configuration',history:'History',lrt:'Local route tables',diagnostics:'Diagnostics',traces:'Packet captures',snmp:'SNMP diagnosis',traps:'SNMP traps',cdr:'Call detail records',recordings:'Recordings',users:'Users & passwords'}[view];
 }
 function lrtRunning(){return $('lrt-source').value==='running'}
 function renderLrtCards(){

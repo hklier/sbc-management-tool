@@ -356,6 +356,7 @@ def main(argv=None):
         print('Rendered public settings: deploy/kubernetes/base/resources.json')
         print('Private files: '+str(directory))
         print('Commit and push the public settings file; Argo CD will roll out the configuration, including Secret changes.')
+        print('Console login fields bootstrap the first administrator. Existing users and passwords are managed through Users in the console.')
         return 0
     except (ConfigError,OSError,yaml.YAMLError,ValueError,TypeError) as error:
         # YAML parser errors and crypto errors can contain input fragments. Never echo them.

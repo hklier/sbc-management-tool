@@ -11,11 +11,27 @@ Oracle SBC HTTPS console, SIPREC recorder, offline transcription worker, and SNM
 - SNMP trap destination: `192.168.0.241:162/UDP`, SNMPv1/v2c with the separately supplied private community. SNMPv3 polling supports SHA256/SHA512 with AES128. SNMPv3 traps are not implemented.
 - MetalLB preserves the source IP using `externalTrafficPolicy: Local`; SIP and all media ports select the same single recorder pod.
 
+## Console users and passwords
+
+Use **Users** in the header or **Users & passwords** in the sidebar. Every signed-in user can change their own password after confirming the current one. Administrators can list accounts, add console users or additional administrators, and reset a password after confirming their own administrator password. New passwords require 12–1024 characters; usernames are case-insensitive. Console users retain access to the existing SBC management features; the administrator role additionally controls console accounts.
+
+Accounts and salted PBKDF2 password hashes are stored in `STATE_DIR/users.sqlite3` on the persistent volume. Passwords cannot be viewed. Password changes revoke previous sessions and rotate the current session cookie. UI account changes are recorded in the operation audit without passwords.
+
+The YAML `console.username` and `console.password`/`password_hash` initialize the first administrator **only when the account database is empty**. Later YAML changes, image upgrades, and restarts do not overwrite accounts or UI password changes. Back up the user database with the other application state. Your existing administrator credentials are preserved on first upgrade.
+
+If all administrators lose access, a cluster administrator can explicitly restore the administrator from the bootstrap values loaded by the running console container:
+
+```sh
+kubectl exec -n sbc-management-tool deploy/sbc-console -c console -- python users_tools.py --reset-bootstrap
+```
+
+Other accounts remain intact; the recovered account's old sessions are invalidated. If you changed bootstrap credentials through YAML, complete that rollout before running recovery. Do not delete the account database to recover a password.
+
 ## Git and deployment
 
 `deploy/kubernetes/base` contains Kustomize resources; `deploy/kubernetes/argocd-application.json` connects Argo CD to the `main` branch. Image references are pinned to published digests. Argo CD automatically reconciles changes to Git. `deploy/Dockerfile` defines the three image builds; images are stored in the existing private-LAN registry. The initial recorder image packages the validated GitHub Actions binary on the console runtime, with its source revision recorded in OCI image labels.
 
-GitHub Actions runs the console tests, Oracle metadata/re-INVITE regression tests, and a Linux recorder build, with the recorder binary available as a downloadable artifact. A manual Actions run also builds all three images and provides downloadable image archives. GitHub-hosted runners have no access to the private cluster or LAN registry.
+GitHub Actions runs the console tests, Oracle metadata/re-INVITE regression tests, and a Linux recorder build, with the recorder binary and deployable console image available as downloadable artifacts. A manual Actions run also builds all three images and provides downloadable image archives. GitHub-hosted runners have no access to the private cluster or LAN registry.
 
 To release from a trusted Linux checkout with Podman and registry access:
 

@@ -22,7 +22,7 @@ snmp:
   trap_communities: generate           # Or a list: ["private-community"]
 console:
   username: "admin"
-  password: generate                  # Or a quoted password; password_hash is also supported.
+  password: generate                  # Initial administrator only; afterwards use Users in the console.
   tls:
     mode: self-signed                  # supplied or self-signed
     days: 365
