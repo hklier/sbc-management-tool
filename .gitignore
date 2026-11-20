@@ -1,0 +1,30 @@
+# Private configuration and runtime data
+.env
+.env.local
+.env.production
+*.env
+!*.env.example
+!environment.example
+environment
+state/
+recordings/
+.trash/
+*.sqlite3
+*.sqlite3-*
+*.pcap
+*.pcapng
+*.bak
+*.key
+*.pem
+*.p12
+*.pfx
+__pycache__/
+*.pyc
+.venv/
+node_modules/
+# Build/runtime artifacts
+bin/
+dist/
+model/
+wheels/
+# Upstream test fixtures already in the source package are intentional.

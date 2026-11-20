@@ -1,0 +1,28 @@
+[Unit]
+Description=Offline SIPREC transcription for SBC Console
+After=siprec-recorder.service
+[Service]
+Type=simple
+User=sbc-console
+Group=sbc-console
+WorkingDirectory=/opt/sbc-console
+Environment=HF_HUB_OFFLINE=1
+Environment=TRANSFORMERS_OFFLINE=1
+Environment=OMP_NUM_THREADS=1
+Environment=OPENBLAS_NUM_THREADS=1
+ExecStart=/opt/sbc-transcription/venv/bin/python /opt/sbc-console/transcription_worker.py
+Restart=on-failure
+RestartSec=10
+Nice=15
+CPUQuota=60%
+MemoryLimit=450M
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateNetwork=true
+ProtectSystem=full
+ProtectHome=true
+ReadWriteDirectories=/var/lib/sbc-console/recordings
+TimeoutStopSec=25
+[Install]
+WantedBy=multi-user.target

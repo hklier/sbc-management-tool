@@ -1,0 +1,1369 @@
+{
+  "release": "S-Cz9.3.0",
+  "mibSource": "https://docs.oracle.com/communications/scz930/MIBSSCZ930.zip",
+  "guideSource": "https://docs.oracle.com/en/industries/communications/session-border-controller/9.3.0/mib/traps.html",
+  "notifications": {
+    "1.3.6.1.4.1.9148.3.16.2.2.1.0.1": {
+      "name": "apAppsENUMServerStatusChangeTrap",
+      "title": "ENUM server reachability changed",
+      "description": "The trap will be generated if the reachability status of an ENUM server changes.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.2.0.1": {
+      "name": "apAppsDnsServerStatusChangeTrap",
+      "title": "DNS server reachability changed",
+      "description": "The trap will be generated if the reachability status of a dns server changes.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.3.0.1": {
+      "name": "apMonitorCollectorDownTrap",
+      "title": "Communication monitor disconnected",
+      "description": "The trap will be generated when there is a disconnect between a SBC and a CommMonitor.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.3.0.2": {
+      "name": "apMonitorCollectorClearTrap",
+      "title": "Communication monitor connection restored",
+      "description": "The trap will be generated when SBC reconnects with the CommMonitor and resumes normal operation.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.4.0.1": {
+      "name": "apAclDropOverThresholdTrap",
+      "title": "ACL packet drop ratio above threshold",
+      "description": "The trap will be generated when acl drop ratio has exceeded the configured threshold.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.4.0.2": {
+      "name": "apAclDropOverThresholdClearTrap",
+      "title": "ACL packet drop ratio back below threshold",
+      "description": "The trap will be generated when acl drop ratio has gone below the configured threshold.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.7.0.1": {
+      "name": "apDosThresholdCrossTrap",
+      "title": "Denial-of-service traffic threshold crossed",
+      "description": "The trap will be generated when the specified traffic crosses the configured DOS thresholds.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.7.0.2": {
+      "name": "apDosThresholdClearTrap",
+      "title": "Denial-of-service traffic alert cleared",
+      "description": "The clear trap will be generated when the specified traffic had fallen back from the all configured DOS thresholds",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.5.0.1": {
+      "name": "apStirServerUnreachableTrap",
+      "title": "STIR server response timed out",
+      "description": "The trap will be generated when STIR server timeout.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.5.0.2": {
+      "name": "apStirServerUnreachableClearTrap",
+      "title": "STIR server responding again",
+      "description": "The trap will be generated when any response received from a STIR server previously timeout.",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.6.0.1": {
+      "name": "apAppsResrvdNsepSessionCapacityUtilTrap",
+      "title": "Reserved NSEP session capacity threshold reached",
+      "description": "The trap will be generated if configured alarm thresholds hit for reserved NSEP sessions capacity utilisation",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.16.2.2.6.0.2": {
+      "name": "apAppsResrvdNsepSessionCapacityUtilClearTrap",
+      "title": "Reserved NSEP session capacity alert cleared",
+      "description": "The trap will be generated if reserved NSEP sessions capacity utilisation becomes less than threshold",
+      "module": "ap-apps.mib"
+    },
+    "1.3.6.1.4.1.9148.3.19.3.0.1": {
+      "name": "apCoreLBMemberInServiceTrap",
+      "title": "Core load balancer member in service",
+      "description": "The trap will be generated when Core LB member is in service.",
+      "module": "ap-corelb.mib"
+    },
+    "1.3.6.1.4.1.9148.3.19.3.0.2": {
+      "name": "apCoreLBMemberOOSTrap",
+      "title": "Core load balancer member out of service",
+      "description": "The trap will be generated when Core LB member is out of service.",
+      "module": "ap-corelb.mib"
+    },
+    "1.3.6.1.4.1.9148.3.12.2.2.0.1": {
+      "name": "apDdConnectionFailureTrap",
+      "title": "Diameter connection disconnected",
+      "description": "A notification when a diameter connection is disconnected via a disconnect request.",
+      "module": "ap-dd.mib"
+    },
+    "1.3.6.1.4.1.9148.3.12.2.2.0.2": {
+      "name": "apDdConnectionFailureClearTrap",
+      "title": "Diameter transport failure recovered",
+      "description": "A notification when a transport failure has been recovered.",
+      "module": "ap-dd.mib"
+    },
+    "1.3.6.1.4.1.9148.3.12.2.2.0.3": {
+      "name": "apDdSCTPPathFailureTrap",
+      "title": "SCTP path failed",
+      "description": "A notification when a SCTP path fails.",
+      "module": "ap-dd.mib"
+    },
+    "1.3.6.1.4.1.9148.3.12.2.2.0.4": {
+      "name": "apDdSCTPPathFailureClearTrap",
+      "title": "SCTP path failure recovered",
+      "description": "A notification when a SCTP path failure has been recovered.",
+      "module": "ap-dd.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.1": {
+      "name": "apDiameterAcctSrvrUpTrap",
+      "title": "Diameter accounting server available",
+      "description": "The trap will be generated when the Diameter Accounting Server goes up",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.2": {
+      "name": "apDiameterAcctSrvrDownTrap",
+      "title": "Diameter accounting server unavailable",
+      "description": "The trap will be generated when the Diameter Accounting Server goes down",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.3": {
+      "name": "apAcctMsgQueueFullTrap",
+      "title": "Accounting queue full and servers unavailable",
+      "description": "The trap will be generated when the accounting message queue is full and all accounting servers are down",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.4": {
+      "name": "apAcctMsgQueueFullClearTrap",
+      "title": "Accounting queue full alert cleared",
+      "description": "The trap will be generated when the apAcctMsgQueueFullTrap condition clears",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.5": {
+      "name": "apDiameterSrvrErrorResultTrap",
+      "title": "Diameter server returned an error",
+      "description": "The trap can be generated when the Diameter Server returns 3xxx (Protocol Errors), 4xxx (Transient Failures), or 5xxx (Permanent Failure) Result-Code AVP (268)",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.6": {
+      "name": "apDiameterSrvrSuccessResultTrap",
+      "title": "Diameter server returned success after an error",
+      "description": "The trap can be generated when the Diameter Server returns a 2xxx (Success) Result-Code AVP (268) after an error result",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.7": {
+      "name": "apAcctMsgQueueUpperThresholdTrap",
+      "title": "Accounting queue reached its upper threshold",
+      "description": "The upper threshold trap shall be sent when ACRq usage reaches to the configured acr-buffer-upper-threshold value. For ex. acr-buffer-upper-threshold=90 and acr-buffer-lower-threshold=60. so once ACRq usages reaches to the 90, upper threshold trap shall be sent.",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.13.1.2.2.0.8": {
+      "name": "apAcctMsgQueueUpperThresholdClearTrap",
+      "title": "Accounting queue returned to its lower threshold",
+      "description": "The upper threshold clear trap shall be sent when ACRq usages reaches to the configured acr-buffer-lower-threshold value and upper threshold trap was sent earlier. For ex. acr-buffer-upper-threshold=90 and acr-buffer-lower-threshold=60. so once ACRq usages hit 90% and upper threshold trap triggered then after taking corrective actions it recovers and reached to the 60, upper threshold clear trap shall be sent.",
+      "module": "ap-diameter.mib"
+    },
+    "1.3.6.1.4.1.9148.3.20.3.2.0.1": {
+      "name": "apDiamAuthSrvrEstTrap",
+      "title": "Diameter authentication connection established",
+      "description": "The trap will be generated when the connection gets established successfully with diameter authentication server",
+      "module": "ap-diameterauth.mib"
+    },
+    "1.3.6.1.4.1.9148.3.20.3.2.0.2": {
+      "name": "apDiamAuthSrvrDownTrap",
+      "title": "Diameter authentication server unavailable",
+      "description": "The trap will be generated when the diameter authentication server goes down",
+      "module": "ap-diameterauth.mib"
+    },
+    "1.3.6.1.4.1.9148.3.14.2.2.0.1": {
+      "name": "apDnsAlgStatusChangeTrap",
+      "title": "DNS ALG server timed out or went out of service",
+      "description": "The trap will be generated if the reachability status of an DNS-ALG server changes from In-Service to either Timed out or Out of Service.",
+      "module": "ap-dnsalg.mib"
+    },
+    "1.3.6.1.4.1.9148.3.14.2.2.0.2": {
+      "name": "apDnsAlgStatusChangeClearTrap",
+      "title": "DNS ALG server returned to service",
+      "description": "The trap will be generated if the reachability status of an DNS-ALG server changes from either Timed out or Out of Service to In-Service",
+      "module": "ap-dnsalg.mib"
+    },
+    "1.3.6.1.4.1.9148.3.14.2.2.0.3": {
+      "name": "apDnsAlgConstraintStateChangeTrap",
+      "title": "DNS ALG configuration constraints exceeded",
+      "description": "The trap will be generated if an DNS-ALG config's constriants state changed from inservice to constraintsExceeded.",
+      "module": "ap-dnsalg.mib"
+    },
+    "1.3.6.1.4.1.9148.3.14.2.2.0.4": {
+      "name": "apDnsAlgConstraintStateChangeClearTrap",
+      "title": "DNS ALG configuration constraints alert cleared",
+      "description": "The trap will be generated if an DNS-ALG config's constriants state changed from constraintsExceeded to inservice.",
+      "module": "ap-dnsalg.mib"
+    },
+    "1.3.6.1.4.1.9148.3.14.2.2.0.5": {
+      "name": "apDnsAlgSvrConstraintStateChangeTrap",
+      "title": "DNS server constraints exceeded",
+      "description": "The trap will be generated if an Dns Server(i.e.IP-Address) constriants state changed from inservice to constraintsExceeded.",
+      "module": "ap-dnsalg.mib"
+    },
+    "1.3.6.1.4.1.9148.3.14.2.2.0.6": {
+      "name": "apDnsAlgSvrConstraintStateChangeClearTrap",
+      "title": "DNS server constraints alert cleared",
+      "description": "The trap will be generated if an Dns Server(i.e.IP-Address) constriants state changed from constraintsExceeded to inservice.",
+      "module": "ap-dnsalg.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.1.0.1": {
+      "name": "apEMSDiscoveryFailure",
+      "title": "Managed SBC configuration discovery failed",
+      "description": "The notification will be generated whenever an error is detected during node discovery.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.1.0.2": {
+      "name": "apEMSSaveFailure",
+      "title": "Managed SBC configuration save failed",
+      "description": "The notification will be generated whenever an save configuration request initiated by Net-Net EMS fails.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.1.0.3": {
+      "name": "apEMSActivateFailure",
+      "title": "Managed SBC configuration activation failed",
+      "description": "The notification will be generated whenever an activate configuration request initiated by Net-Net EMS fails`.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.1.0.4": {
+      "name": "apEMSInvalidConfigDiscovered",
+      "title": "Invalid managed SBC configuration discovered",
+      "description": "The notification will be generated whenever an invalid configuration is retrieved from a node. Additional information about the validity failure is available in the discovery log.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.1.0.5": {
+      "name": "apEMSInvalidConfigInventory",
+      "title": "Managed SBC configuration inventory check failed",
+      "description": "The notification will be generated whenever an inventory check was performed and failed.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.2.0.1": {
+      "name": "apEMSNodeUnreachable",
+      "title": "Managed SBC unreachable from EMS",
+      "description": "The notification will be generated whenever a managed device is determined to be unreachable from the Net-Net EMS server.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.3.2.0.2": {
+      "name": "apEMSNodeUnreachableClear",
+      "title": "Managed SBC reachable again from EMS",
+      "description": "The notification will be generated whenever a previously unreachable managed device is determined to be reachable by the Net-Net EMS server.",
+      "module": "ap-ems.mib"
+    },
+    "1.3.6.1.4.1.9148.3.3.4.0.1": {
+      "name": "apEnvMonI2CFailNotification",
+      "title": "I2C hardware bus stopped functioning",
+      "description": "A notification of I2C state turns from normal(1) to notFunctioning(7)",
+      "module": "ap-env-monitor.mib"
+    },
+    "1.3.6.1.4.1.9148.3.3.4.0.2": {
+      "name": "apEnvMonStatusChangeNotification",
+      "title": "Monitored hardware status changed",
+      "description": "A apEnvStatusChangeNotification is sent if any entry of above table change in the state of a device being monitored",
+      "module": "ap-env-monitor.mib"
+    },
+    "1.3.6.1.4.1.9148.3.3.4.0.3": {
+      "name": "apEnvMonTempChangeNotification",
+      "title": "Hardware temperature threshold crossed",
+      "description": "A notification is sent if any of the units cross a temperature threshold",
+      "module": "ap-env-monitor.mib"
+    },
+    "1.3.6.1.4.1.9148.3.3.4.0.4": {
+      "name": "apEnvMonVoltageChangeNotification",
+      "title": "Hardware voltage threshold crossed",
+      "description": "A notification is sent if any of the units cross a voltage threshold",
+      "module": "ap-env-monitor.mib"
+    },
+    "1.3.6.1.4.1.9148.3.3.4.0.5": {
+      "name": "apEnvMonPortChangeNotification",
+      "title": "Physical port inserted or removed",
+      "description": "The trap will be generated if a physical port is inserted/present or removed/not present.",
+      "module": "ap-env-monitor.mib"
+    },
+    "1.3.6.1.4.1.9148.3.10.3.0.1": {
+      "name": "apH323StackMaxCallThresholdTrap",
+      "title": "H.323 call count above threshold",
+      "description": "This trap is sent if the number of h323 calls increases percentage of the max-calls threshold",
+      "module": "ap-h323.mib"
+    },
+    "1.3.6.1.4.1.9148.3.10.3.0.2": {
+      "name": "apH323StackMaxCallThresholdClearTrap",
+      "title": "H.323 call count alert cleared",
+      "description": "This trap is sent if the number of h323 calls decreases to below the lowest max-calls threshold",
+      "module": "ap-h323.mib"
+    },
+    "1.3.6.1.4.1.9148.3.5.3.0.1": {
+      "name": "apLicenseApproachingCapacityNotification",
+      "title": "Licensed session capacity nearly exhausted",
+      "description": "This trap is sent if the total sessions is approaching the license capacity allowed. (98% or higher)",
+      "module": "ap-license.mib"
+    },
+    "1.3.6.1.4.1.9148.3.5.3.0.2": {
+      "name": "apLicenseNotApproachingCapacityNotification",
+      "title": "Licensed session capacity warning cleared",
+      "description": "This trap is sent if the total sessions is no longer approaching the license capacity allowed. (less than 90%)",
+      "module": "ap-license.mib"
+    },
+    "1.3.6.1.4.1.9148.3.5.3.0.3": {
+      "name": "apLicenseExpirationWarningNotification",
+      "title": "License expires within seven days",
+      "description": "This trap is sent when a license is within 7 days of expiration",
+      "module": "ap-license.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.1": {
+      "name": "apNNCServerUnreachable",
+      "title": "Session management cluster server unreachable",
+      "description": "The notification will be generated whenever a Net-Net Central Server is determined to be unreachable by another the Net-Net Central server configured in the same cluster.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.2": {
+      "name": "apNNCServerUnreachableClear",
+      "title": "Session management cluster server reachable again",
+      "description": "The notification will be generated whenever a previously unreachable Net-Net Central Server is determined to be reachable by another Net-Net Central server configured in the same cluster.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.3": {
+      "name": "apNNCTrapRelayNotAliveNotification",
+      "title": "Session management trap relay not running",
+      "description": "The notification will be generated when the main Net-Net Central Server has determined that the trap relay process is not alive during the Server start up process",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.4": {
+      "name": "apNNCTrapRelayAliveNotification",
+      "title": "Session management trap relay running",
+      "description": "The notification will be generated when the main Net-Net Central Server has determined that the trap relay process is alive during Server start up process",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.5": {
+      "name": "apOCSDMSeverHeartbeatReachable",
+      "title": "Session Delivery Manager heartbeat received",
+      "description": "The notification will be periodically generated by Oracle communication session delivery manager master server at configured interval",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.6": {
+      "name": "apEMPluginFailedInstall",
+      "title": "EMS plugin installation failed",
+      "description": "The notification will be generated whenever an EMS-Plugin failed install.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.7": {
+      "name": "apEMPluginFailedInstallClear",
+      "title": "EMS plugin installation failure cleared",
+      "description": "The notification will be generated whenever an EMS-Plugin failed install status is recovered.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.8": {
+      "name": "apEMPluginFailedUninstall",
+      "title": "EMS plugin removal failed",
+      "description": "The notification will be generated whenever an EMS-Plugin failed uninstall.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.9": {
+      "name": "apEMPluginFailedUninstallClear",
+      "title": "EMS plugin removal failure cleared",
+      "description": "The notification will be generated whenever an EMS-Plugin failed uninstall status is recovered.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.1.0.10": {
+      "name": "apEMPluginDuplicatedRestPrefixName",
+      "title": "EMS plugin REST prefix already in use",
+      "description": "The notification will be generated when attempting to install a plugin with exixting REST prefix name in the system.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.1": {
+      "name": "apNNCReportingHdrDetectionFailure",
+      "title": "HDR reporting data detection failed",
+      "description": "The notification will be generated whenever a Net-Net Central Reporting HDR detection task failed.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.2": {
+      "name": "apNNCReportingHdrAggregationFailure",
+      "title": "HDR reporting aggregation falling behind",
+      "description": "THIS TRAP IS BEING DEPRECATED IN FAVOR of A NEW TRAP apNNCReportingHdrAggregationLagFailure. The notification will be generated when a Net-Net Central Reporting HDR aggregation task fails to keep up with incoming HDR data.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.3": {
+      "name": "apNNCReportingHdrAggregationFailureClear",
+      "title": "HDR reporting aggregation recovered",
+      "description": "THIS TRAP IS BEING DEPRECATED IN FAVOR of A NEW TRAP apNNCReportingHdrAggregationLagFailureClear. The notification will be generated when a previosly failed Net-Net Central Reporting HDR aggregation task is now able to keep up with incoming HDR data.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.4": {
+      "name": "apNNCReportingHdrAggregationLagFailure",
+      "title": "HDR reporting aggregation lag detected",
+      "description": "The notification will be generated when a Net-Net Central Reporting HDR aggregation task fails to keep up with incoming HDR data.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.5": {
+      "name": "apNNCReportingHdrAggregationLagFailureClear",
+      "title": "HDR reporting aggregation lag cleared",
+      "description": "The notification will be generated when a previosly failed Net-Net Central Reporting HDR aggregation task is now able to keep up with incoming HDR data.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.6": {
+      "name": "apNNCReportingPswdExpiration",
+      "title": "Reporting account password nearing expiration",
+      "description": "The notification will be generated when a Net-Net Central Reporting user's password is near to expiry date.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.2.0.7": {
+      "name": "apNNCReportingPswdExpirationClear",
+      "title": "Reporting password expiration warning cleared",
+      "description": "The notification will be generated to clear previous Net-Net Central Reporting user's password expiration trap.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.8.5.3.3.0.1": {
+      "name": "apOCSDMFPLSizeExceedLimit",
+      "title": "Fraud protection list exceeds device size limit",
+      "description": "The notification will be generated whenever a Fraud Protection List is scheduled to push to device(s), and the size of the list exceeds the device limit.",
+      "module": "ap-nnc.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.1.0.1": {
+      "name": "apSecurityTunnelFailureNotification",
+      "title": "IPsec IKEv2 tunnel establishment failed",
+      "description": "The notification will be generated whenever IPSEC IKEV2 tunnel fails to establish.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.1.0.2": {
+      "name": "apSecurityRadiusFailureNotification",
+      "title": "RADIUS authentication request failed",
+      "description": "The notification will be generated whenever Radius authentication request fails.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.1.0.3": {
+      "name": "apSecurityAuthFailureThresholdNotification",
+      "title": "IKE authentication failure threshold reached",
+      "description": "The notification will be generated when IKE DDos auth-failure-threshold is reached and report mode includes SNMP trap",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.1.0.4": {
+      "name": "apSecurityTacacsFailureNotification",
+      "title": "TACACS authentication request failed",
+      "description": "The notification will be generated whenever TACACS authentication requests fail.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.1.0.5": {
+      "name": "apSecurityTunnelFailureInetNotification",
+      "title": "IPsec IKEv2 tunnel establishment failed",
+      "description": "The notification will be generated whenever IPSEC IKEV2 tunnel fails to establish.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.1.0.6": {
+      "name": "apSecurityAuthFailureThresholdInetNotification",
+      "title": "IKE authentication failure threshold reached",
+      "description": "The notification will be generated when IKE DDos auth-failure-threshold is reached and report mode includes SNMP trap",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.2.0.1": {
+      "name": "apSecurityTunnelDPDNotification",
+      "title": "IPsec tunnel failed dead peer detection",
+      "description": "The notification will be generated whenever IPSEC IKEV2 tunnel fails due to Dead Peer Detection(DPD).",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.2.0.2": {
+      "name": "apSecurityIPsecTunCapNotification",
+      "title": "Licensed IPsec tunnel usage above threshold",
+      "description": "This notification is sent when the percentage of licensed IPsec tunnels exceeds an IPsec tunnel alarm threshold. The apSecurityIPsecTunCapPct object indicates the current percentage.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.2.0.3": {
+      "name": "apSecurityIPsecTunCapClearNotification",
+      "title": "Licensed IPsec tunnel usage alert cleared",
+      "description": "This trap is sent when the percentage of licensed IPsec tunnels no longer exceeds an IPsec tunnel alarm threshold. The apSecurityIPsecTunCapPct object indicates the current percentage.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.2.0.4": {
+      "name": "apSecurityTunnelDPDInetNotification",
+      "title": "IPsec tunnel failed dead peer detection",
+      "description": "The notification will be generated whenever IPSEC IKEV2 tunnel fails due to Dead Peer Detection(DPD).",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.3.0.1": {
+      "name": "apSecurityOCSRDownNotification",
+      "title": "OCSR security server unreachable",
+      "description": "This notification is sent when a OCSR server becomes unreachable.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.3.0.2": {
+      "name": "apSecurityOCSRUpNotification",
+      "title": "OCSR security server reachable again",
+      "description": "This notification is sent when a OCSR server becomes reachable.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.4.0.1": {
+      "name": "apSecurityCrlInvalidNotification",
+      "title": "Invalid certificate revocation list detected",
+      "description": "This notification is sent when an invalid CRL is detected.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.5.0.1": {
+      "name": "apSecurityCRLRetrievalFailNotification",
+      "title": "Certificate revocation list download failed",
+      "description": "This notification is sent when there is a failure in CRL retrieval.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.5.0.2": {
+      "name": "apSecurityCRLRetrievalClearNotification",
+      "title": "Certificate revocation list download succeeded",
+      "description": "This notification is sent when there is a success in CRL retrieval.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.6.0.1": {
+      "name": "apSecurityCertExpiredNotification",
+      "title": "Installed certificate has expired",
+      "description": "The notification will be generated periodically if a locally installed certificate has expired.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.6.0.2": {
+      "name": "apSecurityCertExpireSoonNotification",
+      "title": "Installed certificate expires soon",
+      "description": "The notification will be generated periodically if a locally installed certificate will soon expire.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.7.0.1": {
+      "name": "apSecurityGTPLinkFailureNotification",
+      "title": "GTP gateway link failed",
+      "description": "This notification is sent when there is a link failure with GGSN/PGW on GTP Profile.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.7.0.2": {
+      "name": "apSecurityGTPLinkClearNotification",
+      "title": "GTP gateway link restored",
+      "description": "This notification is sent when the link is restored with GGSN/PGW on GTP Profile.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.9.0.1": {
+      "name": "apSecurityTacacsDownLocalAuthUsedTrap",
+      "title": "Local login used because TACACS servers are unavailable",
+      "description": "The trap will be generated when a user remotely logs into a system configured for TACACS+ authentication and is authenticated locally by the system because all of the configured and enabled TACACS+ servers have become unreachable or unresponsive.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.9.0.2": {
+      "name": "apSecurityTacacsDownLocalAuthUsedClearTrap",
+      "title": "Remote TACACS authentication restored",
+      "description": "The trap will be generated when a user remotely logs into a system configured for TACACS+ authentication and is successfully authenticated (i.e., access accepted or denied) remotely by a configured and enabled TACACS+ server.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.10.0.1": {
+      "name": "apSecurityTlsEncryptionFailureNotification",
+      "title": "TLS encryption failed",
+      "description": "The notification will be generated when TLS fails to encrypt.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.10.0.2": {
+      "name": "apSecurityTlsDecryptionFailureNotification",
+      "title": "TLS decryption failed",
+      "description": "The notification will be generated when TLS fails to decrypt.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.11.0.1": {
+      "name": "apSecuritySrtpEncryptionFailureNotification",
+      "title": "SRTP media encryption failed",
+      "description": "The notification will be generated when SRTP fails to encrypt.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.11.0.2": {
+      "name": "apSecuritySrtpDecryptionFailureNotification",
+      "title": "SRTP media decryption failed",
+      "description": "The notification will be generated when SRTP fails to decrypt.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.8.0.1": {
+      "name": "apSecurityTscfAddressPoolUsageTrap",
+      "title": "Legacy TSCF address pool usage alert",
+      "description": "(no longer supported from SCZ9.0) This notification is sent when the available IP addresses in TSCF address pool depletes below the threshold level.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.8.0.2": {
+      "name": "apSecurityTscfAddressPoolUsageClearTrap",
+      "title": "Legacy TSCF address pool usage alert cleared",
+      "description": "(no longer supported from SCZ9.0) This notification is sent when the available IP addresses in TSCF address pool are more than the threshold level.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.8.0.3": {
+      "name": "apSecurityTscfMaxTunnelTrap",
+      "title": "Legacy TSCF tunnel capacity alert",
+      "description": "(no longer supported from SCZ9.0) This notification is sent when the available IP addresses in TSCF address pool depletes below the threshold level.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.9.3.8.0.4": {
+      "name": "apSecurityTscfClearMaxTunnelTrap",
+      "title": "Legacy TSCF tunnel capacity clear notification",
+      "description": "(no longer supported from SCZ9.0) This notification is sent when the available IP addresses in TSCF address pool depletes below the threshold level.",
+      "module": "ap-security.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.2.1.2.0.1": {
+      "name": "apSipSecInterfaceRegThresholdExceededTrap",
+      "title": "Secondary SIP interface registration threshold exceeded",
+      "description": "The trap will be generated if the total number of registrations on all secondary SIP interfaces exceed threshold.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.2.1.2.0.2": {
+      "name": "apSipSecInterfaceRegThresholdClearTrap",
+      "title": "Secondary SIP interface registration alert cleared",
+      "description": "The trap will be generated if the total number of registrations on all secondary SIP interfaces go below clear threshold.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.2.2.2.0.1": {
+      "name": "apSipSurvivabilityModeEnter",
+      "title": "SIP interface entered survivability mode",
+      "description": "The trap will be generated when SIP interface enters Survivability Mode.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.2.2.2.0.2": {
+      "name": "apSipSurvivabilityModeExit",
+      "title": "SIP interface left survivability mode",
+      "description": "The trap will be generated when SIP interface exits Survivability Mode and resumes normal operation.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.2.3.2.0.1": {
+      "name": "apSipCACUtilAlertTrap",
+      "title": "SIP call admission resource threshold exceeded",
+      "description": "The trap will be generated if the item indicated by apSipCACUtilTrapType with value indicated by apSipCACUtilTrapValue exceeds the monitoring threshold.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.2.3.2.0.2": {
+      "name": "apSipCACUtilClearTrap",
+      "title": "SIP call admission resource alert cleared",
+      "description": "The trap will be generated if the item indicated by apSipCACUtilTrapType with value indicated by apSipCACUtilTrapValue is below the monitoring threshold.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.4.1.0.1": {
+      "name": "apSipRecRecDlgFailNotify",
+      "title": "SIP recording dialog response timed out",
+      "description": "This trap will be generated when a Recording Dialog fails to send a timely response to a requests, typically an in-dialog OPTIONS request.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.4.1.0.2": {
+      "name": "apSipRecCommSessionNotify",
+      "title": "Call terminated because recording failed",
+      "description": "This trap will be generated when a Communications Session is terminated because a recording dialog could not be established or prematurely terminated.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.5.1.0.1": {
+      "name": "apSip503RespThresholdCrossedNotify",
+      "title": "SIP 503 response rate above threshold",
+      "description": "This trap will be generated when the percentage of 503 Service Unavailable response exceeds the configured threshold.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.6.1.0.1": {
+      "name": "apSipSteeringPoolThresholdCrossedNotify",
+      "title": "Realm steering pool usage above threshold",
+      "description": "This trap will be generated when the Steering pool utilization for realm exceeds the configured threshold",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.15.7.1.0.1": {
+      "name": "apConfigPushReceiverFailureTrap",
+      "title": "Configuration backup destination failed",
+      "description": "The trap will be generated when an enabled config backup push receiver fails.",
+      "module": "ap-sip.mib"
+    },
+    "1.3.6.1.4.1.9148.3.11.3.0.1": {
+      "name": "apSLBEndpointCapacityThresholdTrap",
+      "title": "Session load balancer endpoint threshold exceeded",
+      "description": "The trap will be generated when the number of endpoints on the SLB exceeds the configured threshold.",
+      "module": "ap-slb.mib"
+    },
+    "1.3.6.1.4.1.9148.3.11.3.0.2": {
+      "name": "apSLBEndpointCapacityThresholdClearTrap",
+      "title": "Session load balancer endpoint alert cleared",
+      "description": "The trap will be generated when the number of endpoints on the SLB falls below the configured threshold.",
+      "module": "ap-slb.mib"
+    },
+    "1.3.6.1.4.1.9148.3.11.3.0.3": {
+      "name": "apSLBUntrustedEndpointCapacityThresholdTrap",
+      "title": "Untrusted endpoint capacity threshold exceeded",
+      "description": "The trap will be generated when the number of untrusted endpoints on the SLB exceeds the configured threshold.",
+      "module": "ap-slb.mib"
+    },
+    "1.3.6.1.4.1.9148.3.11.3.0.4": {
+      "name": "apSLBUntrustedEndpointCapacityThresholdClearTrap",
+      "title": "Untrusted endpoint capacity alert cleared",
+      "description": "The trap will be generated when the number of untrusted endpoints on the SLB falls below the configured threshold.",
+      "module": "ap-slb.mib"
+    },
+    "1.3.6.1.4.1.9148.3.1.2.0.1": {
+      "name": "apSyslogMessageGenerated",
+      "title": "SBC system log notification",
+      "description": "When an alarm message is generated by the device an apSyslogMessageGenerated notification is sent if the alarm is not associated with a alarm specific notification. The sending of these notifications can be enabled/disabled via the apSyslogNotificationsEnabled object.",
+      "module": "ap-slog.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.3.0.1": {
+      "name": "apSysMgmtGroupTrap",
+      "title": "System resource or health threshold crossed",
+      "description": "The trap will generated if value of the monitoring object exceeds a certain threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.3.0.2": {
+      "name": "apSysMgmtGroupClearTrap",
+      "title": "System resource or health threshold alert cleared",
+      "description": "The trap will generated if value of the monitoring object returns to within a certain threshold. This signifies that an alarm caused by that monitoring object has been cleared.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.3.0.3": {
+      "name": "apSysMgmtSingleUnitRedundancyTrap",
+      "title": "Hardware slot redundancy status changed",
+      "description": "The trap will generated a slot's status changes. The varbinds contain the new information for the generating slot.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.1": {
+      "name": "apSysMgmtPowerTrap",
+      "title": "Power supply status changed",
+      "description": "The trap will be generated if a power supply is powered down, powered up, inserted/present or removed/not present.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.2": {
+      "name": "apSysMgmtTempTrap",
+      "title": "System temperature threshold alert",
+      "description": "The trap will be generated if the temperature falls below the monitoring threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.3": {
+      "name": "apSysMgmtFanTrap",
+      "title": "Fan speed below threshold",
+      "description": "The trap will be generated if a fan unit speed falls below the monitoring threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.4": {
+      "name": "apSysMgmtTaskSuspendTrap",
+      "title": "Critical system task suspended",
+      "description": "The trap will be generated if a critical task running on the system enters a suspened state.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.5": {
+      "name": "apSysMgmtRedundancyTrap",
+      "title": "High availability peer state changed",
+      "description": "The trap will be generated if a state change occurs on either the primary or secondary system in a redundant(HA) pair.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.6": {
+      "name": "apSysMgmtMediaPortsTrap",
+      "title": "Media port allocation failure rate too high",
+      "description": "The trap will be generated if port allocation fails at a percentage rate higher or equal to the system's default threshold rate.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.7": {
+      "name": "apSysMgmtMediaBandwidthTrap",
+      "title": "Media bandwidth allocation failure rate too high",
+      "description": "The trap will be generated if bandwidth allocation fails at a percentage rage higher or equal to the system's default threshold rate.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.8": {
+      "name": "apSysMgmtMediaOutOfMemory",
+      "title": "Media process unable to allocate memory",
+      "description": "The trap will be generated if media procees cannot allocate memory.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.9": {
+      "name": "apSysMgmtMediaUnknownRealm",
+      "title": "Media flow has no matching realm",
+      "description": "The trap will be generated if media proccess cannot find associated realm for flow.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.10": {
+      "name": "apSysMgmtGatewayUnreachableTrap",
+      "title": "Network gateway unreachable",
+      "description": "The trap will be generated if gateway specified becomes unreachable by the system.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.11": {
+      "name": "apSysMgmtRadiusDownTrap",
+      "title": "RADIUS accounting server timeout",
+      "description": "The trap will be generated if all or some configured radius accounting servers haved timed out from a RADIUS Server.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.12": {
+      "name": "apSysMgmtH323InitFailTrap",
+      "title": "H.323 stack initialization failed",
+      "description": "The trap will be generated if H.323 stack has failed to initialize properly and has been terminated.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.13": {
+      "name": "apSysMgmtCfgSaveFailTrap",
+      "title": "Configuration save failed",
+      "description": "The trap will be generated if an error occurs while the system is trying to save the configuration to memory.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.14": {
+      "name": "apSysMgmtHardwareErrorTrap",
+      "title": "Switch or CAM hardware error detected",
+      "description": "The trap will be generated if an error condition is detected in the Switch or CAM subsystems.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.15": {
+      "name": "apSysMgmtSAStatusChangeTrap",
+      "title": "Session agent status changed",
+      "description": "Generated when a session agent changes status.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.16": {
+      "name": "apSysMgmtAuthenticationFailedTrap",
+      "title": "SBC login authentication failed",
+      "description": "The trap will be generated if a user fails authentication on the console or over telnet, ftp, ssh, or sftp.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.17": {
+      "name": "apSysMgmtSystemStateTrap",
+      "title": "SBC system state changed",
+      "description": "The trap will be generated when the SBC is instructed to change system-state or the transition from becoming_offline to offline occurs.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.18": {
+      "name": "apSysMgmtMediaPortsClearTrap",
+      "title": "Media port allocation alert cleared",
+      "description": "The trap will be generated if the port allocation failure rate drops below the system's default acceptable threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.19": {
+      "name": "apSysMgmtMediaBandwidthClearTrap",
+      "title": "Media bandwidth allocation alert cleared",
+      "description": "The trap will be generated if bandwidth allocation failure rate drops below the system's default acceptable failure threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.20": {
+      "name": "apSysMgmtMediaOutOfMemoryClear",
+      "title": "Media memory alarm manually cleared",
+      "description": "The trap will be generated if the media out-of-memory alarm is manually cleared, there is no automatic trigger to clear that particular alarm.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.21": {
+      "name": "apSysMgmtGatewayUnreachableClearTrap",
+      "title": "Network gateway reachable again",
+      "description": "The trap will be generated if gateway specified again becomes reachable after being previously unreachable.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.22": {
+      "name": "apSysMgmtRadiusDownClearTrap",
+      "title": "RADIUS accounting connectivity restored",
+      "description": "The trap will be generated when all configured radius accounting servers have resumed communication after any or all have previously timed out.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.23": {
+      "name": "apSysMgmtTaskDeleteTrap",
+      "title": "System task deleted",
+      "description": "The trap will be generated if a task running on the system is deleted.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.24": {
+      "name": "apSysMgmtAlgdCPULoadTrap",
+      "title": "Application CPU usage above threshold",
+      "description": "The trap will be generated if the CPU utilization percentage of application tasks has exceeded the threshold algd-load-limit.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.25": {
+      "name": "apSysMgmtAlgdCPULoadClearTrap",
+      "title": "Application CPU usage alert cleared",
+      "description": "The trap will be generated when the CPU utilization percentage of application tasks has fallen below the threshold algd-load-limit.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.26": {
+      "name": "apSysMgmtInterfaceStatusChangeTrap",
+      "title": "SIP interface status changed",
+      "description": "The trap will be generated when there is a change in the status of the sip interface.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.27": {
+      "name": "apSysMgmtENUMStatusChangeTrap",
+      "title": "ENUM server reachability changed",
+      "description": "The trap will be generated if the reachability status of an ENUM server changes. The trap is being replaced by apAppsENUMStatusChangeTrap.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.28": {
+      "name": "apSysMgmtPushServerUnreachableTrap",
+      "title": "HDR collector destination unreachable",
+      "description": "The trap will be generated if server specified becomes unreachable by the system collector.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.29": {
+      "name": "apSysMgmtPushServerUnreachableClearTrap",
+      "title": "HDR collector destination reachable again",
+      "description": "The trap will be generated if server specified becomes unreachable by the system collector.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.30": {
+      "name": "apSysMgmtNTPServerUnreachableTrap",
+      "title": "NTP server unreachable",
+      "description": "The trap will be generated if server specified becomes unreachable by the NTP process.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.31": {
+      "name": "apSysMgmtNTPServerUnreachableClearTrap",
+      "title": "NTP server reachability alert cleared",
+      "description": "The trap will be generated if server specified was unreachable by the NTP process and now is reachable.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.32": {
+      "name": "apSysMgmtNTPServiceDownTrap",
+      "title": "All NTP servers unavailable",
+      "description": "The trap will be generated if all servers in service are down",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.33": {
+      "name": "apSysMgmtNTPServiceDownClearTrap",
+      "title": "NTP service available again",
+      "description": "The trap will be generated if all servers were down and there is at least one is up in service.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.34": {
+      "name": "apSysMgmtMediaSupervisionTimerExpTrap",
+      "title": "Media supervision timer expired",
+      "description": "The trap will be generated when a media supervision timer has expired. This behavior is disabled by default but may be enabled by changing the 'media-supervision-traps' parameter of the 'media-manager' configuration element. The included object is the call identifier for the call which had the timer expire.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.35": {
+      "name": "apSysMgmntH248AssociationLostTrap",
+      "title": "H.248 control association lost",
+      "description": "This trap will be generated when an H248 control association between a border gateway and session controller is lost. The included object is the border gateway identifier.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.36": {
+      "name": "apSysMgmntH248AssociationLostClearTrap",
+      "title": "H.248 control association restored",
+      "description": "This trap will be generated when an H248 control association between a border gateway and session controller has been restored. The included object is the border gateway identifier.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.37": {
+      "name": "apSysMgmtRFactorBelowThresholdTrap",
+      "title": "Call quality R-factor below threshold",
+      "description": "This trap will be generated when a call using the vq-qos statistics gathering function determines that the R-factor has gone below a configured threshold. The included objects are the current RFactor value and a call identifier.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.38": {
+      "name": "apSysMgmtRFactorBelowThresholdClearTrap",
+      "title": "Call quality R-factor recovered",
+      "description": "This trap will be generated when a call using the vq-qos statistics gathering function determines that the R-factor has recovered after having gone below a configurable threshold. The included object is a call identifier",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.39": {
+      "name": "apSysMgmtSurrogateRegFailed",
+      "title": "Surrogate registration attempts exhausted",
+      "description": "The trap will be generated if a surrogate registration failed after the maximum configured attempts.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.40": {
+      "name": "apSysMgmtRealmMinutesExceedTrap",
+      "title": "Realm monthly call minutes exceeded",
+      "description": "The trap will be generated if monthly minutes exceed for a realm.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.41": {
+      "name": "apSysMgmtRealmMinutesExceedClearTrap",
+      "title": "Realm monthly call minutes reset",
+      "description": "The trap will be generated if monthly minutes reset.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.42": {
+      "name": "apSysMgmtLDAPStatusChangeTrap",
+      "title": "LDAP server reachability changed",
+      "description": "The trap will be generated if the reachability status of an LDAP server changes.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.43": {
+      "name": "apSysMgmtNTPClockSkewTrap",
+      "title": "NTP clock adjustment exceeded 1,000 seconds",
+      "description": "The trap will be generated if NTP has to adjust the clock by more than 1000 seconds. The trap is no longer supported in Linux-based platforms due to third party NTP server limitations.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.44": {
+      "name": "apSysMgmtCollectorPushSuccessTrap",
+      "title": "HDR collector upload completed",
+      "description": "The trap will be generated when the collector completes a push operation successfully.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.45": {
+      "name": "apSysMgmtRealmStatusChangeTrap",
+      "title": "Realm constraint status changed",
+      "description": "The trap will be generated when there is a change in the status of the realm constraints.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.46": {
+      "name": "apSysMgmtRegCacheThresholdTrap",
+      "title": "Registration cache threshold exceeded",
+      "description": "The trap will be generated when the number of contacts stored in the registration cache exceeds the configured threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.47": {
+      "name": "apSysMgmtRegCacheThresholdClearTrap",
+      "title": "Registration cache alert cleared",
+      "description": "The trap will be generated when the number of contacts stored in the registration cache falls below the configured threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.48": {
+      "name": "apSysMgmtShortSessionExceedTrap",
+      "title": "Too many short calls in the realm",
+      "description": "The trap will be generated when the amount of short sessions in a realm exceeds the short session threshold within the short session window.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.49": {
+      "name": "apSysMgmtGatewaySynchronizedTrap",
+      "title": "Default gateway synchronized in ARP table",
+      "description": "The trap will be generated when the default gateway is synchronized in the ARP table.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.50": {
+      "name": "apSysMgmtCallRecordingStateChangeTrap",
+      "title": "Call recording server state changed",
+      "description": "The trap will be generated when a call recording server changes state.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.51": {
+      "name": "apSysMgmtRealmIcmpFailureTrap",
+      "title": "Realm ICMP heartbeat failed",
+      "description": "The trap will be generated when ICMP heartbeat failure.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.52": {
+      "name": "apSysMgmtRealmIcmpFailureClearTrap",
+      "title": "Realm ICMP heartbeat failure cleared",
+      "description": "The trap will be generated ICMP heartbeat failure cleared.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.53": {
+      "name": "apSysMgmtCDRPushReceiverFailureTrap",
+      "title": "Call detail record upload destination failed",
+      "description": "The trap will be generated when an enabled cdr push receiver fails.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.54": {
+      "name": "apSysMgmtCDRPushReceiverFailureClearTrap",
+      "title": "Call detail record upload destination recovered",
+      "description": "The trap will be generated when an enabled cdr push receiver resumes normal operation after a failure.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.55": {
+      "name": "apSysMgmtCDRPushAllReceiversFailureTrap",
+      "title": "All call detail record upload destinations failed",
+      "description": "The trap will be generated when all enabled cdr push receivers fail.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.56": {
+      "name": "apSysMgmtCDRPushAllReceiversFailureClearTrap",
+      "title": "Call detail record upload service recovered",
+      "description": "The trap will be generated when one or more enabled cdr push receivers return to normal operation, after failures were encountered on all receivers.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.57": {
+      "name": "apSysMgmtRejectedMesagesThresholdExeededTrap",
+      "title": "Rejected message count above threshold",
+      "description": "The trap will be generated when the number of rejected messages exceed the configured threshold within the configured window.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.58": {
+      "name": "apSysMgmtAdminAuditLogFullTrap",
+      "title": "Administrative audit log limit reached",
+      "description": "The trap will be generated when one of the audit log full threshold [time interval/file-size/percentage-full] is satisfied.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.59": {
+      "name": "apSysMgmtAdminAuditLogFullClearTrap",
+      "title": "Administrative audit log space available again",
+      "description": "The trap will be generated when free audit log storage space becomes available.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.60": {
+      "name": "apSysMgmtAdminAuditPushFailTrap",
+      "title": "Administrative audit log transfer failed",
+      "description": "The trap will be generated when audit file transfer fails.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.61": {
+      "name": "apSysMgmtAdminAuditPushFailClearTrap",
+      "title": "Administrative audit log transfer recovered",
+      "description": "The trap will be generated when audit file is successfully transferred.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.62": {
+      "name": "apSysMgmtAdminWriteFailTrap",
+      "title": "System file write failed",
+      "description": "The trap will be generated when a write to file fails.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.63": {
+      "name": "apSysMgmtAdminWriteFailClearTrap",
+      "title": "System file write failure cleared",
+      "description": "The trap will be generated when a write to file succeeds.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.64": {
+      "name": "apSysMgmtAdminAuthLockoutTrap",
+      "title": "Administrative access locked after failed logins",
+      "description": "The trap will be generated on system lockout after multiple auth failures.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.65": {
+      "name": "apSysMgmtLPLookupExceededTrap",
+      "title": "Additional local policy lookup limit reached",
+      "description": "The trap will be generated the first time the Additional Local Policy Lookups limit is reached in the recent window period. This trap will only occur once during a window period.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.66": {
+      "name": "apSysMgmtPhyUtilThresholdTrap",
+      "title": "Media port utilization threshold crossed",
+      "description": "The trap will be generated when the media-port's utilization crosses a configured threshold. This trap will indicate if the OverloadProtection feature is turned active.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.67": {
+      "name": "apSysMgmtPhyUtilThresholdClearTrap",
+      "title": "Media port utilization alert cleared",
+      "description": "The trap will be generated once a media-ports' utilization falls below the lowest configured threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.68": {
+      "name": "apSysMgmtSpaceAvailThresholdTrap",
+      "title": "Partition storage space threshold crossed",
+      "description": "The trap will be generated when the space available on a partition crosses a configured space threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.69": {
+      "name": "apSysMgmtSpaceAvailThresholdClearTrap",
+      "title": "Partition storage space alert cleared",
+      "description": "The trap will be generated when the space available on a partition falls below the lowest configured space threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.70": {
+      "name": "apSysMgmtCdrFileDeleteTrap",
+      "title": "Call detail record file removed by retention limits",
+      "description": "The trap will be generated when a CDR file is deleted due to lack of space on the partition or the drive exceeds the number of files specified in account-config.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.71": {
+      "name": "apSysMgmtSataAccessErrorTrap",
+      "title": "Fatal SATA drive access error",
+      "description": "The trap will be generated when there is fatal access error on the SATA hard drive.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.72": {
+      "name": "apSysMgmtTcaTrap",
+      "title": "Threshold crossing alert raised",
+      "description": "The trap will be generated when a Threshold Crossing Alert counter crosses a configured TCA threshold",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.73": {
+      "name": "apSysMgmtTcaClearTrap",
+      "title": "Threshold crossing alert cleared",
+      "description": "The trap will be generated when a Threshold Crossing Alert counter has fallen below the lowest configured TCA reset-threshold value",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.74": {
+      "name": "apSysMgmtExtPolicyServerConnDownTrap",
+      "title": "External policy server connection lost",
+      "description": "The trap will be generated when a connection to an external-policy-server is lost.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.75": {
+      "name": "apSysMgmtExtPolicyServerConnEstTrap",
+      "title": "External policy server connection established",
+      "description": "The trap will be generated when a connection to an external-policy-server is established.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.76": {
+      "name": "apSysMgmtDatabaseRegCacheCapTrap",
+      "title": "Database registration cache license limit exceeded",
+      "description": "The trap will be generated when the number of database-type contacts stored in the registration cache exceeds the licensed threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.77": {
+      "name": "apSysMgmtDatabaseRegCacheCapClearTrap",
+      "title": "Database registration cache license alert cleared",
+      "description": "The trap will be generated when the number of database-type contacts stored in the registration cache falls below the licensed threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.78": {
+      "name": "apSysMgmtTacacsDownTrap",
+      "title": "TACACS server connectivity lost",
+      "description": "The trap will be generated when all or some configured TACACS servers become unreachable.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.79": {
+      "name": "apSysMgmtTacacsDownClearTrap",
+      "title": "TACACS server connectivity restored",
+      "description": "The trap will be generated when all configured TACACS servers become reachable again.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.80": {
+      "name": "apSysMgmtOCSRDownTrap",
+      "title": "OCSR server response timed out",
+      "description": "The trap will be generated if all or some configured OCSR servers haved timed out from a OCSR Server.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.81": {
+      "name": "apSysMgmtOCSRDownClearTrap",
+      "title": "OCSR server connectivity restored",
+      "description": "The trap will be generated when all configured OCSR accounting servers have resumed communication after any or all have previously timed out.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.82": {
+      "name": "apSysMgmtSipInterfaceRegCacheThresholdTrap",
+      "title": "SIP interface registration cache threshold exceeded",
+      "description": "The trap will be generated when the number of contacts stored in the registration cache exceeds the configured threshold for the sip interface.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.83": {
+      "name": "apSysMgmtSipInterfaceRegCacheThresholdClearTrap",
+      "title": "SIP interface registration cache alert cleared",
+      "description": "The trap will be generated when the number of contacts stored in the registration cache falls below the configured threshold for the sip interface.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.84": {
+      "name": "apSysMgmtH248PortMapUsageTrap",
+      "title": "H.248 core port map usage above 90 percent",
+      "description": "The trap will be geenerated when the port map usage on H.248 core side Exceeds 90%",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.85": {
+      "name": "apSysMgmtH248PortMapUsageClearTrap",
+      "title": "H.248 core port map usage back below 90 percent",
+      "description": "The trap will be generated when the port map usage on H.248 core side Goes down below 90%..",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.86": {
+      "name": "apSysMgmtCPULoadAvgTrap",
+      "title": "Average CPU load above alarm threshold",
+      "description": "The trap will be generated when CPU Load Average Alarm exceeds its minor alarm threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.87": {
+      "name": "apSysMgmtCPULoadAvgClearTrap",
+      "title": "Average CPU load alert cleared",
+      "description": "The trap will be generated when CPU Load Average deceeds its minor alarm threshold.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.6.0.88": {
+      "name": "apSysMgmtCSVCfgSaveFailTrap",
+      "title": "CSV configuration upload failed",
+      "description": "The trap will be generated if an error occurs while the system is trying to Upload Csv Configuration to memory.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.8.0.1": {
+      "name": "apSysMgmtDOSTrap",
+      "title": "IPv4 endpoint blocked after denial-of-service detection",
+      "description": "The trap will generated if IP address and realm ID is denied of service. This trap is for IPv4 only and being obsoleted and replaced by apSysMgmtInetAddrDOSTrap which supports IPv4 and IPv6 addresses.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.8.0.2": {
+      "name": "apSysMgmtExpDOSTrap",
+      "title": "Endpoint added to denial-of-service deny list",
+      "description": "This trap is generated when an IP is placed on a deny list due to denial-of-service attempts, and provides the ip address that has been demoted, the realm-id of that IP, and (if available) the URI portion of the SIP From header of the message that caused the demotion.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.8.0.3": {
+      "name": "apSysMgmtInetAddrDOSTrap",
+      "title": "IP endpoint blocked after denial-of-service detection",
+      "description": "This trap is generated when an IP is placed on a deny list due to denial-of-service attempts, and provides the ip address that has been demoted, the realm-id of that IP, and (if available) the URI portion of the SIP From header of the message that caused the demotion. This trap is a replacement for apSysMgmtDOSTrap and supports both IPv4 and IPv6 addresses.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.8.0.4": {
+      "name": "apSysMgmtInetAddrWithReasonDOSTrap",
+      "title": "IP endpoint blocked with denial-of-service reason",
+      "description": "This trap is generated when an IP is placed on a deny list due to denial-of-service attempts, and provides the ip address that has been demoted, the realm-id of that IP, (if available) the URI portion of the SIP From header of the message that caused the demotion and the reason for demotion.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.8.0.5": {
+      "name": "apSysMgmtInetAddrTrustedToUntrustedDOSTrap",
+      "title": "Trusted endpoint demoted to untrusted",
+      "description": "This trap is generated when an IP is placed on a untrusted list from trusted list , and provides the ip address that has been demoted, the realm-id of that IP, (if available) the URI portion of the SIP From header of the message that caused the demotion.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.2.10.0.1": {
+      "name": "apSysMgmtSipRejectionTrap",
+      "title": "SIP call or registration request failed",
+      "description": "This trap is sent when either a SIP Invite or Registration request fails.",
+      "module": "ap-smgmt.mib"
+    },
+    "1.3.6.1.4.1.9148.3.4.3.0.1": {
+      "name": "apSwCfgActivateNotification",
+      "title": "Runtime configuration changes activated",
+      "description": "This trap is sent if <activate-config> is issued and configuration has been changed at runtime.",
+      "module": "ap-swinventory.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.2.0.1": {
+      "name": "apUsbcSysFdCountExceedingTrap",
+      "title": "Open file descriptor count above threshold",
+      "description": "The trap will be generated when the FD count is over a threshold.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.2.0.2": {
+      "name": "apUsbcSysFdCountClearTrap",
+      "title": "Open file descriptor count alert cleared",
+      "description": "The trap will be generated when the FD count drops below the pre-defined threshold.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.1": {
+      "name": "apUsbcSysThreadUsageExceededTrap",
+      "title": "Worker thread usage above threshold",
+      "description": "The trap will be generated when a thread is exceeding pre-defined usage.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.2": {
+      "name": "apUsbcSysThreadUsageClearTrap",
+      "title": "Worker thread usage alert cleared",
+      "description": "The trap will be generated when a thread is droping back under pre-defined usage.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.3": {
+      "name": "apUsbcSysThreadUsageOverloadEnableTrap",
+      "title": "Worker thread CPU overload protection activated",
+      "description": "The trap will be generated when a thread cpu overload is activated.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.4": {
+      "name": "apUsbcSysThreadUsageOverloadDisableTrap",
+      "title": "Worker thread CPU overload protection deactivated",
+      "description": "The trap will be generated when a thread cpu overload is de-activated.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.5": {
+      "name": "apMutexDeadLockDetectedTrap",
+      "title": "Worker thread deadlock detected",
+      "description": "The trap will be generated when a worker thread encounters a deadlock.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.6": {
+      "name": "apMutexDeadLockClearTrap",
+      "title": "Worker thread deadlock clear notification",
+      "description": "The trap will be generated after the trap for thread DeadLock apMutexDeadLockDetectedTrap is generated.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.4.1.9148.3.17.2.2.1.0.7": {
+      "name": "apUsbcSysThreadNotRespondingTrap",
+      "title": "Worker thread not responding",
+      "description": "The trap will be generated once a thread is detected not responding.",
+      "module": "ap-usbcsys.mib"
+    },
+    "1.3.6.1.6.3.1.1.5.1": {
+      "name": "coldStart",
+      "title": "SNMP agent restarted; configuration may have changed",
+      "description": "A coldStart trap signifies that the SNMPv2 entity, acting in an agent role, is reinitializing itself and that its configuration may have been altered.",
+      "module": "rfc1907-snmpv2.mib"
+    },
+    "1.3.6.1.6.3.1.1.5.2": {
+      "name": "warmStart",
+      "title": "SNMP agent restarted with configuration unchanged",
+      "description": "A warmStart trap signifies that the SNMPv2 entity, acting in an agent role, is reinitializing itself such that its configuration is unaltered.",
+      "module": "rfc1907-snmpv2.mib"
+    },
+    "1.3.6.1.6.3.1.1.5.5": {
+      "name": "authenticationFailure",
+      "title": "SNMP message authentication failed",
+      "description": "An authenticationFailure trap signifies that the SNMPv2 entity, acting in an agent role, has received a protocol message that is not properly authenticated. While all implementations of the SNMPv2 must be capable of generating this trap, the snmpEnableAuthenTraps object indicates whether this trap will be generated.",
+      "module": "rfc1907-snmpv2.mib"
+    },
+    "1.3.6.1.2.1.47.2.0.1": {
+      "name": "entConfigChange",
+      "title": "Hardware or logical entity inventory changed",
+      "description": "An entConfigChange notification is generated when the value of entLastChangeTime changes. It can be utilized by an NMS to trigger logical/physical entity table maintenance polls. An agent should not generate more than one entConfigChange 'notification-event' in a given time interval (five seconds is the suggested default). A 'notification-event' is the transmission of a single trap or inform PDU to a list of notification destinations. If additional configuration changes occur within the throttling period, then notification-events for these changes should be suppressed by the agent until the current throttling period expires. At the end of a throttling period, one notification-event should be generated if any configuration changes occurred since the start of the throttling period. In such a case, another throttling period is started right away. An NMS should periodically check the value of entLastChangeTime to detect any missed entConfigChange notification-events, e.g., due to throttling or transmission loss.",
+      "module": "rfc2737-entity.mib"
+    },
+    "1.3.6.1.6.3.1.1.5.3": {
+      "name": "linkDown",
+      "title": "Network interface link went down",
+      "description": "A linkDown trap signifies that the SNMP entity, acting in an agent role, has detected that the ifOperStatus object for one of its communication links is about to enter the down state from some other state (but not from the notPresent state). This other state is indicated by the included value of ifOperStatus.",
+      "module": "rfc2863-if.mib"
+    },
+    "1.3.6.1.6.3.1.1.5.4": {
+      "name": "linkUp",
+      "title": "Network interface link left the down state",
+      "description": "A linkUp trap signifies that the SNMP entity, acting in an agent role, has detected that the ifOperStatus object for one of its communication links left the down state and transitioned into some other state (but not into the notPresent state). This other state is indicated by the included value of ifOperStatus.",
+      "module": "rfc2863-if.mib"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+--- a/pkg/sip/custom_server.go
++++ b/pkg/sip/custom_server.go
+@@ -2013,6 +2013,7 @@
+ 	}
+ 
+ 	success = true
++	s.saveConsoleRecording(message.CallID, callState, "recording", nil)
+ 
+ 	// Sync to handler.ActiveCalls for pause/resume API support
+ 	s.syncCallToActiveList(message.CallID, callState)
+@@ -2484,6 +2485,7 @@
+ 		callState.LastActivity = time.Now()
+ 		s.sendResponse(message, 200, "OK", responseHeaders, []byte(multipartBody))
+ 	} else {
++		responseHeaders["Content-Type"] = "application/sdp"
+ 		callState.State = "awaiting_ack"
+ 		callState.PendingAckCSeq = callState.RemoteCSeq
+ 		callState.LastActivity = time.Now()
+@@ -3824,6 +3826,9 @@
+ 	callState.PendingAckCSeq = 0
+ 
+ 	s.combineRecordingLegs(callID, callState, recordingLegs)
++	consolePaths := []string{}
++	for _,leg := range recordingLegs { consolePaths=append(consolePaths,leg.Path) }
++	s.saveConsoleRecording(callID, callState, reason, consolePaths)
+ 
+ 	// Release allocated port pairs
+ 	pm := media.GetPortManager()

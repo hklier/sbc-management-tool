@@ -1,0 +1,32 @@
+<recording xmlns='urn:ietf:params:xml:ns:recording'>
+	<datamode>complete</datamode>
+	<session id="nyXkuxUFTy1iUhgQ9RiDUQ==">
+		<associate-time>2026-10-28T11:08:49</associate-time>
+	</session>
+	<participant id="IkD9I8s2RPVdjyXmI8nyYg==" session="nyXkuxUFTy1iUhgQ9RiDUQ==">
+		<nameID aor="sip:1001@oracle.com">
+			<name>1001</name>
+		</nameID>
+		<send>oqF7GzAlTfxUrRbmFcWp1A==</send>
+		<associate-time>2026-10-28T11:08:49</associate-time>
+		<extensiondata xmlns:apkt="http://acmepacket.com/siprec/extensiondata">
+			<apkt:callingParty>true</apkt:callingParty>
+			<apkt:request-uri>sip:1002@oracle.com</apkt:request-uri>
+			<apkt:realm>access</apkt:realm>
+		</extensiondata>
+	</participant>
+	<participant id="CnVG2r7oSQVy/t736lDpYw==" session="nyXkuxUFTy1iUhgQ9RiDUQ==">
+		<nameID aor="sip:1002@oracle.com">
+			<name>1002</name>
+		</nameID>
+		<associate-time>2026-10-28T11:08:49</associate-time>
+		<extensiondata xmlns:apkt="http://acmepacket.com/siprec/extensiondata">
+			<apkt:callingParty>false</apkt:callingParty>
+		</extensiondata>
+	</participant>
+	<stream id="oqF7GzAlTfxUrRbmFcWp1A==" session="nyXkuxUFTy1iUhgQ9RiDUQ==">
+		<label>16777221</label>
+		<mode>separate</mode>
+		<associate-time>2026-10-28T11:08:49</associate-time>
+	</stream>
+</recording>

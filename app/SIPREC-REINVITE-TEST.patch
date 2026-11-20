@@ -1,0 +1,20 @@
+--- a/pkg/sip/custom_server_test.go
++++ b/pkg/sip/custom_server_test.go
+@@ -318,6 +318,7 @@
+ }
+ 
+ func TestHandleSiprecReInviteUpdatesSession(t *testing.T) {
++	t.Setenv("MULTIPART_RESPONSE", "false")
+ 	logger := logrus.New()
+ 	logger.SetOutput(io.Discard)
+ 	handler := &Handler{Logger: logger, Config: &Config{MediaConfig: &media.Config{}}}
+@@ -377,6 +378,9 @@
+ 	sipServer.handleSiprecReInvite(message, callState)
+ 	require.NotEmpty(t, tx.responses)
+ 	require.Equal(t, 200, tx.responses[len(tx.responses)-1].StatusCode)
++	header := tx.responses[len(tx.responses)-1].GetHeader("Content-Type")
++	require.NotNil(t, header, "SBC must be able to identify the renegotiated SDP answer")
++	require.Equal(t, "application/sdp", header.Value())
+ 	require.Equal(t, []string{"audio", "audio"}, callState.RecordingSession.MediaStreamTypes)
+ }
+ 

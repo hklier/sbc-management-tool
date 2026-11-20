@@ -1,0 +1,55 @@
+name: Validate SBC Console
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  console:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: app/requirements.txt
+      - run: pip install -r app/requirements.txt
+      - name: Console and Kubernetes regression tests
+        run: python -m unittest discover -s app -p 'test_*.py'
+  recorder:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: siprec
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
+        with:
+          go-version: '1.27.3'
+          cache-dependency-path: siprec/go.sum
+      - run: go mod verify
+      - name: Oracle metadata and re-INVITE regressions
+        run: CGO_ENABLED=0 go test ./pkg/siprec ./pkg/sip -run 'TestOracle|TestHandleSiprecReInviteUpdatesSession' -count=1
+      - name: Build Linux recorder
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o /tmp/siprec ./cmd/siprec
+  images:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [console, recorder, transcription]
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - name: Build image
+        run: docker build --target ${{ matrix.target }} -f deploy/Dockerfile -t sbc-management-tool/${{ matrix.target }}:${{ github.sha }} .
+      - name: Export image
+        run: docker save sbc-management-tool/${{ matrix.target }}:${{ github.sha }} | gzip > ${{ matrix.target }}.tar.gz
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: image-${{ matrix.target }}
+          path: ${{ matrix.target }}.tar.gz
+          retention-days: 7

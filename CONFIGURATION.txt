@@ -1,0 +1,157 @@
+SBC CONNECTION AND CREDENTIAL CONFIGURATION
+==========================================
+
+There is no settings form for these values. Configure the server environment,
+then restart the relevant process. Changing the target does not change the SBC
+configuration and does not migrate saved traps, recordings or other local data.
+The app uses one configured SBC. Changing SBC_HOST switches that target.
+
+On the current Oracle Linux layout, the console and trap receiver load:
+  /etc/sbc-console/environment
+The recorder loads a different file:
+  /etc/sbc-console/siprec.env
+In Kubernetes, inject equivalent variables into each relevant container using
+ConfigMaps/Secrets. environment.example is a template, not a working secret.
+Do not source an unreviewed environment file as a shell script. Quote values
+according to the configuration loader (systemd, shell and Kubernetes differ).
+
+1. SBC REST ADDRESS AND ACCOUNT
+
+SBC_HOST                 New SBC management IP or DNS hostname, without scheme,
+                         path or port. REST currently uses HTTPS port 443.
+SBC_USER                 SBC account username (default: admin).
+SBC_PASSWORD             SBC account password, stored as a deployment secret.
+
+REST and SFTP share this host, username and password. A password change updates
+both connections. The account needs rights for the intended REST operations
+and SFTP access to the relevant files. Network reachability is required from
+the application host or cluster to the new SBC.
+For the current trap receiver, use the numeric source IP in SBC_HOST: its
+source filter compares the packet source IP directly to this string and does
+not resolve DNS names. A different trap source/NAT address requires adapting
+that filter rather than simply entering a hostname.
+
+2. TRUST THE NEW SBC HTTPS CERTIFICATE
+
+SBC_FINGERPRINT          SHA-256 fingerprint of the SBC HTTPS certificate's DER
+                         bytes, hexadecimal, optionally separated by colons.
+SBC_CA                   Path to a mounted trusted CA PEM file, used when
+                         SBC_FINGERPRINT is absent or empty. Without either,
+                         the default OS CA trust store is used.
+
+With a fingerprint configured, the app pins that exact certificate; SBC_CA is
+not consulted. A new SBC/certificate needs a new verified fingerprint. With
+CA validation, the certificate must also match SBC_HOST. Do not replace the
+pin merely to silence an unexpected certificate change.
+
+Obtain and verify the fingerprint through the SBC administrator or another
+trusted channel. To calculate it from an independently obtained PEM file:
+  openssl x509 -in sbc-certificate.pem -noout -fingerprint -sha256
+
+3. TRUST THE NEW SBC SSH/SFTP HOST KEY
+
+SBC_SSH_PORT             SFTP/SSH port (default: 22).
+SBC_SSH_FINGERPRINT      Verified SSH host key fingerprint in OpenSSH form:
+                         SHA256:<base64 value without padding>
+
+This is a DIFFERENT fingerprint from the HTTPS certificate. It is required to
+read/edit LRT files and read CDR/trace files. Have the SBC administrator provide
+the SSH fingerprint. If collecting a candidate key over the network with
+ssh-keyscan, independently verify it before using it; collection is not trust
+verification. The app rejects a mismatched host key.
+
+4. SNMP DIAGNOSIS AND TRAPS
+
+SBC_HOST                 Also selects the SNMP diagnosis target and the source
+                         host expected by the trap receiver.
+SNMP_PORT                Agent UDP port (default: 161).
+SNMP_VERSION             2c or 3.
+SNMP_COMMUNITY           Read community for v2c queries; also the default
+                         accepted trap community when the list below is unset.
+SNMP_USER                SNMPv3 username.
+SNMP_AUTH_KEY            SNMPv3 authentication password/key.
+SNMP_PRIV_KEY            SNMPv3 privacy password/key.
+SNMP_TRAP_COMMUNITIES    Optional JSON array of accepted v1/v2c trap community
+                         strings. For example ["replace-this-community"].
+
+The implemented SNMPv3 query profile uses SHA-256 authentication and AES-128
+privacy; other algorithms require a code change. SNMPv3 queries do not imply
+SNMPv3 trap support. Current traps use community authentication (v1/v2c).
+When using a systemd EnvironmentFile, quote the JSON as a single value, e.g.:
+  SNMP_TRAP_COMMUNITIES='["replace-this-community"]'
+In a Kubernetes Secret, the value is the JSON array string itself, without
+the outer shell/systemd quote characters.
+
+The SBC must allow SNMP queries from the new deployment source address and
+send traps to the new receiver address/UDP 162. NAT can change those addresses.
+The SBC owner must make these changes; editing the app environment does not
+configure SNMP on the SBC. This handoff makes no SBC configuration changes.
+
+5. WEB CONSOLE LOGIN (SEPARATE FROM THE SBC ACCOUNT)
+
+APP_USER                 Web console login username (default: admin).
+APP_PASSWORD_HASH        Salted PBKDF2-HMAC-SHA256 hash, 600000 iterations,
+                         stored as <salt hex>:<derived key hex>.
+
+To generate a fresh console password hash, run the included helper interactively:
+  python3 generate-console-password.py
+Copy its result to APP_PASSWORD_HASH in the private deployment configuration.
+Do not put the actual console password in SBC_PASSWORD unless that happens to
+be the independently selected SBC password. These are separate accounts.
+
+6. LOCAL WEB ENDPOINT AND DATA
+
+BIND_HOST                Address to listen on (e.g. 0.0.0.0 inside a container).
+PORT                     Console HTTPS port (default: 8443).
+TLS_CERT                 Path to the console's PEM certificate, readable by
+                         its service account; include a chain if required.
+TLS_KEY                  Path to the matching private key.
+STATE_DIR                Writable persistent application state directory.
+RECORDING_DIR            Writable shared recordings directory. Ensure the web
+                         console, recorder and worker use the same directory.
+TRANSCRIPTION_MODEL      Worker model directory (default:
+                         /opt/sbc-transcription/model).
+TRANSCRIPTION_PYTHON     Worker inference Python executable (default:
+                         /opt/sbc-transcription/venv/bin/python).
+
+The supplied transcription systemd service does not read the console's
+EnvironmentFile. Set worker overrides in its own systemd drop-in or inject
+them directly into its container. Inspect each process's entrypoint rather
+than assuming the console environment is automatically shared with workers.
+
+SBC_FINGERPRINT/SBC_CA describe the REMOTE SBC certificate. TLS_CERT/TLS_KEY
+describe the LOCAL WEB CONSOLE certificate. They are unrelated trust settings.
+Use a console certificate valid for its new hostname/IP. install.sh contains
+the original lab IP in certificate generation and must be adapted first.
+
+7. SIPREC NETWORK ADDRESSES
+
+Use app/siprec-recorder.env.example as the recorder's starting point. Review
+SIP_HOST, INTERNAL_IP, EXTERNAL_IP and RTP_BIND_IP, plus PORTS, UDP_PORTS,
+TCP_PORTS and RTP_PORT_MIN/RTP_PORT_MAX. Bind addresses must exist locally;
+advertised addresses must be reachable from the SBC. The correct combination
+depends on the cluster/network/NAT design. Keep access from any source enabled
+if retaining the requested behavior, and verify OPTIONS returns 200 OK.
+Changing SBC_HOST alone does not change recorder bind/advertised addresses.
+Have the SBC owner configure SIPREC destinations and its own media source IP.
+
+8. APPLY AND VERIFY
+
+For an existing systemd installation, keep the private environment file owned
+by root with mode 600; service manager reads it for the service account. Keep
+certificate/key permissions limited to the service account as required.
+After a target/account/SNMP change, restart both affected readers:
+  systemctl restart sbc-console.service sbc-traps.service
+Restart siprec-recorder.service only after changing its configuration and
+when no call is being recorded. Restarting the console invalidates its login
+sessions. Do not restart during a configuration save/activation operation.
+
+In Kubernetes, update the appropriate ConfigMap/Secret and restart/roll out
+the affected workload; existing processes do not reread environment variables.
+Stop active configuration work/calls before a disruptive rollout. Restarting
+all readers clears cached SBC hosts/tokens and the SNMP target cache.
+
+Log in and confirm the displayed target, then perform read-only configuration,
+SFTP and SNMP checks. For traps, generate an authorized test trap from the new
+SBC. Confirm certificate and host key validation succeeds. Do not save/activate
+SBC configuration merely to test connection credentials.

@@ -1,0 +1,45 @@
+--- a/pkg/siprec/types.go
++++ b/pkg/siprec/types.go
+@@ -2,6 +2,7 @@
+ 
+ import (
+ 	"encoding/xml"
++	"fmt"
+ 	"strings"
+ 	"time"
+ 
+@@ -617,7 +618,8 @@
+ 	// 3. Check RSParticipant.Send for stream references
+ 	for i := range m.Participants {
+ 		for _, sendRef := range m.Participants[i].Send {
+-			if sendRef == streamLabel {
++			sendRef = strings.TrimSpace(sendRef)
++			if sendRef == streamLabel || (streamLabelToID[streamLabel] != "" && sendRef == streamLabelToID[streamLabel]) {
+ 				return &m.Participants[i]
+ 			}
+ 		}
+@@ -628,12 +630,22 @@
+ 
+ // UnmarshalXML customizes decoding to ensure normalization post-unmarshal.
+ func (m *RSMetadata) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
++	// Oracle SBC can send the pre-RFC SIPREC namespace. Accept only this
++	// known dialect and the RFC namespace; keep XML syntax and validation strict.
++	if start.Name.Local != "recording" || (start.Name.Space != "urn:ietf:params:xml:ns:recording:1" && start.Name.Space != "urn:ietf:params:xml:ns:recording") {
++		return fmt.Errorf("unsupported SIPREC metadata root {%s}%s", start.Name.Space, start.Name.Local)
++	}
+ 	type alias RSMetadata
+-	var aux alias
++	var value alias
++	aux := struct {
++		XMLName xml.Name `xml:"recording"`
++		*alias
++	}{alias: &value}
+ 	if err := d.DecodeElement(&aux, &start); err != nil {
+ 		return err
+ 	}
+-	*m = RSMetadata(aux)
++	*m = RSMetadata(value)
++	m.XMLName = xml.Name{Space: "urn:ietf:params:xml:ns:recording:1", Local: "recording"}
+ 	m.Normalize()
+ 	return nil
+ }

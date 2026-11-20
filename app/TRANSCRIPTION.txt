@@ -1,0 +1,36 @@
+OFFLINE SIPREC TRANSCRIPTION
+
+Installed on 192.168.226.190. No SBC configuration changes are required.
+Service: sbc-transcription.service, running as sbc-console, separate from the SIPREC receiver.
+The service has a private network namespace. Audio and text stay on this server.
+Model: multilingual Whisper tiny, CPU int8, automatic language detection.
+Model repository: https://huggingface.co/Systran/faster-whisper-tiny
+Revision: d90ca5fe260221311c53c58e660288d3deb8d356
+Engine: https://github.com/SYSTRAN/faster-whisper (1.1.1), CTranslate2 4.5.0.
+Whisper: https://github.com/openai/whisper (MIT license).
+Model files and SOURCE.json: /opt/sbc-transcription/model.
+Python environment: /opt/sbc-transcription/venv (isolated from the console).
+Installation wheels: /opt/sbc-transcription/wheels.
+Native dependencies use manylinux2014 wheels for Oracle Linux 7 compatibility.
+ONNX/Silero VAD is not used or installed; Whisper's native no-speech filtering is used.
+
+Finalized existing and new sessions are queued automatically, oldest first.
+Only one recording is processed at a time, using 28-second windows and one CPU thread.
+The service is limited to 60% of one CPU and 450 MiB, with low scheduling priority.
+The inference process exits after each recording, releasing the model memory.
+An interrupted job is resumed from the beginning on restart; completed/failed jobs are skipped.
+Failed jobs can be retried by an administrator after correcting the problem and deleting
+only the relevant .transcript.json file. The service journal contains error details.
+
+Transcripts: /var/lib/sbc-console/recordings/<call-id>.transcript.json, mode 600.
+No automatic transcript deletion is configured; follow the recording retention policy.
+State: /var/lib/sbc-console/recordings/transcription-health.json.
+Access: the existing authenticated Recordings detail page. Text export is generated
+inside the browser. Audio streaming is unchanged. No unauthenticated transcript route.
+Numbers identify recorded streams, not verified speakers or participant identities.
+Automatic transcripts can omit or misrecognize words, particularly with noisy telephone audio.
+The tiny model was selected because the server has approximately 1 GiB RAM.
+
+Validation: offline 11-second spoken-English fixture from faster-whisper's upstream tests
+transcribed successfully; the fixture is outside the recordings library.
+https://github.com/SYSTRAN/faster-whisper/blob/master/tests/data/jfk.flac

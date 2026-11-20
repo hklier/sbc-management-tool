@@ -1,0 +1,20 @@
+SIPREC recorder integration
+Upstream: https://github.com/loreste/siprec
+Revision: 994b9d4c34be89df443da5818bdb485bff4e865c
+License: GPL-3.0 (source and license retained in /opt/siprec-source).
+Built with CGO_ENABLED=0 for Linux amd64; configured audio profile PCMU/PCMA.
+Local modifications: console_sidecar.go plus two saveConsoleRecording calls in
+pkg/sip/custom_server.go. The sidecar retains metadata and WAV file membership
+for the existing authenticated SBC Console.
+Oracle compatibility: pkg/siprec/types.go accepts the known legacy namespace
+urn:ietf:params:xml:ns:recording as well as the RFC namespace ending in :1.
+Inline participant send references resolve through stream ID to SDP label.
+See SIPREC-ORACLE-COMPAT.patch and siprec-compatibility-tests/.
+Installed receiver SHA256 (2026-10-28):
+b1efc312d04ae0380448d3f2f565af95707715c81cbc1eed765b1cf92e0bdeb8
+The SBC configuration is managed by the user and is not modified by this setup.
+
+Audio negotiation fix: plain SDP 200 responses to re-INVITE explicitly set
+Content-Type: application/sdp, matching initial INVITE behavior.
+Regression coverage in SIPREC-REINVITE-TEST.patch; original and updated
+Oracle inactive-to-sendonly messages verified against a staged receiver.

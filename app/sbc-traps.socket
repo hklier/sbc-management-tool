@@ -1,0 +1,8 @@
+[Unit]
+Description=SNMP trap UDP socket for SBC Console
+[Socket]
+ListenDatagram=192.168.226.190:162
+ReceiveBuffer=4M
+FreeBind=true
+[Install]
+WantedBy=sockets.target

@@ -1,0 +1,10 @@
+paramiko==5.1.0
+bcrypt==5.0.0
+cryptography==50.0.2
+invoke==3.0.3
+pynacl==1.6.2
+cffi==2.1.1
+pycparser==3.12
+dpkt==1.9.8
+pysnmp==7.1.22
+pyasn1==0.6.4

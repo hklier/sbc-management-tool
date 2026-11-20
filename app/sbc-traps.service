@@ -1,0 +1,21 @@
+[Unit]
+Description=SBC Console SNMP trap receiver
+Requires=sbc-traps.socket
+After=sbc-traps.socket
+[Service]
+Type=simple
+User=sbc-console
+Group=sbc-console
+WorkingDirectory=/opt/sbc-console
+EnvironmentFile=/etc/sbc-console/environment
+ExecStart=/opt/sbc-console-runtime/python/bin/python3 /opt/sbc-console/trap_tools.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWriteDirectories=/var/lib/sbc-console
+[Install]
+WantedBy=multi-user.target

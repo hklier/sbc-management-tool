@@ -1,0 +1,45 @@
+SBC REST ACTIVITY VIEWER — 2026-11-20
+
+The floating REST activity panel opens automatically for new SBC REST requests.
+Use REST activity in the page header to close/reopen it. Open automatically can
+be unchecked for the current page. Closing the panel never cancels an operation.
+
+Each item shows the actual HTTP method and /rest/v1.2/ path, query parameters,
+running/completed/failed state, status code and elapsed time. Select a request
+and expand Request body or Response to inspect its XML preview with original values.
+
+Instrumentation wraps SBC.raw, including token acquisition, configuration locks,
+unlock calls and asynchronous status polling. It does not replay requests.
+SFTP transfers, SNMP packets and console-only requests are not SBC REST calls
+and therefore do not appear as REST requests.
+
+The activity endpoint requires the existing console session. Events are scoped
+to the sign-in session. Polling does not acquire the configuration lock, so a
+running operation remains visible. No additional SBC configuration is required.
+
+Previews retain original values, including credentials, tokens, authentication
+responses, query parameters and request Authorization headers, as requested by
+the administrator. Payloads are displayed as text, never executed as markup.
+The history remains private to the authenticated sign-in session and exists only
+in RAM: at most 400 requests server-wide, 200 in the browser, and 6,000 characters
+per payload/header preview. Logging out clears the browser viewer.
+
+
+Validation: 195 application tests; real SBC read requests, authentication payload
+visibility, incremental updates and cross-session isolation; browser automatic opening,
+closing/reopening and expanded response persistence during subsequent requests.
+No SBC configuration was changed during validation.
+
+WINDOW CONTROLS
+Minimize collapses the viewer to its title bar and live counter. New requests
+keep arriving without expanding the bar. Restore expands it again.
+Clear removes completed and failed requests from the current sign-in session
+in server memory and the browser. Running requests remain until they finish.
+The clear endpoint requires session authentication and CSRF protection.
+Validated with 16 targeted tests, live API checks and browser interaction.
+
+FULL VALUES UPDATE
+Request headers, Basic/Bearer Authorization, authentication XML and credential
+fields are visible without application redaction. Values already masked by the
+SBC itself remain exactly as returned. Validated with 16 targeted tests and live
+SBC authentication/read requests; browser proof uses explicitly synthetic tokens.

@@ -1,0 +1,23 @@
+[Unit]
+Description=Oracle SBC web configuration console
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=sbc-console
+Group=sbc-console
+WorkingDirectory=/opt/sbc-console
+EnvironmentFile=/etc/sbc-console/environment
+ExecStart=/opt/sbc-console-runtime/python/bin/python3 /opt/sbc-console/server.py
+Restart=on-failure
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWriteDirectories=/var/lib/sbc-console
+
+[Install]
+WantedBy=multi-user.target

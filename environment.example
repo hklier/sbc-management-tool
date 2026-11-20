@@ -1,0 +1,27 @@
+# TEMPLATE ONLY. Replace every placeholder before deployment.
+# This file uses systemd EnvironmentFile syntax. Adapt quoting for other loaders.
+SBC_HOST=CHANGE_ME_SBC_MANAGEMENT_IP_OR_DNS
+SBC_USER=CHANGE_ME_SBC_USERNAME
+SBC_PASSWORD=CHANGE_ME_SBC_PASSWORD
+SBC_FINGERPRINT=CHANGE_ME_VERIFIED_CERTIFICATE_SHA256_HEX
+# Alternative to the certificate pin: remove SBC_FINGERPRINT and mount a CA file.
+# SBC_CA=/etc/sbc-console/sbc-ca.pem
+SBC_SSH_PORT=22
+SBC_SSH_FINGERPRINT=SHA256:CHANGE_ME_VERIFIED_SSH_HOST_KEY
+APP_USER=admin
+APP_PASSWORD_HASH=CHANGE_ME_GENERATED_SALTED_HASH
+BIND_HOST=0.0.0.0
+PORT=8443
+TLS_CERT=/etc/sbc-console/tls.crt
+TLS_KEY=/etc/sbc-console/tls.key
+STATE_DIR=/var/lib/sbc-console
+RECORDING_DIR=/var/lib/sbc-console/recordings
+SNMP_VERSION=2c
+SNMP_PORT=161
+SNMP_COMMUNITY=CHANGE_ME_READ_COMMUNITY
+# For SNMPv3 queries set SNMP_VERSION=3 and supply these secrets:
+# SNMP_USER=CHANGE_ME
+# SNMP_AUTH_KEY=CHANGE_ME
+# SNMP_PRIV_KEY=CHANGE_ME
+# Optional explicit trap communities (v1/v2c only):
+# SNMP_TRAP_COMMUNITIES='["CHANGE_ME_TRAP_COMMUNITY"]'

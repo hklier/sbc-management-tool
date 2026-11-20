@@ -1,0 +1,26 @@
+Recording library update — 2026-10-28
+
+From / To show only the SIP or telephone URI user, preserving + and dialed digits.
+The host, URI scheme and URI parameters are omitted. Caller/callee direction uses
+the SIPREC flags/roles and Oracle callingParty extension, with participant order
+as a fallback when the source supplies no direction hints. Recorder SIP dialog
+headers (acmeSrc / recorder address) are not used as calling/called numbers.
+
+Duration is the longest WAV duration, including the combined recording. It is
+shown as HH:MM:SS with a decimal when needed. Active sessions show In progress.
+
+The trash icon opens a confirmation dialog. POST /api/recordings/delete requires
+an authenticated console session and the CSRF token. Metadata, WAV members and
+the transcript move together to recordings/.trash/<random-id>/, outside the library.
+This is a reversible move and does not free disk space. No automatic purge or
+restore interface is configured. An administrator can restore the original files
+from that directory after checking for name conflicts.
+
+Active calls and recordings currently being transcribed cannot be removed.
+A shared per-recording advisory lock coordinates the transcription worker and
+deletion. Partial move failures roll back. Path traversal and symlinks are rejected.
+Recording deletion does not access or change the SBC configuration.
+
+Validation: 182 application tests, browser cancel/delete against an isolated local
+fixture, and authenticated live deletion of a dedicated synthetic validation session.
+Existing real recordings were preserved.

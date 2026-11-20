@@ -1,0 +1,25 @@
+{
+  "apiVersion": "kustomize.config.k8s.io/v1beta1",
+  "kind": "Kustomization",
+  "namespace": "sbc-management-tool",
+  "resources": [
+    "resources.json"
+  ],
+  "images": [
+    {
+      "name": "sbc-console",
+      "newName": "192.168.2.240:5000/sbc-management-tool/console",
+      "newTag": "0.1.0"
+    },
+    {
+      "name": "sbc-recorder",
+      "newName": "192.168.2.240:5000/sbc-management-tool/recorder",
+      "newTag": "0.1.0"
+    },
+    {
+      "name": "sbc-transcription",
+      "newName": "192.168.2.240:5000/sbc-management-tool/transcription",
+      "newTag": "0.1.0"
+    }
+  ]
+}

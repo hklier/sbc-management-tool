@@ -1,0 +1,22 @@
+[Unit]
+Description=SIPREC recording server for SBC Console
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=sbc-console
+Group=sbc-console
+WorkingDirectory=/opt/siprec-source
+EnvironmentFile=/etc/sbc-console/siprec.env
+ExecStart=/opt/sbc-console-runtime/python/bin/python3 /opt/sbc-console/recordings_supervisor.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=35
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWriteDirectories=/var/lib/sbc-console/recordings
+[Install]
+WantedBy=multi-user.target

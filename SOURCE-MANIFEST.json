@@ -1,0 +1,2687 @@
+{
+  "createdUtc": "2026-11-20T12:55:46.002374+00:00",
+  "purpose": "Source handoff; integrated Kubernetes deployment not yet implemented or tested",
+  "excluded": "Live environment, application state, operational recordings/backups, compiled upstream example binary and caches",
+  "files": [
+    {
+      "path": ".dockerignore",
+      "bytes": 414,
+      "sha256": "230851ad6f73c3bb23af275b9989a0537df5dc93204ca481161312dec6ad9e29"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 386,
+      "sha256": "dba1563ec1b2443adcac1336bbdf55d3f1b49cf8a8ae4b7a31944e6d9bc780f6"
+    },
+    {
+      "path": "CONFIGURATION.txt",
+      "bytes": 8722,
+      "sha256": "e7c81dda2f0b057e1943f5a8e6c6acb3cafc39d20ae6f1fa24793c8f2a130b89"
+    },
+    {
+      "path": "README.txt",
+      "bytes": 6566,
+      "sha256": "f6b27e5c6ad93a238d689fea1ddcc8b6af7e49d44d40f2b4cad0af3b6fc6a2a8"
+    },
+    {
+      "path": "app/RECORDING-LIBRARY.txt",
+      "bytes": 1580,
+      "sha256": "fc41f64fb7dc50db7e16adb206020b64bc97f633fd72a4b651faa9e1cd551e3a"
+    },
+    {
+      "path": "app/REST-ACTIVITY.txt",
+      "bytes": 2665,
+      "sha256": "a8b1971dd4ba8c90afee67b81729e8b4c11206199b0d07b692ae8fe48b00fde4"
+    },
+    {
+      "path": "app/SIPREC-CONSOLE.patch",
+      "bytes": 1010,
+      "sha256": "99911f66d12b486237645a76d1f8d9bf8ec36688f22eebadd4065bb84820feb9"
+    },
+    {
+      "path": "app/SIPREC-LICENSE.txt",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "app/SIPREC-ORACLE-COMPAT.patch",
+      "bytes": 1549,
+      "sha256": "8ce179a05690f8dce735682e248820c3d41f489130f2d6eb2774bb63da227e0b"
+    },
+    {
+      "path": "app/SIPREC-REINVITE-TEST.patch",
+      "bytes": 851,
+      "sha256": "91c3dba4fc53a38735b3e93f4f5742011d3024fb1f1341735a0037836789cbe6"
+    },
+    {
+      "path": "app/SIPREC-SOURCE.txt",
+      "bytes": 1256,
+      "sha256": "0159dfd03a6f7c0c14b8e5ca4cda6daf741706a01129bd3564f00cf85814118d"
+    },
+    {
+      "path": "app/TRANSCRIPTION.txt",
+      "bytes": 2460,
+      "sha256": "5a4a3cb2ada5e73b83459fb32d5d599026124457f0e183e178dcba128753c86b"
+    },
+    {
+      "path": "app/cdr_catalog.json",
+      "bytes": 204707,
+      "sha256": "ad873ddc628603c27b47221baee15d8ddd7a571f792fa46214f45362e767d8b6"
+    },
+    {
+      "path": "app/cdr_tools.py",
+      "bytes": 6311,
+      "sha256": "8334a81a9361b6ff2b05b099476691c6194356c303ebaf4ffa61843de706400b"
+    },
+    {
+      "path": "app/install.sh",
+      "bytes": 3110,
+      "sha256": "3c9886546ffe700a0fbeca6c1b51c46b87b4d5a7ae12bb274c371562573a39c6"
+    },
+    {
+      "path": "app/recordings_supervisor.py",
+      "bytes": 1294,
+      "sha256": "a9d2629b1c74330b0c5d99cceff56dbdda3017672489a3dace32dbd9314c3992"
+    },
+    {
+      "path": "app/recordings_tools.py",
+      "bytes": 11099,
+      "sha256": "3aa45c6d342bf7796ba678c009841af0a618058ec663ca3f8ef20a3f39036388"
+    },
+    {
+      "path": "app/requirements.txt",
+      "bytes": 158,
+      "sha256": "69eb6c8e549f811b5da3a181802dff3945a19cdf111e5df61d946626539be1ca"
+    },
+    {
+      "path": "app/rest_activity.py",
+      "bytes": 2516,
+      "sha256": "b4c3c8f34bfa8765113900b8e60f41bee06881e18ddb7d42fe80d33bae01fe76"
+    },
+    {
+      "path": "app/sbc-console.service",
+      "bytes": 526,
+      "sha256": "b35f47a72ac1900ced26d9e0606302ff27601c4ab5cdd9446f976073e01dfbb1"
+    },
+    {
+      "path": "app/sbc-transcription.service",
+      "bytes": 687,
+      "sha256": "b8bb4cdd1c8a26011215ab16ca459fb9bc05536da462e361576511a12377ac76"
+    },
+    {
+      "path": "app/sbc-traps.service",
+      "bytes": 516,
+      "sha256": "2f01f586902ae6cb7db15c3777ff667a4a4d764b6621b12d323b9f8cb2afa701"
+    },
+    {
+      "path": "app/sbc-traps.socket",
+      "bytes": 173,
+      "sha256": "3d3b4490411a261dccd744c4e9d7939faebe521e6a61c7b94aae286f811b2cd5"
+    },
+    {
+      "path": "app/server.py",
+      "bytes": 75146,
+      "sha256": "efb4963e19439126639b336fb26a94a37a450bd371bc7f345b984e455bf9f3ed"
+    },
+    {
+      "path": "app/siprec-compatibility-tests/oracle_legacy_test.go",
+      "bytes": 2010,
+      "sha256": "7dd2c82a225a18c8c18ef125d0d768aa38ceb9f71e2dd46c331032a7b34fe4c7"
+    },
+    {
+      "path": "app/siprec-compatibility-tests/oracle_scz930_metadata.xml",
+      "bytes": 1253,
+      "sha256": "631b6dfccf6e6c5fd3d806c55f2f5e6f0173e0ff5337b8090e0923e4cb836560"
+    },
+    {
+      "path": "app/siprec-recorder.env.example",
+      "bytes": 904,
+      "sha256": "4556e1b18ca636e6cc8a0230f265325b995214e5cde976472a6c3e8dce06ba45"
+    },
+    {
+      "path": "app/siprec-recorder.service",
+      "bytes": 573,
+      "sha256": "6879ef77d7db92dfb28b08c5666b84a2368b7e79c5cd9087dc092eba31ad659a"
+    },
+    {
+      "path": "app/siprec_console_sidecar.go",
+      "bytes": 1575,
+      "sha256": "cb4f16e0510574b5025ebe1570739ed3cc4525da03146469822ad0f18fa5c9ab"
+    },
+    {
+      "path": "app/snmp_catalog.json",
+      "bytes": 559599,
+      "sha256": "4647fa1714a9506e61755313fb4f3584705d37bd27f435bf1393d7cf291867cf"
+    },
+    {
+      "path": "app/snmp_tools.py",
+      "bytes": 12046,
+      "sha256": "7ed2cb263df736e03e6310995ab4173b4d817e1f26cfd6e57efde8a9685da011"
+    },
+    {
+      "path": "app/static/app.js",
+      "bytes": 16156,
+      "sha256": "a711fcba02abbd647f253a683b906abc0763161eb50b0834846352b6c2b14ed0"
+    },
+    {
+      "path": "app/static/cdr.js",
+      "bytes": 8398,
+      "sha256": "d961a71fcfed46a3b66576c17b5cb8362a6496ed3c736a8585c894c7a1fdcdf7"
+    },
+    {
+      "path": "app/static/diagnostic-charts.js",
+      "bytes": 5645,
+      "sha256": "5b9132ec5b502983fe0001d1d79b0609e80ae44b454b9671ffb318682c985db9"
+    },
+    {
+      "path": "app/static/diagnostics.js",
+      "bytes": 8086,
+      "sha256": "9be9eabd822fc32b6439fb13c158b090c1771e08af6f0a42883eb274fbe6154a"
+    },
+    {
+      "path": "app/static/index.html",
+      "bytes": 31509,
+      "sha256": "9fd1cd193d3301dbbd9d02dac64bb0af26eaa009172ade3dd3338e37053e0802"
+    },
+    {
+      "path": "app/static/lrt.js",
+      "bytes": 13929,
+      "sha256": "068b9d11acbd5897ccab2f2efc637da5d2b7cc55f2811ae3393585209f2a2279"
+    },
+    {
+      "path": "app/static/recordings.js",
+      "bytes": 10667,
+      "sha256": "b7929a4ab9045c273d8639a56365629a3c96e5ea5fda72378ecd51f7a2bd467f"
+    },
+    {
+      "path": "app/static/rest-activity.js",
+      "bytes": 6048,
+      "sha256": "9413680d403274cbeea713d816fe8374337e28089766047acd49bb3ab8059c01"
+    },
+    {
+      "path": "app/static/snmp.js",
+      "bytes": 13218,
+      "sha256": "4c1a6687b63870796e2c3856be826b770ac98e4cf58f67656ec9fb3e5808dc82"
+    },
+    {
+      "path": "app/static/style.css",
+      "bytes": 30184,
+      "sha256": "020da9434701ac9e567f52d32c6aae05ea4c635d3ba9404066abc2f0387f262c"
+    },
+    {
+      "path": "app/static/traces.js",
+      "bytes": 9798,
+      "sha256": "cf1f9d6a7b1167334113b1bf9a335ab2493bfb9f0abfe90212e0775c1e4e928a"
+    },
+    {
+      "path": "app/static/traps.js",
+      "bytes": 7907,
+      "sha256": "162a76ead1a1ca52b674e7fd20e4d66e77365dc8b2192bda1ce33b6b72f15495"
+    },
+    {
+      "path": "app/test_cdr.py",
+      "bytes": 6557,
+      "sha256": "27f0a0a46323519227810ac0486e15b62c9093b0582b2a746d0c395d72713630"
+    },
+    {
+      "path": "app/test_recordings.py",
+      "bytes": 3507,
+      "sha256": "25e162f1bbec3b0302db70cd569e10bff9d457d8dd32a09231b79716d52b9d43"
+    },
+    {
+      "path": "app/test_recordings_management.py",
+      "bytes": 4885,
+      "sha256": "b2b17561d16229a05e1fc66fc94077633a94ca968a96ac96c941f8a5c47e9c93"
+    },
+    {
+      "path": "app/test_rest_activity.py",
+      "bytes": 6999,
+      "sha256": "77f3e9db3c4a0b98d3aabaae010035ebf543320eb3de0bf6232df55a4d575e2f"
+    },
+    {
+      "path": "app/test_server.py",
+      "bytes": 50422,
+      "sha256": "8dfb438b212597a962d35e3a3aa90f86daf33a2a8667ba996b6cce0eae025c18"
+    },
+    {
+      "path": "app/test_snmp.py",
+      "bytes": 4678,
+      "sha256": "12a4b8241ff01aef9d7e9d0e3128cea6566cc3d8485e3da9314a32923fb48328"
+    },
+    {
+      "path": "app/test_traces.py",
+      "bytes": 8222,
+      "sha256": "8fe55cda38059965d034fd4484223ec2b9ef1e47d264bf2feecf87ba44fb6cba"
+    },
+    {
+      "path": "app/test_transcription.py",
+      "bytes": 2294,
+      "sha256": "742387e70f6489c9fb7977428f3d1618d9ff1534baac299cd04c34c3c287cc31"
+    },
+    {
+      "path": "app/test_traps.py",
+      "bytes": 8570,
+      "sha256": "261ef2b8b21549b63a8a1171eb65ae690c7f4e993882aceae0ccdf6a78174d3f"
+    },
+    {
+      "path": "app/trace_tools.py",
+      "bytes": 12625,
+      "sha256": "60cedde5941731c011afd67d5824acede47068c6cdb2eea5d734ee7f3e16a091"
+    },
+    {
+      "path": "app/transcription-wheels.json",
+      "bytes": 3011,
+      "sha256": "50694a4806e4e9f0436e12788eb5ab62793521b18b70887c73fbe81d75cf0ff4"
+    },
+    {
+      "path": "app/transcription_worker.py",
+      "bytes": 5735,
+      "sha256": "097a855af39240000c95e8009a30c1ac1ef173eb2984cab87729e649584e0658"
+    },
+    {
+      "path": "app/trap_catalog.json",
+      "bytes": 75851,
+      "sha256": "3adfb83e581b768287e72f6552dad539b7c8a32cbf47c65eb288df9e59feba81"
+    },
+    {
+      "path": "app/trap_tools.py",
+      "bytes": 11424,
+      "sha256": "c695896ed9b08771c285eb0040e23729c300872f49a4c1cbcee695d59602bccc"
+    },
+    {
+      "path": "app/verify_siprec.py",
+      "bytes": 5511,
+      "sha256": "c306918f4459ad5760f4990b81b2eb6a3da836e9afd0ce1fa90af6d0bf477892"
+    },
+    {
+      "path": "environment.example",
+      "bytes": 1062,
+      "sha256": "72629f0ca590c37e517e8484e183f2308ea08c352c3f6631b6b8d5fee50fb5fa"
+    },
+    {
+      "path": "generate-console-password.py",
+      "bytes": 582,
+      "sha256": "f366ba830a592c2f34bff188337106cde3c049b426fc21e3aced2ddfc4b0a27a"
+    },
+    {
+      "path": "siprec/.dockerignore",
+      "bytes": 790,
+      "sha256": "655a70f3920b09b66ade5dc7c5f57aca1e785d1dc43c804db096255e6cdd3fa4"
+    },
+    {
+      "path": "siprec/.env.example",
+      "bytes": 4198,
+      "sha256": "ab2a18f2d485237abb20e53e06c24a6d5660e1c1b7e12e0ff7317aedfa13bf79"
+    },
+    {
+      "path": "siprec/.env.ports-example",
+      "bytes": 1863,
+      "sha256": "ed3e1149ff2f83fd725b504dacd9ba37391dd6190c3c6121be179c39b3ec88ae"
+    },
+    {
+      "path": "siprec/.github/workflows/docker.yml",
+      "bytes": 2182,
+      "sha256": "46140af61f27be934e6d620cf6a25e8b7555e56076534b93983faa6472afd31f"
+    },
+    {
+      "path": "siprec/.github/workflows/release.yml",
+      "bytes": 5671,
+      "sha256": "1dc2f5ecd7800bd3eca6d448fdca44e8038d236d51bd8805f388c6bfdad0f73a"
+    },
+    {
+      "path": "siprec/.github/workflows/security.yml",
+      "bytes": 4435,
+      "sha256": "8dcf02ab088705137cca41421e08f533026616775d3e313b1311d1716e2ec1ec"
+    },
+    {
+      "path": "siprec/.github/workflows/test.yml",
+      "bytes": 4539,
+      "sha256": "0d13761b609fdce7d46848fb451595882de24abb3481dd24e4c61e0cb34539a6"
+    },
+    {
+      "path": "siprec/.gitignore",
+      "bytes": 2045,
+      "sha256": "a7feb245cedddfdaf8b5954f330223390bd847bae1474325a1ff34d70593921e"
+    },
+    {
+      "path": "siprec/.golangci.yml",
+      "bytes": 1000,
+      "sha256": "8e072e5c2b283f39daaf9ef29bc22e9593b751d5bf98edd1dc1cbfafb97f6c6c"
+    },
+    {
+      "path": "siprec/CHANGELOG.md",
+      "bytes": 41383,
+      "sha256": "c8d84b80359db636cc3ca6af2ca0e9101dfa72a4c458928dbb45aa47a61fa22f"
+    },
+    {
+      "path": "siprec/Dockerfile",
+      "bytes": 3999,
+      "sha256": "beafd3b502646a24bd13f9d66b86deaa14aeef95e9bc1f24c60af6fd1cfe904a"
+    },
+    {
+      "path": "siprec/LICENSE",
+      "bytes": 35149,
+      "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+    },
+    {
+      "path": "siprec/Makefile",
+      "bytes": 13006,
+      "sha256": "a1ddd380d8dc1e7dd02d4591d7e448d9e3306e32ef65a17d21d44d2f2e7f5b8c"
+    },
+    {
+      "path": "siprec/PRODUCTION_CONFIG_GUIDE.md",
+      "bytes": 15512,
+      "sha256": "8a3f8ba171a8bf5699736375ee72f340965bd80dfb8bbb50e2c258604d8da8fa"
+    },
+    {
+      "path": "siprec/README-DEPLOYMENT.md",
+      "bytes": 8932,
+      "sha256": "c2838ff64de1b015ce7b05f73f7fea7fe8fb80c28f90e8c248453289a9575c20"
+    },
+    {
+      "path": "siprec/README.md",
+      "bytes": 34431,
+      "sha256": "e86b926830cb5564da47bcd7686e3ba73b6616d5b7089007829daf3f9e836ffb"
+    },
+    {
+      "path": "siprec/SECURITY.md",
+      "bytes": 2481,
+      "sha256": "ba5d2b2eaadddfe51663197d022b430abb3c211664f24ac072f5e3c7ff1161dd"
+    },
+    {
+      "path": "siprec/SIPREC_EXPLAINED.md",
+      "bytes": 8004,
+      "sha256": "5706a27d78759645faca02b279da945c08c0c8414cd4a855d0638a4a1e4fd8f1"
+    },
+    {
+      "path": "siprec/VERSION",
+      "bytes": 6,
+      "sha256": "10e2e117b01523891ca271a615ae36e9d5e52348fd7d642f66727602c1b8dcbe"
+    },
+    {
+      "path": "siprec/cmd/siprec/main.go",
+      "bytes": 84295,
+      "sha256": "b630b63c621c2c0d6a001c6fe3bc89fb29625016dfdb4c2a1db719db0f194989"
+    },
+    {
+      "path": "siprec/cmd/siprec/run.sh",
+      "bytes": 930,
+      "sha256": "c738f6cd94babdf7e6b35a51c6fb483b39e946b9f673284ec14b844920e49a78"
+    },
+    {
+      "path": "siprec/cmd/siprecctl/main.go",
+      "bytes": 129,
+      "sha256": "0409fa2306613f99cfcec23889b0863728cd0d83ff0f6e2bb2a7ebb517becb14"
+    },
+    {
+      "path": "siprec/cmd/testenv/main.go",
+      "bytes": 1251,
+      "sha256": "8af2360964a578e253b64c79ecd5a859f2e5b237b62b6599a21a24e7277b58f6"
+    },
+    {
+      "path": "siprec/config.example.yaml",
+      "bytes": 7616,
+      "sha256": "c579dbc3f5c775fe8a02f90f240055af916920d3f496c265b92b610e58c2d014"
+    },
+    {
+      "path": "siprec/configs/alerts/siprec-alerts.yaml",
+      "bytes": 8400,
+      "sha256": "6234722c50e737f8a5a6f300a15fec7bb89594025a0b612333c4cbde37a8544c"
+    },
+    {
+      "path": "siprec/configs/grafana/dashboards/siprec-business.json",
+      "bytes": 7092,
+      "sha256": "23df6277162d58e7c4d0b0d6140e80a119c98986d0c17271783d6ce09baeba41"
+    },
+    {
+      "path": "siprec/configs/grafana/dashboards/siprec-overview.json",
+      "bytes": 5947,
+      "sha256": "2886db1569ecf3ae9e98380ae7503c224df34952c56c4086035c8242167bc4b1"
+    },
+    {
+      "path": "siprec/configs/grafana/dashboards/siprec-performance.json",
+      "bytes": 6502,
+      "sha256": "aa20cee528a1be94d537d71154ca81af12b6e20b548ec03551fdd41c98a82dee"
+    },
+    {
+      "path": "siprec/configs/grafana/dashboards/siprec-security.json",
+      "bytes": 7149,
+      "sha256": "8e57cc87b154d2bd120932a3cb5767a24152952cfe2916901afb5a8548eed457"
+    },
+    {
+      "path": "siprec/configs/haproxy/haproxy.cfg",
+      "bytes": 8780,
+      "sha256": "7c9ce4b369ec4b205dc383f9610a454c6b85c755198325e50069aa549e9b2226"
+    },
+    {
+      "path": "siprec/configs/nginx/nginx.conf",
+      "bytes": 12825,
+      "sha256": "a1babec2c57f4b1caa385ff89c6764aba5877b258090282ac5d31b1fc8686bbc"
+    },
+    {
+      "path": "siprec/deploy-quick.sh",
+      "bytes": 7445,
+      "sha256": "c3a6124861533cd37e9c264dc0155c3663c01bded2345f07a86298650963ec3e"
+    },
+    {
+      "path": "siprec/deploy/grafana/dashboards/siprec-overview.json",
+      "bytes": 22776,
+      "sha256": "367ccd8aa8962db27568d38b38dfc6fafd459d3c623fef18bcd4ea89b3a76f58"
+    },
+    {
+      "path": "siprec/deploy/grafana/dashboards/siprec-sip-rtp.json",
+      "bytes": 18357,
+      "sha256": "0ee93baa8381dcc17b07712aaa557bc43804f44a744b4a42e847f94890910825"
+    },
+    {
+      "path": "siprec/deploy/grafana/dashboards/siprec-stt-recording.json",
+      "bytes": 18760,
+      "sha256": "d1de35b86e01ad6d161f2eacc4501130931dcf44a0563997e3892242d146d5c5"
+    },
+    {
+      "path": "siprec/deploy/grafana/provisioning/dashboards/siprec.yml",
+      "bytes": 267,
+      "sha256": "d1d472c1a420f98371c4c48f05b3892f5a21e9650d8e972e718d467874bbec89"
+    },
+    {
+      "path": "siprec/deploy/grafana/provisioning/datasources/prometheus.yml",
+      "bytes": 222,
+      "sha256": "055d2df7f8c8e5d0789ed9e4daed46b2cb0b12776292aae684cc5320b4503ad2"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/Chart.yaml",
+      "bytes": 277,
+      "sha256": "a3d175a1baaa78e8ba514245fdace74a63d0f9d3c02f783878eaa4619a8ceee6"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/NOTES.txt",
+      "bytes": 2554,
+      "sha256": "1aabadd4f0ba441c72f52fe4eb3e8cdf898321ef49be0379c5ff41ea2d230f08"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/_helpers.tpl",
+      "bytes": 1862,
+      "sha256": "ba4da30633ecfc1a0a4598047b94658da9b6141fcdd0198551bbd8a554d81bfa"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/configmap.yaml",
+      "bytes": 3512,
+      "sha256": "7edcef8ff7733813cc10199b39497030cdfbc849579b593fbe19461864d402e4"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/deployment.yaml",
+      "bytes": 5486,
+      "sha256": "a1f1e036571a8c92f336ef6ddc3ccffb1ca517464a969df5178c9e0749123cd9"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/hpa.yaml",
+      "bytes": 1393,
+      "sha256": "8bd002c9097f2bee59e1dcbce6d28a1bff5a8bf1cf9db52eaade643f492340f8"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/pdb.yaml",
+      "bytes": 394,
+      "sha256": "64efbc4bd5e74044b2f3f877d8bed72e7132b7c3fd7902d0f972e31a77f0683a"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/pvc.yaml",
+      "bytes": 637,
+      "sha256": "da07ea1299d13fcc088271123750a9958680e270f9bbb29c4bd111cb6f0d2ce5"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/rbac.yaml",
+      "bytes": 1079,
+      "sha256": "348abf8cd682e886eb48cde9db719134818536592cfa8b6e67f1ec544b333b35"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/secret.yaml",
+      "bytes": 966,
+      "sha256": "a7827f48c7994d870ff142d163241d552c92f2a5a6cc5c5bd1368fd7635a64fc"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/service.yaml",
+      "bytes": 2617,
+      "sha256": "e2a940b88e4819e149333c76981cca4f5fa9b9857e3c186bbb306b5b50eef33b"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/templates/serviceaccount.yaml",
+      "bytes": 331,
+      "sha256": "10c473d26ee9a8c592189a19da75e3568b2d61dc6d207e72061f8c5e4dc701af"
+    },
+    {
+      "path": "siprec/deploy/helm/siprec-server/values.yaml",
+      "bytes": 4338,
+      "sha256": "fa0b37355266dc905820191a18fcacae2f8631875aea9908bc8cff25684b161f"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/README.md",
+      "bytes": 4350,
+      "sha256": "55c55bad88fd188c1068e44eb4c266675c5d4f8aa14f4142e3970c7137556852"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/configmap.yaml",
+      "bytes": 2006,
+      "sha256": "aa59c83bc6de66c54eca24f2bfe82cb6fabe2c48b083f4dc24085a2d94b35195"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/deployment.yaml",
+      "bytes": 4193,
+      "sha256": "0a458c8b1a93d2d5f39cb8338782be99755c6b89f6647c080f5cdd5c1c279ef4"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/hpa.yaml",
+      "bytes": 1365,
+      "sha256": "db549a65f379f6955941e6e4414e93271c0c0c6708d748f9ebe232bbefbacb19"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/kustomization.yaml",
+      "bytes": 320,
+      "sha256": "ea3f94c9ead5cd148fe31752e7eaa110bca99f5531204d0c7f54e7344ef1cff1"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/pvc.yaml",
+      "bytes": 681,
+      "sha256": "6bf44c82ea1330dcd24c9b20c06ddccf9795b1902ba4ec184b3faaf7eba5ea4e"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/rbac.yaml",
+      "bytes": 1231,
+      "sha256": "eb9114a93210c3e33d317404c29549ff79990702a9103152cb7df8ac31c16fc8"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/secret.yaml",
+      "bytes": 1704,
+      "sha256": "218ad766a707f34be86e6470fd124d553d1b5f74940520e8f8dd38a6d373e7f9"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/base/service.yaml",
+      "bytes": 2040,
+      "sha256": "13ece111e201744aa450e7febf716bd0d6d5574dd094272584928899c140c280"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/production/configmap-patch.yaml",
+      "bytes": 583,
+      "sha256": "d400632023e6f63e2ce58eadd331bc037ebab4c6b03be7651780e96fa0168d30"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/production/deployment-patch.yaml",
+      "bytes": 332,
+      "sha256": "41716a83fcc6294d25f9ce203638c9dbd563d1c89cf62c6088a14b749eb5ddef"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/production/hpa-patch.yaml",
+      "bytes": 130,
+      "sha256": "aff042a946ca4c70dde7e09996670f0d7a88deb7f69e6d76c15fd096f49e940e"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/production/kustomization.yaml",
+      "bytes": 425,
+      "sha256": "ce3c85dd45a1ea68edb227176187b3e0fa99d0bfe2b015b60e9759ea81673ccb"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/production/namespace.yaml",
+      "bytes": 140,
+      "sha256": "0e8d366eee53a74e77b7c3cf2b3cafb83b27b911ae7bd365ada99d343d002eb7"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/staging/configmap-patch.yaml",
+      "bytes": 524,
+      "sha256": "52b6b1dfa8c149204c486b3ee5ab054866d23714341992526bd88f76572a3f1b"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/staging/deployment-patch.yaml",
+      "bytes": 333,
+      "sha256": "f2c5c3a5d381381a4903711dc331d7ef68e471b7769115c9a596f3bc1216e87d"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/staging/kustomization.yaml",
+      "bytes": 395,
+      "sha256": "f14f294618942fb2b2eacc11d267ffce7fd84b53539b5f3bd72653bf4e1ccd78"
+    },
+    {
+      "path": "siprec/deploy/kubernetes/overlays/staging/namespace.yaml",
+      "bytes": 134,
+      "sha256": "3ed57282b5527f01a8d8c1711830b0075bbcafd705032f73da99124adf3edf23"
+    },
+    {
+      "path": "siprec/deploy/prometheus/alerts.yml",
+      "bytes": 12921,
+      "sha256": "f94608d2481731f16b03a440646ec59a4794f1170358e944fa6461afbb5f94cb"
+    },
+    {
+      "path": "siprec/deploy/prometheus/prometheus.yml",
+      "bytes": 1522,
+      "sha256": "09ccf0d61e7e739fed6fd56bf4b0173c15dd907e18f384c66fd2494be0af21f3"
+    },
+    {
+      "path": "siprec/deploy_gcp_linux.sh",
+      "bytes": 18010,
+      "sha256": "610e0492c0229a3a2cd3a69f57d289dcd01f960ca417b6302d7624a281e51eb5"
+    },
+    {
+      "path": "siprec/docker-compose.dev.yml",
+      "bytes": 5817,
+      "sha256": "afb7c1e6755fa26d7acd928103a7c48b399bdee156d8b4e808298f30e041686d"
+    },
+    {
+      "path": "siprec/docker-compose.test.yml",
+      "bytes": 344,
+      "sha256": "aca17317c7a7a542831928fdfbfa77449a0cbbdb8a524cc4da62d10325d6b89e"
+    },
+    {
+      "path": "siprec/docker-compose.yml",
+      "bytes": 964,
+      "sha256": "cec57ddf7766285e8492dee4f1d749bc44e157163bad64ca699a89eb8f84db9d"
+    },
+    {
+      "path": "siprec/docs/README.md",
+      "bytes": 1581,
+      "sha256": "95afe37903b882a741f53e4ab28095fccc9a161a4547ebf2f1d2791bd3f51bde"
+    },
+    {
+      "path": "siprec/docs/api.md",
+      "bytes": 9475,
+      "sha256": "35264417ee75e38049d32b2f4724e70683819611c8d78acc62d9c1d3e4c17539"
+    },
+    {
+      "path": "siprec/docs/audio-pipeline.md",
+      "bytes": 10907,
+      "sha256": "8187290720ec11800f71cdecc47007573936fabffcef1ee114b154594de669ff"
+    },
+    {
+      "path": "siprec/docs/cluster-configuration.md",
+      "bytes": 17174,
+      "sha256": "231eb3b9eef31b3206fc78c5efe1124c08efd298b2f5b922badffeafec4a3575"
+    },
+    {
+      "path": "siprec/docs/configuration.md",
+      "bytes": 33123,
+      "sha256": "90be58545aaf1ad63df43cdd4f0dc75203ab0a24690b198d58121fc485bd23d5"
+    },
+    {
+      "path": "siprec/docs/installation.md",
+      "bytes": 7301,
+      "sha256": "71fd241adc2387fc9a6924b70796678124857d91589ece8d8d4b8d579e5e6d03"
+    },
+    {
+      "path": "siprec/docs/overview.md",
+      "bytes": 2731,
+      "sha256": "17583cafe5fda6b1dbe7ab172db9f8828d7d8c04f048789933300dd3e6d83cf1"
+    },
+    {
+      "path": "siprec/docs/realtime-transcription.md",
+      "bytes": 15518,
+      "sha256": "4b21146ab7b886e9d6f6bd4f58dd7bca9c5a217a21d40a81b4b6632d67e958cd"
+    },
+    {
+      "path": "siprec/docs/sessions.md",
+      "bytes": 1955,
+      "sha256": "e2228f443ec1065646bc9c05cd1a082ffe360905451c5e98e73dc5f11e37f08a"
+    },
+    {
+      "path": "siprec/docs/stt.md",
+      "bytes": 13747,
+      "sha256": "1aaac6b39e5288d145ce16a80ad4823ec8d13c0f5ff01dba56959c07a94a04fa"
+    },
+    {
+      "path": "siprec/docs/vendor-integration.md",
+      "bytes": 31279,
+      "sha256": "04e9ec22a0991399510311d2a1cae4af6e1c1d083d6068ed582a1624582d7771"
+    },
+    {
+      "path": "siprec/docs/whisper-setup.md",
+      "bytes": 6602,
+      "sha256": "dfe84cb6efd405d557f4eaeabc9e3b11fccb95461ff715cf2bac5477c9012e50"
+    },
+    {
+      "path": "siprec/examples/analytics_websocket_client.html",
+      "bytes": 18095,
+      "sha256": "5d6bdaf53e8f652fdb24ca43b5318858ef008ff5667bdeb244ae4bb25371c857"
+    },
+    {
+      "path": "siprec/examples/deepgram_integration/main.go",
+      "bytes": 14030,
+      "sha256": "efbc77d084571106af00c7591e55c3e57b5fe10795980980b0b3b9297682fa35"
+    },
+    {
+      "path": "siprec/examples/google_integration/main.go",
+      "bytes": 19012,
+      "sha256": "97b2733126bec97753666305cd1b9dbcb06178154850597b52d6c5f860352ca4"
+    },
+    {
+      "path": "siprec/examples/nat_config.yaml",
+      "bytes": 2151,
+      "sha256": "5092718dd21b7f999f995678e090875f5e376d251f0641554478cac84dc13a81"
+    },
+    {
+      "path": "siprec/examples/nat_traversal/main.go",
+      "bytes": 3956,
+      "sha256": "32feb593e98bec35119ab18e9d69fdfea59fb1521aea3c3dcb8adbcd3f1309da"
+    },
+    {
+      "path": "siprec/examples/streaming_response/main.go",
+      "bytes": 12245,
+      "sha256": "d5654b7e69f11156e43476012f546ec81bfacb6fd7b2e74570947661eff95ece"
+    },
+    {
+      "path": "siprec/examples/stt_configuration_example.env",
+      "bytes": 6046,
+      "sha256": "e7e67bb5b633fccc4b075d7b537fd3ed522473e58fc8bd7d0ffa1822fe1813d2"
+    },
+    {
+      "path": "siprec/gcp-startup-script.sh",
+      "bytes": 1293,
+      "sha256": "a6c03e33e867a7d3fdc55e23b0954264da567dc10d1194c27c2fabf34fba344c"
+    },
+    {
+      "path": "siprec/gcp-terraform.tf",
+      "bytes": 4806,
+      "sha256": "788f390168c35c60c8c5356cfd8e8e4e36499200858afefa20c30b4166490cc5"
+    },
+    {
+      "path": "siprec/go.mod",
+      "bytes": 6800,
+      "sha256": "709a913c8d3aeb753bcb4bd2cbdd9a56e7bda45014fc790997da806875324daf"
+    },
+    {
+      "path": "siprec/go.sum",
+      "bytes": 36948,
+      "sha256": "51fd6c0d11e60cf3d5656f5b6958f8cd98ff938c97d91bcb89108fdf14be44ea"
+    },
+    {
+      "path": "siprec/install_siprec_linux.sh",
+      "bytes": 9707,
+      "sha256": "5a383cec1084415e512a898bd00666add34e5d0004a561b3cd98abeb8cfa6143"
+    },
+    {
+      "path": "siprec/pkg/alerting/alerting.go",
+      "bytes": 14733,
+      "sha256": "5a282ba032fde1d4d086a31288f42fa57d27eb48d2b58133ee76e865a881f029"
+    },
+    {
+      "path": "siprec/pkg/alerting/cpu_other.go",
+      "bytes": 330,
+      "sha256": "e24a1548f1c54eb0d53ceff052f743f61f42066499f876b6d53125dc93c6863a"
+    },
+    {
+      "path": "siprec/pkg/alerting/cpu_unix.go",
+      "bytes": 460,
+      "sha256": "eec106ccd3719082b1e584b272735433e389f5944ca42b82171c5e08bcd5dfbb"
+    },
+    {
+      "path": "siprec/pkg/alerting/email.go",
+      "bytes": 10865,
+      "sha256": "2abb0999b89e45fee9e7f98831e51fe7088e0066d543e962b6bce9d3bf1382e1"
+    },
+    {
+      "path": "siprec/pkg/alerting/email_test.go",
+      "bytes": 6303,
+      "sha256": "b47e13faded7b464590b5777b7824518d353633a5a0f1388e9c7de2a2e9bf7c7"
+    },
+    {
+      "path": "siprec/pkg/alerting/evaluator.go",
+      "bytes": 6837,
+      "sha256": "4b32c45e993ecb1f0c9664fbb0ffb5c027abe6d2dbbce473894b9a814c736771"
+    },
+    {
+      "path": "siprec/pkg/alerting/evaluator_test.go",
+      "bytes": 6257,
+      "sha256": "4dbb610f614a3e4e09f308483bfd0cb24e668c98bd7b0e1a8aacd114d9897871"
+    },
+    {
+      "path": "siprec/pkg/audio/audio_enhancement.go",
+      "bytes": 20077,
+      "sha256": "da00353f2453857edbde61dbae113eb3d8a527891bf7d9d8eb464e9e2cd23629"
+    },
+    {
+      "path": "siprec/pkg/audio/audio_enhancement_test.go",
+      "bytes": 3763,
+      "sha256": "ec621bf6929bded5bdb67de7713e9fbf75006ab1b800925d9e04d83be6907e8b"
+    },
+    {
+      "path": "siprec/pkg/audio/encoder.go",
+      "bytes": 9096,
+      "sha256": "46a9720722ee870102a9da911f4a7867b751184043af8b70986ddf34ec27431d"
+    },
+    {
+      "path": "siprec/pkg/audio/encrypted_manager.go",
+      "bytes": 12441,
+      "sha256": "2d7c0bd65f1a5b1ddcc690565318592c1e3cfddfb89bef95edbcc30f623296f0"
+    },
+    {
+      "path": "siprec/pkg/audio/encrypted_manager_test.go",
+      "bytes": 502,
+      "sha256": "a6bb8178bf82e316ed194b0dabf5de931dcfb56774acff55fda76c62be677150"
+    },
+    {
+      "path": "siprec/pkg/audio/manager.go",
+      "bytes": 8331,
+      "sha256": "d9e63a775ca2de53c8a3bf5eb878dbafc4dc1ae632b9e443ce266fd2eacbf04d"
+    },
+    {
+      "path": "siprec/pkg/audio/multi_channel.go",
+      "bytes": 5895,
+      "sha256": "8991b0f091c7989f3665b2e68f2b0d99c4f93157cc2cb7bd584c98ee7ae9663c"
+    },
+    {
+      "path": "siprec/pkg/audio/noise_reduction.go",
+      "bytes": 5966,
+      "sha256": "73432e7823d2c3b6b168f4607bf38f6f091ae9dd6afb1382eaa0187c78365101"
+    },
+    {
+      "path": "siprec/pkg/audio/noise_suppression.go",
+      "bytes": 14264,
+      "sha256": "9720f6e52dcaf6a2f597a8a81f7e36cd427dcd224d15dd624b47b69c14c8e358"
+    },
+    {
+      "path": "siprec/pkg/audio/noise_suppression_test.go",
+      "bytes": 2943,
+      "sha256": "49394f51969d5515a7d416d037477d6ef1c88c5682b968075fe9b49ea2ae56a3"
+    },
+    {
+      "path": "siprec/pkg/audio/types.go",
+      "bytes": 3738,
+      "sha256": "486eabf12ecbeb2703cb8a2130486ee45026002d4dd02e7c6952d872e933c832"
+    },
+    {
+      "path": "siprec/pkg/audio/vad.go",
+      "bytes": 5866,
+      "sha256": "6569eae15ed208a28d453d581d46012fa0d14a397af73737033b1c7eacf20618"
+    },
+    {
+      "path": "siprec/pkg/audio/vad_test.go",
+      "bytes": 3617,
+      "sha256": "6f7d7e1b4cd9c431377256d241c7877e84ad368b46f7243d17c311ab98019d28"
+    },
+    {
+      "path": "siprec/pkg/auth/rbac.go",
+      "bytes": 10941,
+      "sha256": "bdf8306c0e6abb58549a34994a64db92d2141a544b77454f2659bd14518347fd"
+    },
+    {
+      "path": "siprec/pkg/auth/rbac_test.go",
+      "bytes": 2952,
+      "sha256": "73ccb1df2797b88b7295ec66b5ad70d6f7577ed1777309d546f284b4c0f18724"
+    },
+    {
+      "path": "siprec/pkg/auth/simple_auth.go",
+      "bytes": 8330,
+      "sha256": "9ddbdc1a8be55447ff4ee4353532614a24118c181ebbf9332f94cc487f9cad7b"
+    },
+    {
+      "path": "siprec/pkg/auth/simple_auth_test.go",
+      "bytes": 4267,
+      "sha256": "d66757171eceb0cfb4c29560d739d68d8e376cb00f4ed150d149a0410e202aaa"
+    },
+    {
+      "path": "siprec/pkg/auth/sip_auth.go",
+      "bytes": 18205,
+      "sha256": "aea7ef5cfc4bc51a91c0f43673a1f5512e9a43935e29054b7905d4b46320948e"
+    },
+    {
+      "path": "siprec/pkg/auth/sip_auth_test.go",
+      "bytes": 6321,
+      "sha256": "4b6521dbf3b130c5b73b548de09a0997ca9418d6daf5532333bac7cf943e7d87"
+    },
+    {
+      "path": "siprec/pkg/backup/PRODUCTION_REQUIREMENTS.md",
+      "bytes": 8864,
+      "sha256": "8bb30471ad97714c28202382a4403024c246b9ae93d8bbfbea0dd322ee61c752"
+    },
+    {
+      "path": "siprec/pkg/backup/cloud_providers.go",
+      "bytes": 7880,
+      "sha256": "37d11c78d067efd609312873c32f5f5c45ca054b8146193dcbb7be881bd4b590"
+    },
+    {
+      "path": "siprec/pkg/backup/database_operations.go",
+      "bytes": 8423,
+      "sha256": "2636c660b3a879f8209c88e850daeb677e4c3569baa8d380ba54ccb5922cfe03"
+    },
+    {
+      "path": "siprec/pkg/backup/database_operations_test.go",
+      "bytes": 4482,
+      "sha256": "2b5cdc50cdb4905d075806c384e5b02d90c5bfeb55de34bbb0d7ad03725d8008"
+    },
+    {
+      "path": "siprec/pkg/backup/dns_manager.go",
+      "bytes": 9264,
+      "sha256": "fa21def0b3d40531ca503a1f63cd785c144f7d707ad739faea8e7d5274cc41a5"
+    },
+    {
+      "path": "siprec/pkg/backup/dns_manager_test.go",
+      "bytes": 4787,
+      "sha256": "29f0972e9532601331beddd32a47d65e3908301e91839adcf91d06805a454ece"
+    },
+    {
+      "path": "siprec/pkg/backup/dns_rdata.go",
+      "bytes": 2574,
+      "sha256": "3f52438634c89cc039ce53c8fce77030fc7ae3e836f348dbd769163713803468"
+    },
+    {
+      "path": "siprec/pkg/backup/dns_rdata_test.go",
+      "bytes": 4877,
+      "sha256": "a639276af0e067c6ea03eac3d8aa24ab13f9a976f0fddbc278da3cf7db0a62aa"
+    },
+    {
+      "path": "siprec/pkg/backup/file_utils.go",
+      "bytes": 3392,
+      "sha256": "c688017d077617a206bf702446fa9dbb4cabaf23ace0633f2243f08b0fe7c68e"
+    },
+    {
+      "path": "siprec/pkg/backup/gcp_dns.go",
+      "bytes": 5462,
+      "sha256": "6c9f8bdef4630db9bde9df9e2d0a0b67713c98c2195747b4ee7beff25b63cb6d"
+    },
+    {
+      "path": "siprec/pkg/backup/gcp_loadbalancer.go",
+      "bytes": 10966,
+      "sha256": "fc4bf17e4f7908fac1bbaf797391b7b4d8c773bfc3d0ab328b9168dd4116affc"
+    },
+    {
+      "path": "siprec/pkg/backup/gcp_loadbalancer_test.go",
+      "bytes": 3386,
+      "sha256": "d37d101c31476e7e7504c6d7a3660d09810ad1cf3e96c242f1f2556265fd4eec"
+    },
+    {
+      "path": "siprec/pkg/backup/load_balancer.go",
+      "bytes": 15006,
+      "sha256": "81f6c6f04a78f9e4c553ffae3ed24cd98fd3aa5e1b34a658e3a6010cf05dc237"
+    },
+    {
+      "path": "siprec/pkg/backup/route53_dns.go",
+      "bytes": 4218,
+      "sha256": "2f00ecc27ad3ac4c010db647667497fae436e5d07897c11cc3cc96927e93996b"
+    },
+    {
+      "path": "siprec/pkg/backup/storage.go",
+      "bytes": 23831,
+      "sha256": "289557d0191a3bfc8e83d351adab6724d0555c87f7e12f9021c7a9248d3821d2"
+    },
+    {
+      "path": "siprec/pkg/backup/storage_test.go",
+      "bytes": 10329,
+      "sha256": "daff0e232c4f047ba88a63252f3ca91bc63113fb57d94b2ad83bf40ace914ec5"
+    },
+    {
+      "path": "siprec/pkg/cdr/service.go",
+      "bytes": 22271,
+      "sha256": "e9c7daa2090dc3bff1b7369e11cdd8b780eb728ea2a1f582b90dce1ddc4671f2"
+    },
+    {
+      "path": "siprec/pkg/circuitbreaker/circuit_breaker.go",
+      "bytes": 12067,
+      "sha256": "e361e051bb8f7a8b43fcf0eb5db884dcbc515a801819fbe2dd1c7b68e9297da2"
+    },
+    {
+      "path": "siprec/pkg/circuitbreaker/configs.go",
+      "bytes": 713,
+      "sha256": "749a79e131b73751e0a64c4bc39b5905f935a091b2b595cd2f59be75ab4a82b6"
+    },
+    {
+      "path": "siprec/pkg/circuitbreaker/errors.go",
+      "bytes": 867,
+      "sha256": "4ec51f5341b1597e606925891740268dd387e4615a1724346624502d5952420e"
+    },
+    {
+      "path": "siprec/pkg/circuitbreaker/manager.go",
+      "bytes": 2000,
+      "sha256": "adfeb4e37048bd83020138dab5137b65865530688df5d1f494a6bc2a5c20f968"
+    },
+    {
+      "path": "siprec/pkg/cli/client.go",
+      "bytes": 2392,
+      "sha256": "bbc96c261d6f5622643ecf5b9dc18e999515ba913f81a927e2b89af2a0a388de"
+    },
+    {
+      "path": "siprec/pkg/cli/config.go",
+      "bytes": 4472,
+      "sha256": "fb01114a70d8affed7c2e17c385924199468977e2520b91deada341b65297e50"
+    },
+    {
+      "path": "siprec/pkg/cli/health.go",
+      "bytes": 2847,
+      "sha256": "99651b33f71fbb439e7043cb03ceb3864198dd96369967a1c664ad7873ba3f7c"
+    },
+    {
+      "path": "siprec/pkg/cli/recordings.go",
+      "bytes": 3640,
+      "sha256": "7f9386d246328ed157706adec877fb433f516e9304b9365bb81a641319db22b3"
+    },
+    {
+      "path": "siprec/pkg/cli/resources.go",
+      "bytes": 2897,
+      "sha256": "ecf6a5d6957c5e7fcd5508198de38c20f74c603120fdd8c71fc773777a13999f"
+    },
+    {
+      "path": "siprec/pkg/cli/root.go",
+      "bytes": 1893,
+      "sha256": "9594a3d7d28f40276bde9ab9f1b9c6ee852e8e50e4d25e2b9ca30ea2132a1951"
+    },
+    {
+      "path": "siprec/pkg/cli/sessions.go",
+      "bytes": 4021,
+      "sha256": "390b593fb828a93b8b56c11ce5a0361bf330809d55c88fe51db680919b8a8a98"
+    },
+    {
+      "path": "siprec/pkg/cluster/distributed_ratelimit.go",
+      "bytes": 13789,
+      "sha256": "2dc7b344a1d0dd7e9186a51b1ef28655e7493368dcc257797ddcb117b560be15"
+    },
+    {
+      "path": "siprec/pkg/cluster/distributed_ratelimit_test.go",
+      "bytes": 3363,
+      "sha256": "61e4a1129f2440a43831932a490d00b6d6a91f4894062a6bc37bf15935ab6a2e"
+    },
+    {
+      "path": "siprec/pkg/cluster/distributed_tracing.go",
+      "bytes": 13811,
+      "sha256": "aabcb439964db1ecb7b5661f1f49216ffdcff8099f76ed43aa31abaeec917f66"
+    },
+    {
+      "path": "siprec/pkg/cluster/distributed_tracing_test.go",
+      "bytes": 10246,
+      "sha256": "d71dbfef7430c4034e07ecb01d8310c836fa174fe1b1f810eb7b1701e3582285"
+    },
+    {
+      "path": "siprec/pkg/cluster/leak_detection_test.go",
+      "bytes": 23428,
+      "sha256": "3c8308a8a7586d9e597d15eb78f575b55016ae15d149ed4350c0ab0991777df7"
+    },
+    {
+      "path": "siprec/pkg/cluster/manager.go",
+      "bytes": 11904,
+      "sha256": "cf4d94fe8457774dbc93cd32470801913d6f14b7b1b7ec33d016cfd0bf06a219"
+    },
+    {
+      "path": "siprec/pkg/cluster/manager_test.go",
+      "bytes": 12116,
+      "sha256": "8d6025a433b9cefbf6a277dde2ab5d5bad537f6a9f05ceaf1ea82099d89f6b55"
+    },
+    {
+      "path": "siprec/pkg/cluster/orchestrator.go",
+      "bytes": 13089,
+      "sha256": "2f354dd870554b18a6fa723d02271da65269fd0b11996f74e817290132a43f5f"
+    },
+    {
+      "path": "siprec/pkg/cluster/orchestrator_test.go",
+      "bytes": 4759,
+      "sha256": "c8346e3ef12653607e220836c7c5f558d79a20b74574fb49c16aa7af3252c9ea"
+    },
+    {
+      "path": "siprec/pkg/cluster/redis_cluster.go",
+      "bytes": 7018,
+      "sha256": "16c85a3e3079cca77a9292b9d667a9648711869249fe9b3a2ea18f24484bbd24"
+    },
+    {
+      "path": "siprec/pkg/cluster/rtp_state.go",
+      "bytes": 14728,
+      "sha256": "51baf08c83bc3426855acc3f18737d52477490c49149b9397b58bbb5f38ac0d6"
+    },
+    {
+      "path": "siprec/pkg/cluster/rtp_state_test.go",
+      "bytes": 9233,
+      "sha256": "1524ea78d9a4da0ed0777dab657115d684d2728c8208ba388115ffb3105b296b"
+    },
+    {
+      "path": "siprec/pkg/cluster/split_brain.go",
+      "bytes": 11621,
+      "sha256": "cd2ea15e2bbebdc2297caca11b2937b77d2a8e8a0eff676147919c4a61882431"
+    },
+    {
+      "path": "siprec/pkg/cluster/split_brain_test.go",
+      "bytes": 4436,
+      "sha256": "e643a7ac8e140817ccd51d9e6aae694a439814ff6227abfd9e4f62cc8f6ad7d4"
+    },
+    {
+      "path": "siprec/pkg/cluster/stream_migration.go",
+      "bytes": 17768,
+      "sha256": "3972b860bd6907823dbf5090c03fe932de6bdd1dab5a1155ec509017eb672367"
+    },
+    {
+      "path": "siprec/pkg/cluster/stream_migration_test.go",
+      "bytes": 7950,
+      "sha256": "218471129b65a3908b1f36b727d93a84ae6cc522ecbd799cdc7bc09b79e5c0e6"
+    },
+    {
+      "path": "siprec/pkg/compliance/audit_chain.go",
+      "bytes": 2059,
+      "sha256": "5b95b42aa05065d2ce073fb18a17c3615f188a3cd4d7c6c1842ddead238bbece"
+    },
+    {
+      "path": "siprec/pkg/compliance/gdpr_integration_test.go",
+      "bytes": 9687,
+      "sha256": "a3e5a4a3b2f4eb8568cab676a2b78d5a5335a8879781d03741296d623d6a211f"
+    },
+    {
+      "path": "siprec/pkg/compliance/gdpr_service.go",
+      "bytes": 6465,
+      "sha256": "562235259a93ae1ec14a425725c9ba26823fbc63d9ab2a47c012e1644a0bd3cf"
+    },
+    {
+      "path": "siprec/pkg/compliance/gdpr_service_test.go",
+      "bytes": 6416,
+      "sha256": "38a5bf2d59346db825e3c5e619d86d96f016ef5e06151f4545bfce5e08b1cadb"
+    },
+    {
+      "path": "siprec/pkg/config/audio_config.go",
+      "bytes": 8701,
+      "sha256": "15ac56b5cff2e7928d58dfea746b6c492d72036a45a1b2af962efc87a75ab5f9"
+    },
+    {
+      "path": "siprec/pkg/config/compat.go",
+      "bytes": 3344,
+      "sha256": "f1b27a543598fce9570723cc10d5b62ff78de95a95c86490e909dbb7044bd421"
+    },
+    {
+      "path": "siprec/pkg/config/config.go",
+      "bytes": 140961,
+      "sha256": "5c7581f77912badcce25d7cf591a9a769ea780e944a9bb4a39d7b5ac174a69b1"
+    },
+    {
+      "path": "siprec/pkg/config/config_test.go",
+      "bytes": 12888,
+      "sha256": "fbef5f1552e7926d95380fb31ac9ca5a1500f2d46fe6e5ac8d73c8a589764afe"
+    },
+    {
+      "path": "siprec/pkg/config/file_loader.go",
+      "bytes": 10357,
+      "sha256": "e177c3e58477c12d60c3af8f304362031ce3d41e1651a301d75306259e313d99"
+    },
+    {
+      "path": "siprec/pkg/config/file_loader_memory_test.go",
+      "bytes": 6838,
+      "sha256": "25503107b7993842d9356da3f181c8cad14a85149ebaea7c82cfad61871bb704"
+    },
+    {
+      "path": "siprec/pkg/config/file_loader_race_test.go",
+      "bytes": 4953,
+      "sha256": "047f5edd3ffe78aebfbc272ffe12d196a4499ae5aaaac04056394af16acaa813"
+    },
+    {
+      "path": "siprec/pkg/config/file_loader_test.go",
+      "bytes": 16033,
+      "sha256": "5ab20c35fdba0b99cde5ec0697923a5fd2be6d466a9b0def55056a7c9cb8f85e"
+    },
+    {
+      "path": "siprec/pkg/config/hotreload.go",
+      "bytes": 14327,
+      "sha256": "a9328e901f2d9cae46b6032ed68b5e43f06654c57a6007fb20f06efbdeb50e54"
+    },
+    {
+      "path": "siprec/pkg/config/hotreload_deepcopy_test.go",
+      "bytes": 6622,
+      "sha256": "1a1fdf2cd31cfc57abc080df50c4ce458721d04c2fde7f0625e1ca6c8c86f8c5"
+    },
+    {
+      "path": "siprec/pkg/config/multi_amqp_test.go",
+      "bytes": 1611,
+      "sha256": "a38ab7724c546909b8803f1344f0cfffbd2018102de0465fb4357fa156f96147"
+    },
+    {
+      "path": "siprec/pkg/config/tls_config.go",
+      "bytes": 1171,
+      "sha256": "328c0bc97f1bef73c4af068cf8366c4620ed97dccb28e0b518f79706cee8e610"
+    },
+    {
+      "path": "siprec/pkg/config/validation.go",
+      "bytes": 15729,
+      "sha256": "d8ed87e290b0868c8e818aac4d09ad2c32e9592556711a8c0a1b8173d2ab5bfc"
+    },
+    {
+      "path": "siprec/pkg/config/validation_test.go",
+      "bytes": 3249,
+      "sha256": "5643016cc1cbca50f94fce1bb03c3b42daa480f94c2d9930124aa4da3b3b231f"
+    },
+    {
+      "path": "siprec/pkg/core/registry.go",
+      "bytes": 1876,
+      "sha256": "d37dceb44f893d2ef5cc083099332a4d910c486ca8e294c168609df88719f290"
+    },
+    {
+      "path": "siprec/pkg/correlation/correlation.go",
+      "bytes": 5473,
+      "sha256": "fb5330f46e38f18cc2fac1a1d055f1b666ad909bfb2d6a9e944d8a5193fec851"
+    },
+    {
+      "path": "siprec/pkg/correlation/correlation_test.go",
+      "bytes": 10575,
+      "sha256": "4fd183840c98c9ccd19f8d1a42800ccd0afe27ad384f9379db9cc8134393d658"
+    },
+    {
+      "path": "siprec/pkg/correlation/http_middleware.go",
+      "bytes": 5309,
+      "sha256": "ad2a5d56e1d68a66a77459520cc06faab0c403c1f2d7fe08cc4035bdc367d518"
+    },
+    {
+      "path": "siprec/pkg/correlation/logger.go",
+      "bytes": 1765,
+      "sha256": "a35abb01a928d687502d8a6d688fa4d0cc3690772f0cc239fb7ed8ba7b399e3c"
+    },
+    {
+      "path": "siprec/pkg/database/config.go",
+      "bytes": 4550,
+      "sha256": "f3591f15f7b809efba1b28aeab34187153a4849e57d753475c049e657610d6cd"
+    },
+    {
+      "path": "siprec/pkg/database/errors.go",
+      "bytes": 203,
+      "sha256": "da735dcac682e16d49b4212b6247770eb11dd6a59c7a3ae4d195b54bc809f9d6"
+    },
+    {
+      "path": "siprec/pkg/database/models.go",
+      "bytes": 13575,
+      "sha256": "5e762b04b5b5295b6e728d7a01e99ef7315a13d193cd129acaa48b423b49c5af"
+    },
+    {
+      "path": "siprec/pkg/database/mysql.go",
+      "bytes": 12062,
+      "sha256": "d321f31cd9d289ae55cf9d224c16ddbb1b5033cc8d88a21dabd3c80a6e66c32e"
+    },
+    {
+      "path": "siprec/pkg/database/mysql_stub.go",
+      "bytes": 1851,
+      "sha256": "2dd931e244be28de0692d9e285eb97c5bccb23612ef6bca95fdf461cff653542"
+    },
+    {
+      "path": "siprec/pkg/database/repository.go",
+      "bytes": 37327,
+      "sha256": "d62731674f7a4095c74d7e1a8e0fdd4127fc211ea81cd3f6bea376679899b688"
+    },
+    {
+      "path": "siprec/pkg/elasticsearch/client.go",
+      "bytes": 3084,
+      "sha256": "e13aa4ce52538e0b0d33e38be6a397f74db8b0b4c300389267c2758cb4c258f4"
+    },
+    {
+      "path": "siprec/pkg/elasticsearch/client_test.go",
+      "bytes": 1180,
+      "sha256": "e5b19ed87303dfecf9107e366d28870214d1487f9032c783affd460df29626dc"
+    },
+    {
+      "path": "siprec/pkg/encryption/backup_test.go",
+      "bytes": 4319,
+      "sha256": "7b55baeda84adb799d9cda50ec7de0ebe776d549b3df2fc17d845c3868dba559"
+    },
+    {
+      "path": "siprec/pkg/encryption/crypto_utils.go",
+      "bytes": 1611,
+      "sha256": "0694fb681c2d8ad935a3a771ee0af8143b0618a7c2d6b3b22095ecf2609c05c1"
+    },
+    {
+      "path": "siprec/pkg/encryption/keystore.go",
+      "bytes": 14149,
+      "sha256": "dc390a75c68c84219b2aa8a0e026795d972a14ce592497da5317abccb86a4f75"
+    },
+    {
+      "path": "siprec/pkg/encryption/keystore_test.go",
+      "bytes": 12967,
+      "sha256": "426bca4b2764f82bd6bff6335fa7dca3171ed90dc05a0874d409ea580fe6ee9c"
+    },
+    {
+      "path": "siprec/pkg/encryption/kms_provider.go",
+      "bytes": 4173,
+      "sha256": "3c3e195e234be2df2437401386ed7de77347fc51c669beb0c1cf91666ba3b5f4"
+    },
+    {
+      "path": "siprec/pkg/encryption/manager.go",
+      "bytes": 28980,
+      "sha256": "1ec39998915ba479d489b3dac28326a4f4747e4766dfe5dfcf87944511977de0"
+    },
+    {
+      "path": "siprec/pkg/encryption/manager_test.go",
+      "bytes": 16508,
+      "sha256": "7707ca8ccd919fa5625df28fd61dd1314f0eea455368e1c782652d979daf2602"
+    },
+    {
+      "path": "siprec/pkg/encryption/rotation_service.go",
+      "bytes": 2352,
+      "sha256": "b680d8537aa564c0619c12aa65178fdb40ba927991504040b93c2f420e31817f"
+    },
+    {
+      "path": "siprec/pkg/encryption/types.go",
+      "bytes": 6747,
+      "sha256": "25790242bded1c9cda5732dbd18c1eda73974675ee41f4aeb7a06ba011d3058e"
+    },
+    {
+      "path": "siprec/pkg/errors/errors.go",
+      "bytes": 9427,
+      "sha256": "7ed94f0eb31ad428f36f494ca6c72787239084109217c5ea1de8570e8ea41676"
+    },
+    {
+      "path": "siprec/pkg/errors/errors_test.go",
+      "bytes": 5729,
+      "sha256": "139f4564d56ffdb3ec6d74fe649f65a1f7c130a2e6d98dcaed15d300d7ee5c16"
+    },
+    {
+      "path": "siprec/pkg/errors/http.go",
+      "bytes": 2717,
+      "sha256": "624b3234af46b7479af530c3ba15716da98c8af4a538c0d73c5163b5a3a18526"
+    },
+    {
+      "path": "siprec/pkg/http/adapter.go",
+      "bytes": 1811,
+      "sha256": "5a2a93b347e9ca26644784bf0ab6f0eeb3b9bb3d4c148726c403ee3830a8d749"
+    },
+    {
+      "path": "siprec/pkg/http/analytics_websocket.go",
+      "bytes": 10854,
+      "sha256": "3bf2b81b42ef585503a362ac9e755bfdf94fd6984af670149e09c66c4180bd08"
+    },
+    {
+      "path": "siprec/pkg/http/analytics_websocket_test.go",
+      "bytes": 9861,
+      "sha256": "c1c3f2cde028e93c9095616cb3bfd3a7bb8a8268bb73d1c5850dc73dafac57dd"
+    },
+    {
+      "path": "siprec/pkg/http/auth_middleware.go",
+      "bytes": 7128,
+      "sha256": "a73aff667e9a327b3d99b541b686bfe77d26059c72543db26043bf35da3962fd"
+    },
+    {
+      "path": "siprec/pkg/http/cluster_handler.go",
+      "bytes": 11276,
+      "sha256": "93b18d56949d1eec97f115b706b28570b6317caa2f8d83608cd11f485381f716"
+    },
+    {
+      "path": "siprec/pkg/http/cluster_handler_test.go",
+      "bytes": 4669,
+      "sha256": "b43c424856cccf17f4413ec1897e32684df16f83bfbe24e751e8b09dd79e5a69"
+    },
+    {
+      "path": "siprec/pkg/http/compliance_handler.go",
+      "bytes": 5211,
+      "sha256": "5cca8ccaa35171ea250868f2b45a19955cdc3ab64c977819477fe9963703cd74"
+    },
+    {
+      "path": "siprec/pkg/http/compliance_handler_test.go",
+      "bytes": 3997,
+      "sha256": "7cf6666a3838e485df2c7fefca857947f6e69adc1714254d13ad1ecbcaa78c74"
+    },
+    {
+      "path": "siprec/pkg/http/config.go",
+      "bytes": 2324,
+      "sha256": "e347c8d4a59f144764ca46953e9f41e0bb9f0787a48c3fb43aeb0077df78252b"
+    },
+    {
+      "path": "siprec/pkg/http/config_handlers.go",
+      "bytes": 7565,
+      "sha256": "64de8455891dd287643bc4be6822e5e8143fb8b6b211bb1c23a9593d8fc487ff"
+    },
+    {
+      "path": "siprec/pkg/http/config_handlers_test.go",
+      "bytes": 7405,
+      "sha256": "92357e7be7b0a863a4b1d737075188d204da7c7f75acecf75b0a12b705f679a4"
+    },
+    {
+      "path": "siprec/pkg/http/config_redact.go",
+      "bytes": 5484,
+      "sha256": "e7b547a2f6e1089c37ab30724a5102459004660174d4188f341ec87ae7d971ec"
+    },
+    {
+      "path": "siprec/pkg/http/handler.go",
+      "bytes": 3252,
+      "sha256": "48b52743fb97d8d6e00bbc0db8caded09b3ed916aa3aceacb8f893435330e5e2"
+    },
+    {
+      "path": "siprec/pkg/http/health.go",
+      "bytes": 11716,
+      "sha256": "4a331ff71eecb0c3c414659cb2f817edbc7a9706c77910f93278bd850550666f"
+    },
+    {
+      "path": "siprec/pkg/http/health_dependencies.go",
+      "bytes": 2277,
+      "sha256": "b36eba310c3d3c6962c385b5a8a542a35404f1d0c17cf52c641078788fe82384"
+    },
+    {
+      "path": "siprec/pkg/http/health_dependencies_test.go",
+      "bytes": 3269,
+      "sha256": "48ac50658a11e1913378bb181930eb9a561c8dd04d354dae19175a8eb77c38e8"
+    },
+    {
+      "path": "siprec/pkg/http/pause_resume_handler.go",
+      "bytes": 19504,
+      "sha256": "44c9a4fd761a80237e2a2aee633ead5920a958b6c1631d4cfdbe568e53b7b100"
+    },
+    {
+      "path": "siprec/pkg/http/pause_resume_handler_test.go",
+      "bytes": 17978,
+      "sha256": "50c4255f163acc9c6ff653a6424b24d1fe2468f9084c48c0afa51c263164844b"
+    },
+    {
+      "path": "siprec/pkg/http/rbac_middleware.go",
+      "bytes": 3818,
+      "sha256": "45671af978343abda2e5bd6c3c8e1972860a73e4a8400338e7ff9c4ac00aeb30"
+    },
+    {
+      "path": "siprec/pkg/http/rbac_middleware_test.go",
+      "bytes": 3870,
+      "sha256": "2f98332684839f3d96f2653346f6609e51c978cddfe1d24f874d9ee12bff2b73"
+    },
+    {
+      "path": "siprec/pkg/http/server.go",
+      "bytes": 13530,
+      "sha256": "2686cc51c1e8d410575d2fee4c40dd7a41ab8741743c8934dd28852f88253340"
+    },
+    {
+      "path": "siprec/pkg/http/stt_handlers.go",
+      "bytes": 16322,
+      "sha256": "169a6b167c2bec3312d18df9d78d02859bbe28f1dfdc30b59815b8234fea4a79"
+    },
+    {
+      "path": "siprec/pkg/http/stt_handlers_test.go",
+      "bytes": 7266,
+      "sha256": "aaa66ad3c20a74fbfe4cc92e818de92dd5d4f61f1693e3e152ce3c99642fd101"
+    },
+    {
+      "path": "siprec/pkg/http/websocket.go",
+      "bytes": 16467,
+      "sha256": "6ba24c0a8800e0bacb411c0b7793b173f981f1212e42763750014b0d66ffdb80"
+    },
+    {
+      "path": "siprec/pkg/http/websocket_handler.go",
+      "bytes": 9350,
+      "sha256": "ff2747b8a36720a01dc4079467b1e40abff376a79308402bd07827f824e69f80"
+    },
+    {
+      "path": "siprec/pkg/http/websocket_protocol_test.go",
+      "bytes": 6295,
+      "sha256": "f35b00f91d0c39649170b7250325a01ab6c18369b1dcd6c4b8220ff13a5992e0"
+    },
+    {
+      "path": "siprec/pkg/media/audio_conversion.go",
+      "bytes": 23401,
+      "sha256": "968fa3b663635d1f31ef1e3cf05cc1c5e01632ab21066ffe495075441921647c"
+    },
+    {
+      "path": "siprec/pkg/media/audio_conversion_test.go",
+      "bytes": 16428,
+      "sha256": "af176c9837aa8dc378d240ce70d7196ef34861e39ce1e5a52a33a42b4a8d8561"
+    },
+    {
+      "path": "siprec/pkg/media/audio_metrics.go",
+      "bytes": 1132,
+      "sha256": "7434d2f63f3933f0587322b3c94c6e420f2ad7bf421886c9607e21021914a3c0"
+    },
+    {
+      "path": "siprec/pkg/media/buffered_pipe.go",
+      "bytes": 4781,
+      "sha256": "44f8e98a88d7292f1db3b1005de4a26e74bf889c8840d6a2266354454bddb1ed"
+    },
+    {
+      "path": "siprec/pkg/media/buffered_pipe_test.go",
+      "bytes": 3074,
+      "sha256": "7be6064eeca165fb48348fdb7e762a74dda146058815fbe6f9c38d1b719d55d0"
+    },
+    {
+      "path": "siprec/pkg/media/codec.go",
+      "bytes": 8213,
+      "sha256": "ec77f0e3f81624e0f11866ba0b9879f29e639ec8baf02f2f96c7616a8bbbace9"
+    },
+    {
+      "path": "siprec/pkg/media/config.go",
+      "bytes": 1812,
+      "sha256": "76230eece6f7762a403735d393dbdb95731cc311795c3509c777452055fc7e9d"
+    },
+    {
+      "path": "siprec/pkg/media/config_test.go",
+      "bytes": 3663,
+      "sha256": "e7a66500cb5a00e4d6bd60ce2292c08282732ee465b097c7773eb12e50ca67cd"
+    },
+    {
+      "path": "siprec/pkg/media/encrypted_writer_test.go",
+      "bytes": 4258,
+      "sha256": "edd739c1c3d3914a5170d78763f622b22c2381fdde5c774a982c4c8d3b715367"
+    },
+    {
+      "path": "siprec/pkg/media/g729_cgo.go",
+      "bytes": 5472,
+      "sha256": "407f67c9229359d1eb9bf4e125bef207c0caa6a1f3c23217026af588ab9f1793"
+    },
+    {
+      "path": "siprec/pkg/media/g729_cgo_test.go",
+      "bytes": 15241,
+      "sha256": "3d89ddd7c4f1ad4654a53a5eaee48cd2c35a943aeb9c30a3661ec22531bcbdbf"
+    },
+    {
+      "path": "siprec/pkg/media/g729_nocgo.go",
+      "bytes": 1462,
+      "sha256": "952de0c259ae0a4755d03fb523cefb98ce6f83a2acda558b176a9a9414ed9740"
+    },
+    {
+      "path": "siprec/pkg/media/goroutine_leak_test.go",
+      "bytes": 3538,
+      "sha256": "165798ee73224a07089f9a2bfd6d42b044e15ea5e67fa9db8a06fed15e211fce"
+    },
+    {
+      "path": "siprec/pkg/media/jitter_buffer.go",
+      "bytes": 5137,
+      "sha256": "628a104dd10cb895a8c5fa215e05c12fd89ac1762fd0ddad7c04f9083552b739"
+    },
+    {
+      "path": "siprec/pkg/media/jitter_buffer_stress_test.go",
+      "bytes": 6370,
+      "sha256": "9daea0d9c1aee7ac5912a728b0ebde1109011e77c34896d8a27d6c5359f5e957"
+    },
+    {
+      "path": "siprec/pkg/media/jitter_buffer_test.go",
+      "bytes": 3316,
+      "sha256": "8268e78d8fdf4df1be3b5a04274b1d5e18da1828eb5148709dbd6c50fba7f74c"
+    },
+    {
+      "path": "siprec/pkg/media/opus_decoder_cgo.go",
+      "bytes": 3786,
+      "sha256": "dc9a635f27d4948cac3d813f28e2436270665c50db5c902ff747015fe777341b"
+    },
+    {
+      "path": "siprec/pkg/media/opus_decoder_nocgo.go",
+      "bytes": 971,
+      "sha256": "b8faf340386ee109b24055a44fb39761ed5c92feebb4d298ecc4078ba4b1a7bd"
+    },
+    {
+      "path": "siprec/pkg/media/opus_decoder_test.go",
+      "bytes": 4565,
+      "sha256": "a9b85c550dea2c3425ce2b4a76afcf057aa8718d3e0a575fb083a8ab38af2e37"
+    },
+    {
+      "path": "siprec/pkg/media/pause_writer.go",
+      "bytes": 3261,
+      "sha256": "883c06f5277314dd65b82e4a7b1541a45cf515fa8315270a8fff50fc1e1caf1e"
+    },
+    {
+      "path": "siprec/pkg/media/pause_writer_test.go",
+      "bytes": 4208,
+      "sha256": "1db3bdaa63305db1854c9b3ce2710597764b511c47945750693d8c36c9438949"
+    },
+    {
+      "path": "siprec/pkg/media/pii_audio_marker.go",
+      "bytes": 6886,
+      "sha256": "bdd0f52fa5d8437c7c5b756ccca1539b814346daa4a1b69f1d519cac3846ce66"
+    },
+    {
+      "path": "siprec/pkg/media/pii_audio_processor.go",
+      "bytes": 11796,
+      "sha256": "e8b1b4a87f47b470ed4d1d78c6b504523c7ced3e77a43992fa415b8a3b93158c"
+    },
+    {
+      "path": "siprec/pkg/media/port_manager.go",
+      "bytes": 8339,
+      "sha256": "f93144b1f83de0aad1ef2bec6ff3d552c6cdff5425a0540eca9cb59dd9d276a8"
+    },
+    {
+      "path": "siprec/pkg/media/port_manager_test.go",
+      "bytes": 3691,
+      "sha256": "134743604baf8df29360c395d3e8f4bc8350789e04756a040757b5819891914f"
+    },
+    {
+      "path": "siprec/pkg/media/recording_storage.go",
+      "bytes": 5035,
+      "sha256": "d844457b2b5c684fa207da473bbb22abb894e88eac0aab49ab9c859626494bee"
+    },
+    {
+      "path": "siprec/pkg/media/recording_storage_test.go",
+      "bytes": 9122,
+      "sha256": "d7a96a82212b6c1bc78c99cae738fd8aa82890d54dbe694991adc164f3ad196e"
+    },
+    {
+      "path": "siprec/pkg/media/rtp.go",
+      "bytes": 58244,
+      "sha256": "3761307d0e3c58e7b6d07f8bb2f7d5e1c95a214ac91315b858e1ef435ecf77e0"
+    },
+    {
+      "path": "siprec/pkg/media/rtp_stats.go",
+      "bytes": 3103,
+      "sha256": "0f34e6bcc05940f9f07d8e7fb0b5a5ea7a086c557085c26526fa90dab8577d15"
+    },
+    {
+      "path": "siprec/pkg/media/rtp_test.go",
+      "bytes": 11262,
+      "sha256": "e9e9019e90f70910abf61621b7d385fa21fd614fe9c75b6c0dc1ca927db8acc6"
+    },
+    {
+      "path": "siprec/pkg/media/sdp_utils.go",
+      "bytes": 5993,
+      "sha256": "7efd9124ea5b59217b0d2149478e69ef6ded75a4f94df8e920bc30d6c97ff1eb"
+    },
+    {
+      "path": "siprec/pkg/media/sdp_utils_test.go",
+      "bytes": 2372,
+      "sha256": "53224622d1fc9ed6e69965141f0c2654f7ffcf641beedfa427c9e530135dd90e"
+    },
+    {
+      "path": "siprec/pkg/media/stun.go",
+      "bytes": 5840,
+      "sha256": "4893a4c7722d3677f13a5b5940979efdc9c05544a4e894d1ecdff89ddcb5ffdb"
+    },
+    {
+      "path": "siprec/pkg/media/stun_test.go",
+      "bytes": 6319,
+      "sha256": "22e9335c86bc4b64fec60afaa29f4e5e7b5355a504c27b40cdcdf3f94356390a"
+    },
+    {
+      "path": "siprec/pkg/media/types.go",
+      "bytes": 24237,
+      "sha256": "f5ce26d58254cc73ab33ea65e02de41b47b582b659463f667368b72d9db0a937"
+    },
+    {
+      "path": "siprec/pkg/media/wav_combiner.go",
+      "bytes": 5420,
+      "sha256": "efd659ac1d23bafe933bf9bb5cd3f7c912485bb081bf76d8900a6c157f890b5a"
+    },
+    {
+      "path": "siprec/pkg/media/wav_combiner_test.go",
+      "bytes": 4937,
+      "sha256": "68c74cd80766162a4a41cd755f40283c4e84dbba6a8b4b45e5483d54cdf97e77"
+    },
+    {
+      "path": "siprec/pkg/media/wav_reader.go",
+      "bytes": 4178,
+      "sha256": "9ca485e64c1fab5360a0fa306e88dc395c148bea28a1da8e9ffba9e691195597"
+    },
+    {
+      "path": "siprec/pkg/media/wav_writer.go",
+      "bytes": 4345,
+      "sha256": "530edd7f568e19681624b3e3871ac34364063a2150772be135be2460917940f0"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp.go",
+      "bytes": 14767,
+      "sha256": "8ae1429e61b80d3bdccfce82c66d259728ffd368ba4a926a71ab0c5b1f110ea9"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_dlq.go",
+      "bytes": 255,
+      "sha256": "af43c43efbc620d042efde326e8e3e778da7c1f7aae33129e8a9744f5a071db4"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_enhanced.go",
+      "bytes": 16439,
+      "sha256": "414ef4551de02c969f43dba9b175a2758254528ea629e231ca979e3ca563f2a1"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_metrics.go",
+      "bytes": 12395,
+      "sha256": "099baf8299a3c16bd1d4177e92a7f695854855eb19d307fc56565acfbaf4c9bf"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_pool.go",
+      "bytes": 15627,
+      "sha256": "01513342f6bb12d9c0b8638e2ddb344001db133836373c410db2ec060350251f"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_realtime.go",
+      "bytes": 15775,
+      "sha256": "35a9bc07df09b58023d951cd695392402a08ffded8818aa1f84a95b3c9df8a7f"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_test.go",
+      "bytes": 3532,
+      "sha256": "51f2d757bbcbce94f9e7f7f1ecbcdcea9097d72d7ee201286ae6a15ebb00ac3f"
+    },
+    {
+      "path": "siprec/pkg/messaging/amqp_transcription.go",
+      "bytes": 15184,
+      "sha256": "852f65c54a7c8eae8174bc6b15886b6b28331a813cc7fa7e17967391637807d3"
+    },
+    {
+      "path": "siprec/pkg/messaging/circuit_breaker.go",
+      "bytes": 13742,
+      "sha256": "6143691e8907735103e5449ad41cc848b70a5696b19a36e1b3f362525a38a17e"
+    },
+    {
+      "path": "siprec/pkg/messaging/delivery_service.go",
+      "bytes": 22689,
+      "sha256": "2a64a188a1f899c32e06ee60ff76e35f61bfc839911c375a4b15b8199ef0c803"
+    },
+    {
+      "path": "siprec/pkg/messaging/enhanced_wrapper.go",
+      "bytes": 1893,
+      "sha256": "c3ad6f23f6feca3bc650ef02a8b8f14b3c6df364ccc28316a298af3cd2150f25"
+    },
+    {
+      "path": "siprec/pkg/messaging/interfaces.go",
+      "bytes": 355,
+      "sha256": "8c928bcdc78c12b5c6fa180500b30ec96305233e728f706b15133957ba7426ee"
+    },
+    {
+      "path": "siprec/pkg/messaging/memory_storage.go",
+      "bytes": 3904,
+      "sha256": "3282f59733011fcfb167cfa302844aa5de33799225bc3c2f21887a872daf2ef4"
+    },
+    {
+      "path": "siprec/pkg/messaging/race_conditions_test.go",
+      "bytes": 3871,
+      "sha256": "9a0a45e635a7b921b29f9e6c08026eda227b714f28edc0f55d219a1e8c339a6e"
+    },
+    {
+      "path": "siprec/pkg/messaging/realtime_listener.go",
+      "bytes": 5677,
+      "sha256": "c1a162aa0b0f2ba0bdcd826709c32d90540deddd7168e43d959701052fb52289"
+    },
+    {
+      "path": "siprec/pkg/messaging/simple_test.go",
+      "bytes": 2649,
+      "sha256": "9ce9cb1278f1a39eff887230cb6f94bc8b3a502c3cceac23d58a1176e20189dc"
+    },
+    {
+      "path": "siprec/pkg/messaging/tls_test.go",
+      "bytes": 3414,
+      "sha256": "754793de8c82050a7dcd367dbbe774514aca7d5cf76e6f1b868095edadd84dfd"
+    },
+    {
+      "path": "siprec/pkg/metrics/enhanced_metrics.go",
+      "bytes": 16678,
+      "sha256": "27e54b39e64afc238b7a7024e367c8a5e8b6481bb59b5b023fc9705ce34b2a6b"
+    },
+    {
+      "path": "siprec/pkg/metrics/metrics.go",
+      "bytes": 25671,
+      "sha256": "7082ccbac1f58293a643c982fad78d86cbbc24cdfbc095bcd28412fb47e45769"
+    },
+    {
+      "path": "siprec/pkg/metrics/metrics_value_test.go",
+      "bytes": 1855,
+      "sha256": "8bffb41abdfe7265d9ce96eef7390991226bf581a61633c5edee2ca2c8f0a583"
+    },
+    {
+      "path": "siprec/pkg/performance/monitor.go",
+      "bytes": 5272,
+      "sha256": "303c0ba9cb3c8fe20e5a592958c5a146bfb91770505789ad96ad57678bb26514"
+    },
+    {
+      "path": "siprec/pkg/pii/detector.go",
+      "bytes": 12465,
+      "sha256": "bc3787ef58cb722474b335050fba5cb4d05f0fe22f886f2731b29f6c3bc4fa5d"
+    },
+    {
+      "path": "siprec/pkg/pii/detector_test.go",
+      "bytes": 7414,
+      "sha256": "d0b1563ef96456672d36104b6bb54902d54dcd692d844abdfe9ab7512a920170"
+    },
+    {
+      "path": "siprec/pkg/ratelimit/http_middleware.go",
+      "bytes": 5779,
+      "sha256": "d5b02fef90fdb42991ca32eb8e05ee8ff33ce50d5a132f34b30bfc46ab096ae1"
+    },
+    {
+      "path": "siprec/pkg/ratelimit/http_middleware_test.go",
+      "bytes": 8332,
+      "sha256": "644f6c68e23f24e001dfea1e8604eccfbb4a968b212c21b2d6507a588485fe6b"
+    },
+    {
+      "path": "siprec/pkg/ratelimit/ratelimit.go",
+      "bytes": 6928,
+      "sha256": "094e41d18f1736a09ca40c270d65654cb7cdda6378dfe45413cff54f0473d2ae"
+    },
+    {
+      "path": "siprec/pkg/ratelimit/ratelimit_test.go",
+      "bytes": 8448,
+      "sha256": "36f1ce738ee35dcd48f9760ec6159d506258137a1590fbb0b396f9ae9daed74d"
+    },
+    {
+      "path": "siprec/pkg/ratelimit/sip_limiter.go",
+      "bytes": 6134,
+      "sha256": "09f15ba200fb8ddcff24c07fd4368c7a1517597b367fc70951ac2e763afad292"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/dispatcher.go",
+      "bytes": 3859,
+      "sha256": "2eb488d027ee64613482d5363d56069f23faf259ed2c5d9dc9ff47bf96a08cab"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/es_snapshot_store.go",
+      "bytes": 799,
+      "sha256": "a0575fa9a5d1fb5a783df417123efa2f18a0b08316141b968d9da68402e0762c"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/mock_store.go",
+      "bytes": 745,
+      "sha256": "8638515838d50c97e4675f5e67f6f2d641234a4437b6baf9579922f330f79276"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/pipeline.go",
+      "bytes": 8609,
+      "sha256": "48da60ab8b76fb9fbbb9d685e0173c059ef90b9669930c329fe703547c940334"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/pipeline_test.go",
+      "bytes": 4113,
+      "sha256": "baca2af7d35dc1b6b659f520a0df39b2e3b29af7fd89ca5d1d401c6dfd513a4d"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/processors.go",
+      "bytes": 5172,
+      "sha256": "cbf2ca78ab87b617d581e6a27ea9cbdf0292c4c2fec5635986ae90df7345df23"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/subscribers.go",
+      "bytes": 407,
+      "sha256": "e0771a6e39d150accea1f80f7e1c8d2429575548639be8e24b549f95e938d8b1"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/types.go",
+      "bytes": 3025,
+      "sha256": "0854e5bc30d6a0fe7c252cbe24f0957e0279e8dad324fb104b2589b84c0b2026"
+    },
+    {
+      "path": "siprec/pkg/realtime/analytics/websocket_subscriber.go",
+      "bytes": 5990,
+      "sha256": "c2271fd58296694f48ae163b66e8866ed471ba81e7bf29f2fb8d5b1902f2c735"
+    },
+    {
+      "path": "siprec/pkg/realtime/audio_buffer.go",
+      "bytes": 4916,
+      "sha256": "425cb02de4b19bb2b2fb9393f61938a92178a4f9d8adcb45d8445799d6d3cec9"
+    },
+    {
+      "path": "siprec/pkg/realtime/audio_features.go",
+      "bytes": 13864,
+      "sha256": "09e7b7e5a553e2dd2e3784b4fc4a82c60d921d675359b18e37686fdcf69c2712"
+    },
+    {
+      "path": "siprec/pkg/realtime/batch_processor.go",
+      "bytes": 6879,
+      "sha256": "ad7f2819bc58c8897faae6a0acb1c5ef5c5e5ca488e78095b1bcdaad49491a6f"
+    },
+    {
+      "path": "siprec/pkg/realtime/keyword_detector.go",
+      "bytes": 23583,
+      "sha256": "345dfb008813286df98c23d6b0bbac7c86cde8d32401a70d2b2184def05e1aa2"
+    },
+    {
+      "path": "siprec/pkg/realtime/keyword_detector_test.go",
+      "bytes": 12454,
+      "sha256": "79702b5a17e1dbac1c960e5ab194e90f0e759cc5d83fea2a1d663f2d27465a1c"
+    },
+    {
+      "path": "siprec/pkg/realtime/resource_monitor.go",
+      "bytes": 5933,
+      "sha256": "4e0f614e064d66f9c170d92498e7eb9f845dbeb7f769faf26a3d6c7d12f8bad2"
+    },
+    {
+      "path": "siprec/pkg/realtime/sentiment_analyzer.go",
+      "bytes": 20894,
+      "sha256": "43a36eb45b2c6ef040c3ad643c93181f6827edbc05973cb1081d197201373b02"
+    },
+    {
+      "path": "siprec/pkg/realtime/sentiment_analyzer_test.go",
+      "bytes": 9415,
+      "sha256": "7af5766afca3e3bd96c3821d796fc126926b731621b46c9231845d1ead8493ea"
+    },
+    {
+      "path": "siprec/pkg/realtime/sentiment_ml.go",
+      "bytes": 5991,
+      "sha256": "0a2fdfde9111206f8f3c4ed0edffcae74413898dcd159f874111fc4cddf6d82f"
+    },
+    {
+      "path": "siprec/pkg/realtime/sentiment_ml_test.go",
+      "bytes": 21710,
+      "sha256": "995af053e99016945bb83e166a185f958fa64c055bee62694f273c309d075612"
+    },
+    {
+      "path": "siprec/pkg/realtime/speaker_change_detector.go",
+      "bytes": 15425,
+      "sha256": "f3ded4576ce5591399bdf8a2581d2430e813fc9c569408363ed7491d8e368561"
+    },
+    {
+      "path": "siprec/pkg/realtime/speaker_diarization.go",
+      "bytes": 15547,
+      "sha256": "df5454e3ab0072d5cbc94b87c0d9f35e009e08b32c0b69fc7a4a34c228b6b981"
+    },
+    {
+      "path": "siprec/pkg/realtime/streaming_metrics.go",
+      "bytes": 3546,
+      "sha256": "cea6c308ba677b6d9960409dd05973d924c9217f1adafdbeeecfe01ca4e13c25"
+    },
+    {
+      "path": "siprec/pkg/realtime/transcription.go",
+      "bytes": 17002,
+      "sha256": "ff5970311454da370f90636f3b614676742bc6655f1d5c527a5ac1e753e6c2f4"
+    },
+    {
+      "path": "siprec/pkg/realtime/transcription_amqp_test.go",
+      "bytes": 4601,
+      "sha256": "88510d17a8af5d0d155029ed4b3c61509d698280712760230a21a02e6b77964b"
+    },
+    {
+      "path": "siprec/pkg/realtime/vad.go",
+      "bytes": 12082,
+      "sha256": "601368274da407d8b7bc58f4631535f9bcbd603dd07cec301829a2f9b54ef1c7"
+    },
+    {
+      "path": "siprec/pkg/realtime/worker_pool.go",
+      "bytes": 6857,
+      "sha256": "46a74a3c7d77ff06d698ff7c67cf0f6b2422b35c6beb5b4b82f1704d5ab799aa"
+    },
+    {
+      "path": "siprec/pkg/security/audit/audit.go",
+      "bytes": 9379,
+      "sha256": "902bec996b48c68060c8586bfce6fabf53696b0ef2601f4df6f26f955edf0c04"
+    },
+    {
+      "path": "siprec/pkg/security/credentials.go",
+      "bytes": 9430,
+      "sha256": "4f4f502d52df9209f0d6aca0f530a609761cb6da431686dd6431d309712ff9a6"
+    },
+    {
+      "path": "siprec/pkg/security/credentials_test.go",
+      "bytes": 5332,
+      "sha256": "ee24ad8ce6910044034fc41201878df2b9be25f52dda8ebdb1f6affb39f7219b"
+    },
+    {
+      "path": "siprec/pkg/security/limits.go",
+      "bytes": 1610,
+      "sha256": "85f2f2a04d85cb31dfd73c417e8a21fcaef07369273f2d42104615b1649ce5e9"
+    },
+    {
+      "path": "siprec/pkg/session/integration.go",
+      "bytes": 4184,
+      "sha256": "94c7e9268550db82241441006f974690e0e0fbfea27b99490a99f35c8504c9c5"
+    },
+    {
+      "path": "siprec/pkg/session/manager.go",
+      "bytes": 13009,
+      "sha256": "481044864da83b376ce08e7165d5cfc1622402722f6fbc40196bf6453b3d1772"
+    },
+    {
+      "path": "siprec/pkg/session/redis_store.go",
+      "bytes": 14981,
+      "sha256": "47d3847617236091d13179ea12e3a2f79811c6abcaa71b309bc02d9e98b51449"
+    },
+    {
+      "path": "siprec/pkg/sip/console_sidecar.go",
+      "bytes": 1575,
+      "sha256": "cb4f16e0510574b5025ebe1570739ed3cc4525da03146469822ad0f18fa5c9ab"
+    },
+    {
+      "path": "siprec/pkg/sip/crlf_normalizer.go",
+      "bytes": 4631,
+      "sha256": "7222d2f0ba0ebaf7eaa792331a72824865fe60fb061b8da73f1ba25f8a64ee93"
+    },
+    {
+      "path": "siprec/pkg/sip/crlf_normalizer_test.go",
+      "bytes": 17408,
+      "sha256": "5184a62bf4d147bd542add51e94ee76df8267612d4aa34537dca7a3a5226caf3"
+    },
+    {
+      "path": "siprec/pkg/sip/custom_server.go",
+      "bytes": 242782,
+      "sha256": "5d9aec3350f6c86ee74d865553960aa93aee64dbb4e5474d5e868b4a20bb87d8"
+    },
+    {
+      "path": "siprec/pkg/sip/custom_server_test.go",
+      "bytes": 29704,
+      "sha256": "2b689203ae763ec034b06857b79a50b3494c377471109323b52fdd879589c7e4"
+    },
+    {
+      "path": "siprec/pkg/sip/handler.go",
+      "bytes": 34028,
+      "sha256": "24f6c756bd533f41b30b41a2f719443bffeca3e87937e8e1a8f774f880cbe854"
+    },
+    {
+      "path": "siprec/pkg/sip/handler_test.go",
+      "bytes": 7823,
+      "sha256": "9a9c0c14d06c3200cb8995506af603c6327a928ca866173cf3ea85510beb47ad"
+    },
+    {
+      "path": "siprec/pkg/sip/hold_resume_bug_test.go",
+      "bytes": 5785,
+      "sha256": "005952a2e173e032ed133cb99158bd6620871e5aa3febf0067d4f6fbdea1bcc4"
+    },
+    {
+      "path": "siprec/pkg/sip/http_test_helpers_test.go",
+      "bytes": 197,
+      "sha256": "65af8bf3133ae2f0a8555acec8e1fc0818329725a60e18ff781fd84b11bd9ae1"
+    },
+    {
+      "path": "siprec/pkg/sip/ice_test.go",
+      "bytes": 3254,
+      "sha256": "6f1af607058f645404686a66cd5ef42995be4c652f081e2554a662647a6f9f4a"
+    },
+    {
+      "path": "siprec/pkg/sip/nat_config_helper.go",
+      "bytes": 1568,
+      "sha256": "999c1dd26066344c773fb0d7316126c3caa07c36a7ddd1d9701b1be667c0c597"
+    },
+    {
+      "path": "siprec/pkg/sip/nat_rewriter.go",
+      "bytes": 19475,
+      "sha256": "b1742a6e5da36a071cd2342e69bd058b80a6fb8170c8e63e0da19a5a46911385"
+    },
+    {
+      "path": "siprec/pkg/sip/nat_rewriter_bench_test.go",
+      "bytes": 9748,
+      "sha256": "86bba74e77fef874254531eee7c35b67b3b5a2283c7e0820c9a843f97fd973bd"
+    },
+    {
+      "path": "siprec/pkg/sip/nat_rewriter_test.go",
+      "bytes": 7159,
+      "sha256": "592d9d3f333aa6758fafa49a17098ba9eaaff7bed6006024791be51a0c24a964"
+    },
+    {
+      "path": "siprec/pkg/sip/notifications.go",
+      "bytes": 12189,
+      "sha256": "b72d12fb026b978c84f5465f63266d502293d2c6f16fe2882e2f0e320f47c225"
+    },
+    {
+      "path": "siprec/pkg/sip/notifications_test.go",
+      "bytes": 2065,
+      "sha256": "bb5130b5a812f97b60f85de06e5d4a328f8ece25c8bec4051b1de2e4ad4bd715"
+    },
+    {
+      "path": "siprec/pkg/sip/pause_resume_service.go",
+      "bytes": 7517,
+      "sha256": "a04f044357d72393f65ebfe7277d8927422a2cd7e99f7f87ddbf2e5afec1719b"
+    },
+    {
+      "path": "siprec/pkg/sip/pause_resume_service_test.go",
+      "bytes": 11400,
+      "sha256": "c64632692c9485c738ae762b0881a197073b4a2804a4f534c8489467a4451a98"
+    },
+    {
+      "path": "siprec/pkg/sip/sdp.go",
+      "bytes": 19066,
+      "sha256": "a2ffb17bef476bdce2cc71aebb62f742237255e019a4dcbaa3e97ffbca8c536c"
+    },
+    {
+      "path": "siprec/pkg/sip/sdp_test.go",
+      "bytes": 9429,
+      "sha256": "2dee6ed82de3424037bfd92821ad6de073bc319dd92027b011fbed4efa4e1362"
+    },
+    {
+      "path": "siprec/pkg/sip/security_test.go",
+      "bytes": 4428,
+      "sha256": "1c95e7b3c50dafb1c63990812d57cc7dcc058d074230ec51d58ccc055c63cf5f"
+    },
+    {
+      "path": "siprec/pkg/sip/session_store_adapter.go",
+      "bytes": 10194,
+      "sha256": "6066a431c7272296d3799b66fd004dd3f061d768c11b7922f63754c5a02d0d20"
+    },
+    {
+      "path": "siprec/pkg/sip/sharded_map.go",
+      "bytes": 4753,
+      "sha256": "c55db885d6bd7cddcc1031f7dc3847a0abc1dd31df99898235f72a1ba1932af4"
+    },
+    {
+      "path": "siprec/pkg/sip/sharded_map_test.go",
+      "bytes": 4184,
+      "sha256": "ab6e07eac668a731e967af5849475c3892a388ba378c0e6d1bbfea6966b35f76"
+    },
+    {
+      "path": "siprec/pkg/sip/stun_client.go",
+      "bytes": 6365,
+      "sha256": "fd171bfea2dc7ec4cc47e1844dd54f49796da91533184d464beee0dee25212b5"
+    },
+    {
+      "path": "siprec/pkg/sip/stun_client_test.go",
+      "bytes": 1870,
+      "sha256": "2519d119ebb34c89601e493c3ece4e8a006710c1c4dd0bd566fc97c9c75f6f47"
+    },
+    {
+      "path": "siprec/pkg/sip/timeout_handler.go",
+      "bytes": 2139,
+      "sha256": "b1b02b83317b8b5796f75d55f9a631c724cf429e9acf0f04d28ffd43243b5cbc"
+    },
+    {
+      "path": "siprec/pkg/siprec/oracle_legacy_test.go",
+      "bytes": 2010,
+      "sha256": "7dd2c82a225a18c8c18ef125d0d768aa38ceb9f71e2dd46c331032a7b34fe4c7"
+    },
+    {
+      "path": "siprec/pkg/siprec/parser.go",
+      "bytes": 20214,
+      "sha256": "70f2d9a2299a55a70019c522d6316e5c1df63371e5bb507f98bd96aa34ea4c78"
+    },
+    {
+      "path": "siprec/pkg/siprec/parser_test.go",
+      "bytes": 19781,
+      "sha256": "31b94b0c07d3079b225a4078d5762eaad00996f5732fa8ccacd5f2ce108c5d8f"
+    },
+    {
+      "path": "siprec/pkg/siprec/policy.go",
+      "bytes": 12004,
+      "sha256": "3b9c25af06893b2285446996fc97fde6c7973cc490fac6227fffd82cba364b9d"
+    },
+    {
+      "path": "siprec/pkg/siprec/session.go",
+      "bytes": 26493,
+      "sha256": "22a4afc7cb610de02f327d971f30ad1954522f31657c94c81ed4ddee20472a13"
+    },
+    {
+      "path": "siprec/pkg/siprec/session_test.go",
+      "bytes": 25408,
+      "sha256": "37a28fec82c5eb8cad94ddaafaf82a43b0e4cd77a4aaf4d84bf1028876c22955"
+    },
+    {
+      "path": "siprec/pkg/siprec/testdata/oracle_scz930_metadata.xml",
+      "bytes": 1253,
+      "sha256": "631b6dfccf6e6c5fd3d806c55f2f5e6f0173e0ff5337b8090e0923e4cb836560"
+    },
+    {
+      "path": "siprec/pkg/siprec/types.go",
+      "bytes": 26335,
+      "sha256": "42cfefb0d36bd172b6fe7fc16b55de8bf16dfc841332d3e8f41343a8ac385235"
+    },
+    {
+      "path": "siprec/pkg/siprec/types_test.go",
+      "bytes": 15448,
+      "sha256": "c7c909182d259123c0c5eda66229dd3fd55ecf1be7df19770be7d510e3a9687e"
+    },
+    {
+      "path": "siprec/pkg/stt/amazon_transcribe.go",
+      "bytes": 11641,
+      "sha256": "518224367ed1b85ad2b22aba76e5b2305467fdaf21251dbe7ec89dcb7d6dc2b1"
+    },
+    {
+      "path": "siprec/pkg/stt/analytics_listener.go",
+      "bytes": 1752,
+      "sha256": "ff8e1f7da6b4e766fea0682b2251f5ceb498d1266a0acd89b698563768c7fbc2"
+    },
+    {
+      "path": "siprec/pkg/stt/async_processor.go",
+      "bytes": 31391,
+      "sha256": "67f863f8377c391d16bdbb54dad0162d45c6ce62b823fd90f0d074dd55b83194"
+    },
+    {
+      "path": "siprec/pkg/stt/async_processor_test.go",
+      "bytes": 6456,
+      "sha256": "613c3b61a3fceeb6c05775249d7a1545a4abc6d7a263b0f5da2f5b113a97c023"
+    },
+    {
+      "path": "siprec/pkg/stt/azure_speech.go",
+      "bytes": 25429,
+      "sha256": "dd731e8f6c47b896d329a8b89ded22116d206f739a4824c72c4b10a871aeb3e6"
+    },
+    {
+      "path": "siprec/pkg/stt/circuit_breaker_wrapper.go",
+      "bytes": 3697,
+      "sha256": "6220a467d69ead310d34a485bb311f9f1093d9b5c153c7414d6613f3b0e2632d"
+    },
+    {
+      "path": "siprec/pkg/stt/deepgram.go",
+      "bytes": 20487,
+      "sha256": "bdb6c40cd23a3fc19541a414d0649919251758d5488f6f6c391a50cca9a8b8e4"
+    },
+    {
+      "path": "siprec/pkg/stt/deepgram_enhanced.go",
+      "bytes": 35046,
+      "sha256": "2783ad4adda4efbded22fdca669d2ffc0f2275aab5070a884017ce6cd4faa4c5"
+    },
+    {
+      "path": "siprec/pkg/stt/deepgram_enhanced_test.go",
+      "bytes": 28199,
+      "sha256": "2a7f3db54db27045523a778b96b5f843ebde8f3addfbaedda216005922958f68"
+    },
+    {
+      "path": "siprec/pkg/stt/elevenlabs.go",
+      "bytes": 6600,
+      "sha256": "7c44982cdf524a62e2d273694c0301ebc10a6f3d277df47c52572181e9a54ea5"
+    },
+    {
+      "path": "siprec/pkg/stt/elevenlabs_test.go",
+      "bytes": 4806,
+      "sha256": "4b3a74bb1d14188ad812260d8166e0eb0790d0d2b3889cd814a6d121c16e9ffc"
+    },
+    {
+      "path": "siprec/pkg/stt/errors.go",
+      "bytes": 361,
+      "sha256": "394f32a130e1396c5e22e96886f953680ffbd9525b9b2fb8b1a6abc48943251f"
+    },
+    {
+      "path": "siprec/pkg/stt/google.go",
+      "bytes": 12211,
+      "sha256": "953483aec36ab9b8b4d265f64c1a803b842f4eb0e278e59c835e85cee5406f77"
+    },
+    {
+      "path": "siprec/pkg/stt/google_enhanced.go",
+      "bytes": 26430,
+      "sha256": "ee1011cf9d7415bfb837713064601c8f9e6698e999fb366394d271549b8a8e7d"
+    },
+    {
+      "path": "siprec/pkg/stt/health.go",
+      "bytes": 11587,
+      "sha256": "a9a7513728ea0af9864cdad0c6d0c6c4cd4246c35ad8424251420b80872e8fd9"
+    },
+    {
+      "path": "siprec/pkg/stt/health_test.go",
+      "bytes": 10096,
+      "sha256": "82a4b631d08202ba973aca45648f4e1456e154b1b0aff56bb7e366dd9f6a8263"
+    },
+    {
+      "path": "siprec/pkg/stt/language_listener.go",
+      "bytes": 2005,
+      "sha256": "47da09317ccabd56440c16dd2eb94b2d2ab9db381600ae32e24a5a38bc9abfb5"
+    },
+    {
+      "path": "siprec/pkg/stt/language_persistence.go",
+      "bytes": 40865,
+      "sha256": "03e33384464bee8b41289fbfd40d718c4c57161e29adabc76127bbee06c6116a"
+    },
+    {
+      "path": "siprec/pkg/stt/language_persistence_test.go",
+      "bytes": 5916,
+      "sha256": "1e6cdc55624852ce9efa36170e7584d9ba6eaaa55d6208bf5cd232ba4c588ae3"
+    },
+    {
+      "path": "siprec/pkg/stt/language_switcher.go",
+      "bytes": 16313,
+      "sha256": "3cb53f9bc4147d1b5da8501e32e286a974b8772fa58b9f076d061886b2b097b8"
+    },
+    {
+      "path": "siprec/pkg/stt/language_transition_smoother.go",
+      "bytes": 18263,
+      "sha256": "e3eae957dd9b92dcfc7ee9aa283ebda838606e56c1f56fea6e53d67a09815733"
+    },
+    {
+      "path": "siprec/pkg/stt/live_transcription.go",
+      "bytes": 3638,
+      "sha256": "a725760efa33f9e8e924da32db360f3104a87281b55df9207d6d9d80e1796804"
+    },
+    {
+      "path": "siprec/pkg/stt/mock.go",
+      "bytes": 4669,
+      "sha256": "f184b08430e67fdb0ad55812abf006cb079ec493d1bf9f19f93e77fa2ee4a669"
+    },
+    {
+      "path": "siprec/pkg/stt/mock_test.go",
+      "bytes": 1897,
+      "sha256": "2ede7239459bb44764ce7965e83dbc97872ffc429f21ca6be4c6ca2bf185e6a8"
+    },
+    {
+      "path": "siprec/pkg/stt/openai.go",
+      "bytes": 6062,
+      "sha256": "1c38b7b1db4890071bc753578fb3eb9955abaf013ec2af2f84b1f57c402eb541"
+    },
+    {
+      "path": "siprec/pkg/stt/opensource_models.go",
+      "bytes": 32375,
+      "sha256": "361be2f46bedd6260f3401171f535749b658db2bf63b93dd5de98a51f9bf12a3"
+    },
+    {
+      "path": "siprec/pkg/stt/pii_audio_transcription_bridge.go",
+      "bytes": 2886,
+      "sha256": "59bcd10aaf3049c9391a7d904c5a51e1ee8390512b9bf708b84da17ab86ead27"
+    },
+    {
+      "path": "siprec/pkg/stt/pii_transcription_filter.go",
+      "bytes": 4854,
+      "sha256": "b0b8c54df078937fe170f3012332f9be23312bd930f4ad087057e55fd1c95a19"
+    },
+    {
+      "path": "siprec/pkg/stt/pii_transcription_filter_test.go",
+      "bytes": 8727,
+      "sha256": "d138b414330e5cc075af7eec1c6445d6380d3434916fdccfa57c1288f85044f7"
+    },
+    {
+      "path": "siprec/pkg/stt/provider.go",
+      "bytes": 14084,
+      "sha256": "2b77dfcd664a531def599828d3cf9c11d9a676f3185b78234847e6cee366a4d4"
+    },
+    {
+      "path": "siprec/pkg/stt/provider_test.go",
+      "bytes": 10635,
+      "sha256": "5508612946c1925f99bd9016b054663ae8091a78b479abbf3dcaf25433511b9c"
+    },
+    {
+      "path": "siprec/pkg/stt/queue.go",
+      "bytes": 8671,
+      "sha256": "51f714d192e06a102fec11db230a415514ab1867a842acc3e4592791afc11062"
+    },
+    {
+      "path": "siprec/pkg/stt/speechmatics.go",
+      "bytes": 8762,
+      "sha256": "aa4e95091ae03745fa70d950f0bef3e616d0d196c4e7b6a405148c757ae23183"
+    },
+    {
+      "path": "siprec/pkg/stt/speechmatics_test.go",
+      "bytes": 5320,
+      "sha256": "6fc4d9c76200b3ba35c45b2f1860460d55a4eb663498965cb286712bd25f7c9a"
+    },
+    {
+      "path": "siprec/pkg/stt/transcription.go",
+      "bytes": 12263,
+      "sha256": "14a7d3c2d7d1d5aef4ff96ecc722c74015f13120f3ac1c81de6dec090b2563c8"
+    },
+    {
+      "path": "siprec/pkg/stt/whisper.go",
+      "bytes": 10079,
+      "sha256": "96981439baf32cf5b5cb09786351593c51528b0c780b3c19d84b14cbd7b228fc"
+    },
+    {
+      "path": "siprec/pkg/stt/whisper_test.go",
+      "bytes": 21723,
+      "sha256": "2418323828f0a6eb3db4a4109bbda2dbca9704b213ca0f14eeabcb1328ba2535"
+    },
+    {
+      "path": "siprec/pkg/telemetry/tracing/tracing.go",
+      "bytes": 9178,
+      "sha256": "72a41b5987dadf50161c24422eabb28be1f11f72456fe12020bf90986001c734"
+    },
+    {
+      "path": "siprec/pkg/util/session_cache.go",
+      "bytes": 4047,
+      "sha256": "fb45a7f4f75f7d5eaecb0292fd4cfba9b76c3566a78ce11b04c131d41e1dc1a5"
+    },
+    {
+      "path": "siprec/pkg/version/version.go",
+      "bytes": 348,
+      "sha256": "9fb9d9267b56b317e02a1aeebe35b17bbf7a26b811c0a0c6598bdc26b12c2aab"
+    },
+    {
+      "path": "siprec/pkg/warnings/warnings.go",
+      "bytes": 4322,
+      "sha256": "9a888bd83e5310c35e5b2fff20aa4abe26315d3cd8ac7359ebf45028d33457f5"
+    },
+    {
+      "path": "siprec/run.sh",
+      "bytes": 744,
+      "sha256": "265bcb6664a554dec3a54ec416a62d9cd058f1f17addcb3cd1839a0cb759e73f"
+    },
+    {
+      "path": "siprec/scripts/cleanup.sh",
+      "bytes": 1380,
+      "sha256": "e4a8749fc7c1653dd87eae0d73f416d845cd1fae4cdbdbb4eae4d9149231db0b"
+    },
+    {
+      "path": "siprec/scripts/deploy_redis_sessions.sh",
+      "bytes": 5116,
+      "sha256": "998ed549c3f06f9c21b06442eb91aa9d8f525475d01a124e5d229333eabe0699"
+    },
+    {
+      "path": "siprec/scripts/docker-entrypoint.sh",
+      "bytes": 7839,
+      "sha256": "9105b633cb1eea2d395308d6999d4e21af3762f1734f550732d5fbc72480386c"
+    },
+    {
+      "path": "siprec/scripts/init_db.sql",
+      "bytes": 5768,
+      "sha256": "72fc1eb1f59f6605417013c60f34c3dcc18cab372a2ec3e971a435ba44f74e1c"
+    },
+    {
+      "path": "siprec/scripts/install-remote.sh",
+      "bytes": 9336,
+      "sha256": "5d1805b731ed540985061640baf3232cd5e2b6d1d38365d8363311d9bb29b707"
+    },
+    {
+      "path": "siprec/scripts/run-tests.sh",
+      "bytes": 14447,
+      "sha256": "d5670103ffc11f1c948c8f2a3152856fe50d7634c379fc3f25d6372a6b8ed0f3"
+    },
+    {
+      "path": "siprec/scripts/test_redis_sessions.sh",
+      "bytes": 4580,
+      "sha256": "e42eabf09bdbf87deaf018062d75efa2b76af851498c267c7df9c8774b58cdd7"
+    },
+    {
+      "path": "siprec/scripts/test_redundancy.sh",
+      "bytes": 3001,
+      "sha256": "4e25402946bef46073b8a731623dddd339c1f3fd9e9057e360eca8458829ff62"
+    },
+    {
+      "path": "siprec/siprec-server.service",
+      "bytes": 777,
+      "sha256": "19c818e1c892becaa9f7d86210598795899892f80a13ad031ab497526d1889ce"
+    },
+    {
+      "path": "siprec/siprec_test_data/avaya_siprec_invite.txt",
+      "bytes": 1937,
+      "sha256": "9c4cc94209fb97744c4935e18caf684cda0b8aea86930956954c8670bca8991c"
+    },
+    {
+      "path": "siprec/siprec_test_data/cisco_siprec_invite.txt",
+      "bytes": 1935,
+      "sha256": "d5b4df5b8170baa8fcbffaf62f484f95183a88a16aad26c60fd433cafde66c7d"
+    },
+    {
+      "path": "siprec/siprec_test_data/simple_options.txt",
+      "bytes": 251,
+      "sha256": "86e46c8e453f85a918925dd72eac3bc0650d09e8d921a86700e9d080d2f7940b"
+    },
+    {
+      "path": "siprec/siprec_test_data/siprec_body.txt",
+      "bytes": 892,
+      "sha256": "6105e0f9b2859f9852a779fbee603e41074f3c7eeda129a999de0efbda8b33a6"
+    },
+    {
+      "path": "siprec/siprec_test_data/siprec_invite.txt",
+      "bytes": 1256,
+      "sha256": "af407fb5ba7c3e2d7deead2491e626be6863c69ad19c7cd2c961609d74322491"
+    },
+    {
+      "path": "siprec/siprec_test_data/siprec_invite_full.txt",
+      "bytes": 2058,
+      "sha256": "f2e83d6ee28705471d3b9f700ecd95378751e235d78a75ce0a5a834b0fe831af"
+    },
+    {
+      "path": "siprec/test/e2e/README.md",
+      "bytes": 1793,
+      "sha256": "0b0fac16bd9f451c3b5a96173a4d44a3e91ea6aabdb4db603d7715d18abf9f8c"
+    },
+    {
+      "path": "siprec/test/e2e/helpers_test.go",
+      "bytes": 746,
+      "sha256": "7b45499bd6c27f81d60b398d16f47094770acb05d101ca8492ceb1252ef79e55"
+    },
+    {
+      "path": "siprec/test/e2e/server_test.go",
+      "bytes": 13384,
+      "sha256": "92bbd018dfa617053c359701d841fa62a381b745fc83929d492830f5594d5cf7"
+    },
+    {
+      "path": "siprec/test/e2e/session_recovery_test.go",
+      "bytes": 12802,
+      "sha256": "08da72801380455e2c3b6374c25cc2198ff136bf69852d101068a14f55eebbcf"
+    },
+    {
+      "path": "siprec/test/e2e/sip_mock_test.go",
+      "bytes": 2034,
+      "sha256": "8b3cf3708ceeb2d9a999f767a156c035ec3a823f7bc1963db56839214ddef57b"
+    },
+    {
+      "path": "siprec/test/e2e/siprec_e2e_test.go",
+      "bytes": 3572,
+      "sha256": "9272f9973aa43e5a711c5025b1bcb8827e60adba8e023793c61197a1e1a7bf28"
+    },
+    {
+      "path": "siprec/test/e2e/siprec_recording_test.go",
+      "bytes": 4166,
+      "sha256": "56e7796698a1d32e9f341416b2779d2c6e7fc0fded1a7a330e5c1e17324e8e06"
+    },
+    {
+      "path": "siprec/test/e2e/siprec_redundancy_test.go",
+      "bytes": 17087,
+      "sha256": "12c51d0deeb16be4d392ef3e95e336016f45773a97b72f51fbe57b61ccd9a40c"
+    },
+    {
+      "path": "siprec/test/e2e/siprec_simulation_test.go",
+      "bytes": 5521,
+      "sha256": "a85253d60c087b9c6d1787f93e5e1b7947cc4be81e6844872ac63fc6bf287633"
+    },
+    {
+      "path": "siprec/test/env.go",
+      "bytes": 8613,
+      "sha256": "1695fed8826566b1ae2f22738bfa3a1ae9df05657159a63e1f325d8a26f266d2"
+    },
+    {
+      "path": "siprec/test/env_test.go",
+      "bytes": 4044,
+      "sha256": "c493fedbd88b9554c7834024089b3ed8cab8eed010e953a52b2207e08373b240"
+    },
+    {
+      "path": "siprec/test/integration/stt_providers_test.go",
+      "bytes": 17345,
+      "sha256": "b7d740bbcc56da9edf32cd8421600ff9bfa4b95a55d1bd0a58c9295958079359"
+    },
+    {
+      "path": "siprec/test/leak_detection_test.go",
+      "bytes": 24409,
+      "sha256": "61c879e7471be626a8a4a12da9199cbc3c251913129bdd0441b5b0249d640af1"
+    },
+    {
+      "path": "siprec/test/providers/stt_resilience_test.go",
+      "bytes": 23097,
+      "sha256": "23e31e0fb561232937b154e33e05562b7939cf5cf0d7adbe60e6a69ed810b58b"
+    },
+    {
+      "path": "siprec/test/race_detection_test.go",
+      "bytes": 3937,
+      "sha256": "60b711a41179148389ba62b41e11415f30f56fbd05213e94317565bf1b096f0b"
+    },
+    {
+      "path": "siprec/test/scripts/simple_sip_test.sh",
+      "bytes": 2725,
+      "sha256": "4e97e53a480ed89b893e592afb57a56e0d1a09260d456ff8c1194813f0c6a358"
+    },
+    {
+      "path": "siprec/test/scripts/test_nat_config.sh",
+      "bytes": 8969,
+      "sha256": "11289ef2672c8a2f8eae1e473752287c6f2b53b37394581dde1bf912e850eae3"
+    },
+    {
+      "path": "siprec/test/scripts/test_options.sh",
+      "bytes": 417,
+      "sha256": "2709d898624ff088d51b6958b590d662164d86de13e8d92d9b1cd48c2e8910cf"
+    },
+    {
+      "path": "siprec/test/scripts/test_remote_siprec.sh",
+      "bytes": 4900,
+      "sha256": "26b1695ebcf352d3ebcaceda725b4f829fdb568bba9b0249b8acab0b78923920"
+    },
+    {
+      "path": "siprec/test/scripts/test_simple_sip.sh",
+      "bytes": 640,
+      "sha256": "365457113e3a52c6694071c45e36ab9a6139bba259bf970e2c61a548690d135b"
+    },
+    {
+      "path": "siprec/test/scripts/test_siprec_invite.sh",
+      "bytes": 1207,
+      "sha256": "f83faeddf48f933e0ba7ab17750ade0c8bd71eb2d4a0fc1caefd8a0ab28df704"
+    },
+    {
+      "path": "siprec/test/scripts/test_siprec_local.sh",
+      "bytes": 9209,
+      "sha256": "520dbd829f954c56a49ee5ddeae7c7b7ace68891f134ae201a1513d2a0d3870c"
+    },
+    {
+      "path": "siprec/test/scripts/test_tls.sh",
+      "bytes": 949,
+      "sha256": "d92c71ec38e61e330249249d723604801a668a6fc14683e11e0ead9cdbf8d0a6"
+    },
+    {
+      "path": "siprec/test/sipp/README.md",
+      "bytes": 4276,
+      "sha256": "8f3a08720ecba2f41837c9e53102a27d1262fe0094cd5b5512df2cf44a93a5a1"
+    },
+    {
+      "path": "siprec/test/sipp/g711_audio.pcap",
+      "bytes": 115024,
+      "sha256": "efd699bd2cf4ab5902f42b1997f4d96128001ec181bc4c9174e884f218a1f0fe"
+    },
+    {
+      "path": "siprec/test/sipp/generate_rtp_pcap.py",
+      "bytes": 4089,
+      "sha256": "226b9a0c8b43ddbd86945df62a3130911a519f926e302ad6fe195114d3457275"
+    },
+    {
+      "path": "siprec/test/sipp/rtp_audio_sender.py",
+      "bytes": 3352,
+      "sha256": "baaac6f4fb56a2b60a7066d1969da888b55e2b43e7aadb66b9cbdb21c3c50f60"
+    },
+    {
+      "path": "siprec/test/sipp/rtp_sender.py",
+      "bytes": 3495,
+      "sha256": "0b6dcf2e1e0f27a44b0bb7b5d858e6d30c7003854dd8fe78c13a4c201b935517"
+    },
+    {
+      "path": "siprec/test/sipp/run_hold_media_test.sh",
+      "bytes": 1656,
+      "sha256": "d6b7359772f36abc4d9437a25eebd0b362e7cda0dc52992fbe02a8bde39cdfdb"
+    },
+    {
+      "path": "siprec/test/sipp/run_media_load_test.sh",
+      "bytes": 4543,
+      "sha256": "b05b914dca6163d74df6cdbc4ab1abea94de6e390deb31327fbcc20e5b99710e"
+    },
+    {
+      "path": "siprec/test/sipp/run_media_test.sh",
+      "bytes": 4239,
+      "sha256": "9446e8038203d30d2cc6468bb90c5e2b4ef5ff4a98db37fda670b2afd45012af"
+    },
+    {
+      "path": "siprec/test/sipp/run_parallel_media_test.sh",
+      "bytes": 2902,
+      "sha256": "b63089cb8c1b0b4f9ea9c132cdea37e7fb4b99478af0dd4cc0cb4328694006c4"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_hold_resume.xml",
+      "bytes": 9026,
+      "sha256": "8814a5608995431cfe0f3ac0b049146adb9ccae1afd312acb3fc4d31703f5b29"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_load_test.xml",
+      "bytes": 3309,
+      "sha256": "f7fbac2cc2a7ba4efe47d39eb4d5e62ae26c53d6e7b0a2ca4afafedbebc0e96e"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_quick_test.xml",
+      "bytes": 3502,
+      "sha256": "d826775f2701e953250147e242d57a5f640a48c34af9538d1c7d336d8efeb085"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_rtp_stream.xml",
+      "bytes": 3345,
+      "sha256": "7cc3903d160d302315b00be6f398eaf1460a6916c790fd5dfd01bcb1676b86f4"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_short_test.xml",
+      "bytes": 2195,
+      "sha256": "83dc8e6fb232d1e6ab6e7454d66d36b959010b17e1f486f052af310d724e3eec"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_transfer.xml",
+      "bytes": 6927,
+      "sha256": "c1079606245b76d195ff9a3384fe178c568cb20e1b90432281fc38633643fc71"
+    },
+    {
+      "path": "siprec/test/sipp/siprec_with_media.xml",
+      "bytes": 3544,
+      "sha256": "f20e13f78da737ade499e1d425c00a78057fd8ad280394e45e48be1fbcd3f49a"
+    },
+    {
+      "path": "siprec/test/siprec_live_test.go",
+      "bytes": 21485,
+      "sha256": "eb9d12293820e74a7ad05f49abe9717790cdfecd41cdf57982644c60ea9e325d"
+    },
+    {
+      "path": "siprec/test/test_websocket.html",
+      "bytes": 6540,
+      "sha256": "5327c724909f80c3de7a9161b9326cbb8ad5b9830c5f132bab9670eecfd9c2b9"
+    },
+    {
+      "path": "siprec/test/unit/messaging_test.go",
+      "bytes": 15366,
+      "sha256": "1d44f0426bf6ca3be05d8015ecd6b29dddd8e13f0ceb54af8b406b89fa889285"
+    },
+    {
+      "path": "siprec/test_tls/go.mod",
+      "bytes": 27,
+      "sha256": "74747baa64188ca11f8c4c1ee7feebb5945e2071b8e36ec9b5b5f8751e28c497"
+    },
+    {
+      "path": "siprec/test_tls/main.go",
+      "bytes": 12646,
+      "sha256": "63132d8a3ffe27200c715eb8e8ac2a72a776e82e097cda171222a6d30abe0ebc"
+    },
+    {
+      "path": "siprec/validate_production.sh",
+      "bytes": 4105,
+      "sha256": "7e448b896fe55a22c1dcc83069d4f29dae30f224951ef135e0661c8dbed270e7"
+    },
+    {
+      "path": "siprec/validate_siprec.sh",
+      "bytes": 2064,
+      "sha256": "2df4c132936788d822cb3c178be93289f06f698c975bc9a816a44dbf7c08bf0f"
+    }
+  ]
+}
