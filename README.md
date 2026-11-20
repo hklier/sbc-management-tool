@@ -15,7 +15,7 @@ Oracle SBC HTTPS console, SIPREC recorder, offline transcription worker, and SNM
 
 `deploy/kubernetes/base` contains Kustomize resources; `deploy/kubernetes/argocd-application.json` connects Argo CD to the `main` branch. Image references are pinned to published digests. Argo CD automatically reconciles changes to Git. The three images are built with `deploy/Dockerfile` and stored in the existing private-LAN registry.
 
-GitHub Actions runs the console tests, Oracle metadata/re-INVITE regression tests, and a Linux recorder build. A manual Actions run also builds all three images and provides downloadable image archives. GitHub-hosted runners have no access to the private cluster or LAN registry.
+GitHub Actions runs the console tests, Oracle metadata/re-INVITE regression tests, and a Linux recorder build, with the recorder binary available as a downloadable artifact. A manual Actions run also builds all three images and provides downloadable image archives. GitHub-hosted runners have no access to the private cluster or LAN registry.
 
 To release from a trusted Linux checkout with Podman and registry access:
 
@@ -59,5 +59,7 @@ The transcription model is downloaded at image-build time from `Systran/faster-w
 ## Acceptance and SBC setup
 
 The deployment does not change SBC configuration. The SBC owner must configure the SIPREC destination and trap destination/community, and allow management/SNMP traffic from the cluster. Validate console login, read-only configuration, CDR/trace/LRT access, SNMP polling, a test trap, and a real recorded call with both directions and transcription. Do not save or activate SBC configuration merely to test connectivity.
+
+`python deploy/check-siprec.py 192.168.0.241` sends labelled synthetic media through the external UDP/TCP SIP and RTP endpoint. It creates a self-test recording; verify both stored audio legs and the combined stereo WAV in the console afterward. This test does not modify the SBC.
 
 The original `SOURCE-MANIFEST.json` describes the received handoff, before Kubernetes adaptations. Git history records subsequent changes.

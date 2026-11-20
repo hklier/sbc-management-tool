@@ -34,7 +34,12 @@ jobs:
       - name: Oracle metadata and re-INVITE regressions
         run: CGO_ENABLED=0 go test ./pkg/siprec ./pkg/sip -run 'TestOracle|TestHandleSiprecReInviteUpdatesSession' -count=1
       - name: Build Linux recorder
-        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -o /tmp/siprec ./cmd/siprec
+        run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags='-s -w' -o /tmp/siprec ./cmd/siprec
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: siprec-linux-amd64
+          path: /tmp/siprec
+          retention-days: 7
   images:
     if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
