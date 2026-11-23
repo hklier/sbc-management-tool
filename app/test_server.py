@@ -602,6 +602,41 @@ class LrtMutationTests(unittest.TestCase):
         self.assertEqual(len(data['entries'][0]['nextHops']),2)
         self.assertEqual(review['entry']['nextHops'][0]['value'],'sip:three@example.invalid')
 
+    def test_edit_preserves_duplicates_order_metadata_and_gzip(self):
+        content=app.gzip.compress(self.SAMPLE)
+        proposed,review=app.build_lrt_change(content,'edit',self.draft(),index=2)
+        before=app.parse_lrt(content);after=app.parse_lrt(proposed)
+        self.assertTrue(proposed.startswith(b'\x1f\x8b'))
+        self.assertEqual(after['entryCount'],2);self.assertEqual(after['entries'][0],before['entries'][0])
+        self.assertEqual(after['entries'][1]['match'],'+3400123');self.assertEqual(after['version'],before['version'])
+        self.assertEqual(review['previousEntry'],before['entries'][1]);self.assertEqual(review['entry'],after['entries'][1])
+
+    def test_edit_preserves_namespace_comments_and_unknown_route_user_attributes(self):
+        content=b'<localRoutes xmlns="urn:test"><!--keep--><route flag="keep"><user type="E164" custom="keep">123</user><extra>keep</extra><next type="regex">sip:old</next><description lang="en">old</description></route><emsVersion><version>7</version></emsVersion></localRoutes>'
+        proposed,_=app.build_lrt_change(content,'edit',self.draft(),index=1)
+        root=app.ET.fromstring(proposed);route=root.find('{urn:test}route')
+        self.assertIn(b'<!--keep-->',proposed);self.assertEqual(route.get('flag'),'keep')
+        self.assertEqual(route.find('{urn:test}user').get('custom'),'keep');self.assertEqual(route.findtext('{urn:test}extra'),'keep')
+        self.assertEqual(route.find('{urn:test}description').get('lang'),'en')
+
+    def test_edit_ranges_and_next_hop_count_changes(self):
+        content=b'<localRoutes type="range"><route><user type="range" rangeStart="001" rangeEnd="099" rangePrefix="44"/><next type="regex">sip:old</next></route></localRoutes>'
+        draft=self.draft();draft.update(userType='range',rangeStart='002',rangeEnd='088',rangePrefix='')
+        draft['nextHops']*=2
+        proposed,_=app.build_lrt_change(content,'edit',draft,index=1)
+        entry=app.parse_lrt(proposed)['entries'][0]
+        self.assertEqual(entry['userAttributes'],dict(type='range',rangeStart='002',rangeEnd='088'))
+        self.assertEqual(len(entry['nextHops']),2)
+        draft['nextHops']=draft['nextHops'][:1];draft['description']=''
+        proposed,_=app.build_lrt_change(proposed,'edit',draft,index=1)
+        self.assertEqual(len(app.parse_lrt(proposed)['entries'][0]['nextHops']),1)
+        self.assertNotIn(b'<description',proposed)
+
+    def test_edit_rejects_invalid_index_and_complex_next_hop_xml(self):
+        for index in (None,True,0,3):
+            with self.assertRaises(app.Problem):app.build_lrt_change(self.SAMPLE,'edit',self.draft(),index=index)
+        with self.assertRaises(app.Problem):app.build_lrt_change(b'<localRoutes><route><user type="E164">1</user><next><extension/></next></route></localRoutes>','edit',self.draft(),index=1)
+
     def test_delete_last_entry_is_supported(self):
         content=b'<localRoutes><route><user type="string">one</user><next>sip:a</next></route></localRoutes>'
         proposed,review=app.build_lrt_change(content,'delete',index=1)
@@ -740,6 +775,19 @@ class LrtRouteTests(unittest.TestCase):
         self.assertEqual(len(self.writes),1)
         self.assertFalse(any('refresh' in e[1] or 'activate' in e[1] for e in self.events))
         self.assertNotIn(review['plan'],app.LRT_PLANS)
+
+    def test_edit_preview_and_apply_changes_only_selected_entry(self):
+        original=app.parse_lrt(self.content)
+        draft=LrtMutationTests.draft(self)
+        code,review=self.request('/api/lrt/preview',dict(name='one',running=True,sha256=app.hashlib.sha256(self.content).hexdigest(),action='edit',index=2,entry=draft))
+        self.assertEqual(code,200,review);self.assertEqual(self.writes,[])
+        self.assertEqual(review['previousEntry'],original['entries'][1])
+        code,result=self.request('/api/lrt/apply',dict(plan=review['plan'],reload=False))
+        self.assertEqual(code,200,result);self.assertIn('backup',result)
+        updated=app.parse_lrt(self.content)
+        self.assertEqual(updated['entryCount'],2);self.assertEqual(updated['entries'][0],original['entries'][0])
+        self.assertEqual(updated['entries'][1]['match'],draft['match'])
+        self.assertFalse(any('refresh' in e[1] or 'activate' in e[1] for e in self.events))
 
     def test_save_and_reload_uses_each_active_config_name(self):
         _,review=self.preview();code,result=self.request('/api/lrt/apply',dict(plan=review['plan'],reload=True))

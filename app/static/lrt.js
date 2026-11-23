@@ -1,6 +1,6 @@
 'use strict';
 let lrtTables=[],lrtSelected='',lrtOffset=0,lrtFiltered=0,lrtRequest=0,lrtSearchTimer;
-let lrtCurrent=null,lrtChange=null,lrtOverviewRequest=0;
+let lrtCurrent=null,lrtChange=null,lrtOverviewRequest=0,lrtEditEntry=null,lrtDraftContext=null;
 
 function showWorkspace(view){
   ['config','history','lrt','diagnostics','traces','snmp','traps','cdr','recordings','users','devices'].forEach(name=>{$(name+'-view').hidden=name!==view;$('nav-'+name).classList.toggle('active',name===view)});
@@ -56,7 +56,7 @@ async function loadLrtEntries(){
     entry.nextHops.forEach((hop,index)=>{const block=el('div',{class:'lrt-hop'});block.append(el('code',{},hop.value));const attributes=Object.entries(hop.attributes).map(([key,value])=>key+': '+value).join(' · ');block.append(el('small',{},(entry.nextHops.length>1?'Next hop '+(index+1)+' · ':'')+attributes));hops.append(block)});
     if(!entry.nextHops.length)hops.append(el('span',{class:'muted'},'No next hop'));
     row.append(hops,el('td',{},entry.description||'—'));
-    const cell=el('td'),details=el('details');details.append(el('summary',{},'View XML'),el('pre',{},entry.xml));cell.append(details);const remove=el('button',{class:'lrt-delete-entry',type:'button'},'Delete');remove.onclick=()=>task(()=>reviewLrtDeletion(entry));cell.append(remove);row.append(cell);$('lrt-rows').append(row);
+    const cell=el('td'),details=el('details');details.append(el('summary',{},'View XML'),el('pre',{},entry.xml));cell.append(details);const edit=el('button',{class:'lrt-edit-entry',type:'button'},'Edit');edit.onclick=()=>openLrtEntry(entry);cell.append(edit);const remove=el('button',{class:'lrt-delete-entry',type:'button'},'Delete');remove.onclick=()=>task(()=>reviewLrtDeletion(entry));cell.append(remove);row.append(cell);$('lrt-rows').append(row);
   });
   $('lrt-page-info').textContent=data.filtered?'Showing '+(data.offset+1)+'–'+(data.offset+data.entries.length)+' of '+data.filtered+(data.filtered!==data.total?' matching entries ('+data.total+' total)':' entries'):'0 matching entries';
   $('lrt-prev').disabled=data.offset===0;$('lrt-next').disabled=data.offset+data.limit>=data.filtered;
@@ -85,27 +85,37 @@ function lrtTypeFields(){
   ['lrt-range-start','lrt-range-end','lrt-range-prefix'].forEach(id=>$(id).disabled=!range);
   $('lrt-range-start').required=range;$('lrt-range-end').required=range;
 }
-function addLrtHop(){
+function addLrtHop(hop=null){
   if($('lrt-hop-inputs').children.length>=10)return;
   const row=el('div',{class:'lrt-hop-editor'}),label=el('label',{},'Next-hop expression / URI');
-  label.append(el('textarea',{class:'hop-value',rows:'2',required:'',maxlength:'8192',placeholder:'!^.*$!sip:1000@example.invalid!'}));
+  const value=el('textarea',{class:'hop-value',rows:'2',required:'',maxlength:'8192',placeholder:'!^.*$!sip:1000@example.invalid!'});value.value=hop?.value||'';label.append(value);
   const advanced=el('details');advanced.append(el('summary',{},'Type and optional attributes'));
-  const typeLabel=el('label',{},'Type'),type=el('input',{class:'hop-type',required:'',maxlength:'32'});type.value='regex';typeLabel.append(type);
-  const attrsLabel=el('label',{},'Optional XML attributes as JSON'),attrs=el('textarea',{class:'hop-attributes',rows:'2'});attrs.value='{}';attrsLabel.append(attrs);advanced.append(typeLabel,attrsLabel);
+  const typeLabel=el('label',{},'Type'),type=el('input',{class:'hop-type',required:'',maxlength:'32'});type.value=hop?.type||'regex';typeLabel.append(type);
+  const attrsLabel=el('label',{},'Optional XML attributes as JSON'),attrs=el('textarea',{class:'hop-attributes',rows:'2'});attrs.value=JSON.stringify(Object.fromEntries(Object.entries(hop?.attributes||{}).filter(([key])=>key!=='type')));attrsLabel.append(attrs);advanced.append(typeLabel,attrsLabel);
   const remove=el('button',{type:'button'},'Remove next hop');remove.onclick=()=>{row.remove();updateLrtHopButtons()};row.append(label,advanced,remove);$('lrt-hop-inputs').append(row);updateLrtHopButtons();
 }
 function updateLrtHopButtons(){const count=$('lrt-hop-inputs').children.length;$('lrt-add-hop').disabled=count>=10;[...$('lrt-hop-inputs').children].forEach(row=>row.querySelector('button').disabled=count===1)}
-$('lrt-add').onclick=()=>{
-  if(!lrtCurrent)return;$('lrt-add-form').reset();$('lrt-add-error').textContent='';$('lrt-hop-inputs').replaceChildren();
-  const range=lrtCurrent.tableType==='range';[...$('lrt-entry-type').options].forEach(option=>option.disabled=(option.value==='range')!==range);$('lrt-entry-type').value=range?'range':'E164';lrtTypeFields();addLrtHop();
-  $('lrt-add-context').textContent=lrtCurrent.name+' · '+lrtCurrent.filename;$('lrt-add-dialog').showModal();
-};
-$('lrt-entry-type').onchange=lrtTypeFields;$('lrt-add-hop').onclick=addLrtHop;$('lrt-cancel-add').onclick=()=>$('lrt-add-dialog').close();
+function openLrtEntry(entry=null){
+  if(entry?.nextHops.length>10){notify('This entry has more than 10 next hops and cannot be safely edited with this form.',true);return}
+  if(!lrtCurrent)return;lrtEditEntry=entry;lrtDraftContext={name:lrtCurrent.name,running:lrtRunning(),sha256:lrtCurrent.sha256};$('lrt-add-form').reset();$('lrt-add-error').textContent='';$('lrt-hop-inputs').replaceChildren();
+  const range=lrtCurrent.tableType==='range';[...$('lrt-entry-type').options].forEach(option=>option.disabled=(option.value==='range')!==range);$('lrt-entry-type').value=entry?.userType||(range?'range':'E164');lrtTypeFields();
+  if(entry){
+    $('lrt-entry-match').value=range?'':entry.match;$('lrt-entry-description').value=entry.description||'';
+    for(const [id,key] of [['lrt-range-start','rangeStart'],['lrt-range-end','rangeEnd'],['lrt-range-prefix','rangePrefix']])$(id).value=entry.userAttributes?.[key]||'';
+    entry.nextHops.forEach(hop=>addLrtHop(hop));updateLrtHopButtons();
+  }else addLrtHop();
+  $('lrt-entry-dialog-title').textContent=entry?'Edit route entry':'Add route entry';$('lrt-review-add').textContent=entry?'Review changes →':'Review addition →';
+  $('lrt-add-context').textContent=lrtCurrent.name+' · '+lrtCurrent.filename+(entry?' · Entry '+entry.index:'');$('lrt-add-dialog').showModal();
+}
+$('lrt-add').onclick=()=>openLrtEntry();
+$('lrt-entry-type').onchange=lrtTypeFields;$('lrt-add-hop').onclick=()=>addLrtHop();$('lrt-cancel-add').onclick=()=>$('lrt-add-dialog').close();
 function showLrtReview(review){
-  lrtChange=review;$('lrt-change-error').textContent='';$('lrt-change-title').textContent=review.action==='add'?'Add this entry?':'Delete this entry?';
+  lrtChange=review;$('lrt-change-error').textContent='';$('lrt-change-title').textContent=review.action==='add'?'Add this entry?':review.action==='edit'?'Save these entry changes?':'Delete this entry?';
   $('lrt-change-description').textContent=review.name+' · '+review.filename+'. The original file will be backed up on the SBC and on this server before saving. Other route entries are preserved.';
-  const block=el('div',{class:'lrt-change-block'});block.append(el('strong',{},review.entry.match),el('p',{},review.entry.userType+' · Entries: '+review.beforeCount+' → '+review.afterCount));
-  review.entry.nextHops.forEach(hop=>block.append(el('pre',{},hop.value)));if(review.entry.description)block.append(el('p',{},review.entry.description));
+  const block=el('div',{class:'lrt-change-block'});
+  function entryPreview(label,entry){const section=el('section');section.append(el('h3',{},label),el('strong',{},entry.match),el('p',{},entry.userType));entry.nextHops.forEach(hop=>{section.append(el('pre',{},hop.value));const attributes=Object.entries(hop.attributes||{}).map(([key,value])=>key+': '+value).join(' · ');if(attributes)section.append(el('small',{},attributes))});if(entry.description)section.append(el('p',{},entry.description));return section}
+  if(review.previousEntry)block.append(entryPreview('Before',review.previousEntry));
+  block.append(entryPreview(review.action==='edit'?'After':'Entry',review.entry),el('p',{},'Entries: '+review.beforeCount+' → '+review.afterCount));
   if(review.afterCount===0)block.append(el('p',{class:'error'},'This will leave the table empty.'));
   $('lrt-change-summary').replaceChildren(block);$('lrt-change-reload-label').hidden=false;$('lrt-change-reload').checked=false;$('lrt-change-reload').disabled=!review.activeTables.length;
   $('lrt-shared-note').textContent=review.activeTables.length?'Active LRTs using this file: '+review.activeTables.join(', ')+'. Reloading applies the file to live routing.':'This file is not used by a running LRT yet. Save the file and activate the relevant configuration before reloading.';
@@ -113,7 +123,7 @@ function showLrtReview(review){
 }
 $('lrt-add-form').onsubmit=async event=>{
   event.preventDefault();$('lrt-add-error').textContent='';$('lrt-review-add').disabled=true;
-  try{const review=await api('/api/lrt/preview',{name:lrtCurrent.name,running:lrtRunning(),sha256:lrtCurrent.sha256,action:'add',entry:lrtEntryDraft()});$('lrt-add-dialog').close();showLrtReview(review)}catch(error){$('lrt-add-error').textContent=error.message}finally{$('lrt-review-add').disabled=false}
+  try{const review=await api('/api/lrt/preview',{...lrtDraftContext,action:lrtEditEntry?'edit':'add',index:lrtEditEntry?.index,entry:lrtEntryDraft()});$('lrt-add-dialog').close();showLrtReview(review)}catch(error){$('lrt-add-error').textContent=error.message}finally{$('lrt-review-add').disabled=false}
 };
 async function reviewLrtDeletion(entry){
   if(!lrtCurrent)return;

@@ -39,6 +39,12 @@ On the first upgrade, the existing YAML/environment SBC and SNMP settings initia
 
 Device records are encrypted in `STATE_DIR/devices.sqlite3`; the encryption key is `STATE_DIR/device-encryption.key`, readable only by the application account. Back up the database and matching key together with application state, outside Git. A missing or mismatched key fails closed. This protects database-only copies; anyone with access to both files can decrypt credentials. Keep the deployment at one active replica on its retained persistent volume.
 
+## Editing local route entries
+
+Open **Local route tables**, select a loaded table, and choose **Edit** on the entry. The form loads its number/string or DID range, description, next-hop expressions, types, and optional attributes. **Review changes** shows the original and proposed entry. **Save file** uses the same verified backups, file hash checks, and atomic replacement as adding or deleting entries. Other entries, including duplicate matches, stay in their original order. Saving changes the source file; **Reload in SBC** applies it to live routing. Reloading remains an explicit choice. Previewing and cancelling make no SBC changes.
+
+The editor accepts up to ten next hops. Entries with structured next-hop XML are rejected rather than silently dropping unsupported content. Existing table/route/user metadata is retained, and both plain XML and gzip files are supported.
+
 ## Git and deployment
 
 `deploy/kubernetes/base` contains Kustomize resources; `deploy/kubernetes/argocd-application.json` connects Argo CD to the `main` branch. Image references are pinned to published digests. Argo CD automatically reconciles changes to Git. `deploy/Dockerfile` defines the three image builds; images are stored in the existing private-LAN registry. The initial recorder image packages the validated GitHub Actions binary on the console runtime, with its source revision recorded in OCI image labels.

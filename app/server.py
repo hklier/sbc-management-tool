@@ -437,6 +437,7 @@ def lrt_entries(name, running, query='', offset=0, limit=50):
 
 
 def make_lrt_route(draft, table_type):
+    if not isinstance(draft, dict):raise Problem('A route entry object is required.')
     user_type = draft.get('userType', 'E164')
     if user_type not in ('E164', 'string', 'range') or (table_type == 'range') != (user_type == 'range'):
         raise Problem('Range entries require a range LRT. Standard LRTs accept E164 or string entries.')
@@ -466,6 +467,7 @@ def make_lrt_route(draft, table_type):
     if not isinstance(hops, list) or not 1 <= len(hops) <= 10:
         raise Problem('Provide between 1 and 10 next hops.')
     for hop in hops:
+        if not isinstance(hop, dict):raise Problem('Each next hop must be an object.')
         value = str(hop.get('value', '')).strip()
         next_type = str(hop.get('type', 'regex')).strip()
         if not value or len(value) > 8192 or not re.fullmatch(r'[A-Za-z0-9_-]{1,32}', next_type):
@@ -491,18 +493,50 @@ def build_lrt_change(content, action, draft=None, index=None):
         insertion = list(root).index(routes[-1]) + 1 if routes else 0
         root.insert(insertion, route)
         selected_index = len(routes) + 1
-    elif action == 'delete':
+    elif action in ('edit', 'delete'):
         if isinstance(index, bool) or not isinstance(index, int) or not 1 <= index <= len(routes):
             raise Problem('This route entry no longer exists. Refresh the table.', 409)
-        root.remove(routes[index - 1])
+        original = routes[index - 1]
+        if action == 'delete':
+            root.remove(original)
+        else:
+            if any(list(hop) for hop in original.findall(namespace + 'next')):
+                raise Problem('This entry contains structured next-hop XML that the form cannot safely edit. No changes were made.')
+            edited = make_lrt_route(draft or {}, before['tableType'])
+            for node in edited.iter():node.tag = namespace + node.tag
+            # Update only the selected route, retaining unknown route/user metadata.
+            user = original.find(namespace + 'user')
+            replacement = edited.find(namespace + 'user')
+            for key in ('type', 'rangeStart', 'rangeEnd', 'rangePrefix'):user.attrib.pop(key, None)
+            user.attrib.update(replacement.attrib);user.text = replacement.text
+            old_hops = original.findall(namespace + 'next')
+            new_hops = edited.findall(namespace + 'next')
+            for position, old_hop in enumerate(old_hops):
+                at = list(original).index(old_hop)
+                original.remove(old_hop)
+                if position < len(new_hops):
+                    new_hop = new_hops[position];new_hop.tail = old_hop.tail
+                    original.insert(at, new_hop)
+            if len(new_hops) > len(old_hops):
+                anchors = original.findall(namespace + 'next')
+                at = list(original).index(anchors[-1] if anchors else user) + 1
+                for hop in new_hops[len(old_hops):]:original.insert(at, hop);at += 1
+            description = original.find(namespace + 'description')
+            replacement = edited.find(namespace + 'description')
+            if replacement is None:
+                if description is not None:original.remove(description)
+            elif description is not None:description.text = replacement.text
+            else:original.append(replacement)
         selected_index = index
     else:
-        raise Problem('Only add and delete entry operations are supported.')
+        raise Problem('Only add, edit and delete entry operations are supported.')
     plain = ET.tostring(root, encoding='utf-8', xml_declaration=True)
     proposed = gzip.compress(plain, mtime=0) if content.startswith(b'\x1f\x8b') else plain
     after = parse_lrt(proposed)
     entry = before['entries'][index - 1] if action == 'delete' else after['entries'][selected_index - 1]
-    return proposed, dict(action=action, beforeCount=before['entryCount'], afterCount=after['entryCount'], entry=entry)
+    review = dict(action=action, beforeCount=before['entryCount'], afterCount=after['entryCount'], entry=entry)
+    if action == 'edit':review['previousEntry'] = before['entries'][index - 1]
+    return proposed, review
 
 
 def prepare_lrt_change(session, body):
