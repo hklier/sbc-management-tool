@@ -62,6 +62,23 @@ class DeviceStoreTests(unittest.TestCase):
             d.CONTEXT.set(a);proxy['same']='first';d.CONTEXT.set(b);self.assertNotIn('same',proxy);proxy['same']='second'
             d.CONTEXT.set(a);self.assertEqual(proxy['same'],'first');self.assertEqual(a.client.host,'192.0.2.51');self.assertEqual(b.monitor.settings['SBC_HOST'],'192.0.2.52')
         finally:d.CONTEXT.set(None)
+    def test_stale_profile_cannot_replace_latest_runtime(self):
+        first=self.store.create(profile())
+        with patch.object(server,'DEVICES',self.store):
+            latest=self.store.update(first['id'],dict(name='New settings'),1)
+            current=server.runtime(latest)
+            self.assertIs(server.runtime(first),current)
+            server.RUNTIMES.pop(first['id'],None)
+    def test_trap_views_are_filtered_by_management_ip(self):
+        import trap_tools,test_traps
+        store=trap_tools.Store(Path(self.directory.name)/'traps.sqlite3')
+        a=test_traps.event();a['source']='192.0.2.51';first=store.append(a)
+        b=test_traps.event();b['source']='192.0.2.52';second=store.append(b)
+        record=self.store.create(profile());d.CONTEXT.set(server.DeviceRuntime(record))
+        try:
+            self.assertEqual(store.overview()['retained'],1);self.assertEqual(store.query()['filtered'],1)
+            self.assertIsNotNone(store.event(first));self.assertIsNone(store.event(second))
+        finally:d.CONTEXT.set(None)
 
 class DeviceHttpTests(unittest.TestCase):
     def setUp(self):

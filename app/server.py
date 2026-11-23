@@ -255,6 +255,8 @@ class DeviceRuntime:
 
 def runtime(record):
     with DEVICE_GATE:
+        # An edit may have finished after the request read the device list.
+        record=DEVICES.get(record['id']) if DEVICES.initialized else record
         current=RUNTIMES.get(record['id'])
         if current is None or current.record['version']!=record['version']:
             current=RUNTIMES[record['id']]=DeviceRuntime(record)
