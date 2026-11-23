@@ -141,8 +141,15 @@ class HdrSftpIntegrationTests(unittest.TestCase):
         devices_tools.Store(root).initialize({});self.hdr=hdr_tools.Manager(root)
         pem=test_devices.KEY.private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.TraditionalOpenSSL,serialization.NoEncryption()).decode()
         host_key=paramiko.RSAKey.from_private_key(io.StringIO(pem));self.pem=pem
+        from cryptography.hazmat.primitives.asymmetric import ed25519
+        alternate=ed25519.Ed25519PrivateKey.generate().private_bytes(serialization.Encoding.PEM,serialization.PrivateFormat.OpenSSH,serialization.NoEncryption()).decode()
+        self.host_keys=[host_key,paramiko.Ed25519Key.from_private_key(io.StringIO(alternate))]
+        self.host_algorithms=None;self.auth_attempts=[]
+        owner=self
         class Auth(paramiko.ServerInterface):
-            def check_auth_password(self,username,password):return paramiko.AUTH_SUCCESSFUL if username=='hdr-reader' and password=='private-hdr-password' else paramiko.AUTH_FAILED
+            def check_auth_password(self,username,password):
+                owner.auth_attempts.append(username)
+                return paramiko.AUTH_SUCCESSFUL if username=='hdr-reader' and password=='private-hdr-password' else paramiko.AUTH_FAILED
             def check_auth_publickey(self,username,key):return paramiko.AUTH_SUCCESSFUL if username=='hdr-reader' and key==host_key else paramiko.AUTH_FAILED
             def get_allowed_auths(self,username):return 'publickey,password'
             def check_channel_request(self,kind,channel):return paramiko.OPEN_SUCCEEDED if kind=='session' else paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
@@ -159,7 +166,10 @@ class HdrSftpIntegrationTests(unittest.TestCase):
                 try:client,_=self.socket.accept()
                 except socket.timeout:continue
                 except OSError:break
-                transport=paramiko.Transport(client);self.transports.append(transport);transport.add_server_key(host_key);transport.set_subsystem_handler('sftp',paramiko.SFTPServer,Files)
+                transport=paramiko.Transport(client);self.transports.append(transport)
+                for key in self.host_keys:transport.add_server_key(key)
+                if self.host_algorithms:transport.get_security_options().key_types=self.host_algorithms
+                transport.set_subsystem_handler('sftp',paramiko.SFTPServer,Files)
                 try:transport.start_server(server=Auth())
                 except Exception:transport.close()
         self.thread=threading.Thread(target=serve,daemon=True);self.thread.start();self.addCleanup(self.close)
@@ -175,6 +185,21 @@ class HdrSftpIntegrationTests(unittest.TestCase):
         from cryptography.hazmat.primitives.asymmetric import rsa
         key=rsa.generate_private_key(public_exponent=65537,key_size=2048).public_key().public_bytes(serialization.Encoding.OpenSSH,serialization.PublicFormat.OpenSSH).decode()
         body=self.config();body['host_key']=key;self.hdr.save(body)
-        with self.assertRaises(hdr_tools.HdrError):self.hdr.listing()
+        with self.assertRaisesRegex(hdr_tools.HdrError,'does not match'):self.hdr.listing()
+        self.assertEqual(self.auth_attempts,[])
+    def test_saved_rsa_key_with_ed25519_and_only_rsa_sha256(self):
+        self.host_algorithms=('ssh-ed25519','rsa-sha2-256')
+        self.hdr.save(self.config())
+        self.assertEqual([f['name'] for f in self.hdr.listing()['files']],['sample.csv'])
+    def test_authentication_and_missing_directory_errors_are_actionable(self):
+        body=self.config();body['password']='wrong';self.hdr.save(body)
+        with self.assertRaisesRegex(hdr_tools.HdrError,'authentication failed'):self.hdr.listing()
+        body.update(version=1,password='private-hdr-password',path='/missing');self.hdr.save(body)
+        with self.assertRaisesRegex(hdr_tools.HdrError,'directory does not exist'):self.hdr.listing()
+    def test_empty_listing_with_subdirectories_explains_directory_scope(self):
+        (self.hdr.local_root/'daily').mkdir()
+        result=self.hdr.listing()
+        self.assertEqual(result['files'],[]);self.assertEqual(result['subdirectories'],1)
+        self.assertIn('Enter the path',result['message'])
 
 if __name__=='__main__':unittest.main()

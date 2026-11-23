@@ -161,6 +161,8 @@ Use an existing SFTP receiver as the destination for SBC HDR pushes; configure t
 
 Credentials and private keys are encrypted on the persistent state volume. The API returns stored/not-stored indicators instead of their contents. Blank credentials keep saved values for the same server/port/username; changing that identity requires credentials again. Use the explicit removal options to clear saved material. A new private key with an empty passphrase is treated as an unencrypted replacement key. Host-key changes must be verified before reconnecting.
 
+The SFTP connection negotiates the saved public host key's algorithm. A server offering both RSA and Ed25519 keys can be verified using its saved RSA key; a genuinely different key is rejected before authentication. Authentication failures, missing directories, and directory permission errors have separate messages. If a successful connection finds only subdirectories, enter the path of the directory containing the CSV files.
+
 Listings are read-only, include direct `.csv`/`.CSV` regular files, and are bounded to 200 results and 2,000 examined entries. Subdirectories are not traversed. Listing success confirms access, not that CSV contents conform to an HDR schema. All signed-in users can list files; administrators change source settings.
 
 ## 8. GitHub and Argo CD

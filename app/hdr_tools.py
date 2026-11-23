@@ -1,5 +1,5 @@
 """HDR CSV source configuration and bounded, read-only file discovery."""
-import io,os,re,stat,time
+import base64,io,os,re,stat,time
 from pathlib import Path,PurePosixPath
 import devices_tools,settings_tools
 from cryptography.hazmat.primitives import serialization
@@ -54,23 +54,27 @@ class Manager:
         else:raise HdrError('Choose a mounted directory or SFTP source.')
         self.store.save('hdr',value,body.get('version'));return self.public()
     def listing(self):
-        value=self.raw()['value'];rows=[];scanned=0;limit=200;maximum=2000
+        value=self.raw()['value'];rows=[];scanned=0;subdirectories=0;limit=200;maximum=2000
         try:
             if value['mode']=='local':
                 path=self.local_path(value['path'])
                 with os.scandir(path) as entries:
                     for entry in entries:
                         scanned+=1
+                        subdirectories+=entry.is_dir(follow_symlinks=False)
                         if entry.name.lower().endswith('.csv') and entry.is_file(follow_symlinks=False):
                             info=entry.stat(follow_symlinks=False);rows.append(dict(name=entry.name,size=info.st_size,modified_at=info.st_mtime))
                         if scanned>=maximum or len(rows)>=limit:break
             else:
                 import paramiko
-                class Trusted(paramiko.MissingHostKeyPolicy):
-                    def missing_host_key(self,client,hostname,key):
-                        actual=devices_tools.ssh_key(key.get_name()+' '+key.get_base64())[1]
-                        import hmac
-                        if not hmac.compare_digest(actual,value['host_fingerprint']):raise HdrError('The SFTP server host key changed. Verify its public key before reconnecting.',502)
+                host_kind,encoded=value['host_key'].split()[:2]
+                trusted_key=paramiko.PKey.from_type_string(host_kind,base64.b64decode(encoded,validate=True))
+                def pinned_transport(sock,**kwargs):
+                    transport=paramiko.Transport(sock,**kwargs)
+                    options=transport.get_security_options()
+                    # Negotiate the saved key family, retaining supported RSA SHA-2 signatures.
+                    options.key_types=tuple(name for name in options.key_types if name==host_kind or (host_kind=='ssh-rsa' and name in ('rsa-sha2-512','rsa-sha2-256')))
+                    return transport
                 key=None
                 if value.get('private_key'):
                     for kind in ('Ed25519Key','RSAKey','ECDSAKey'):
@@ -79,16 +83,26 @@ class Manager:
                             try:key=klass.from_private_key(io.StringIO(value['private_key']),password=value.get('key_passphrase') or None);break
                             except Exception:pass
                     if key is None:raise HdrError('The stored SFTP key could not be loaded.',502)
-                client=paramiko.SSHClient();client.set_missing_host_key_policy(Trusted())
+                client=paramiko.SSHClient()
+                server_name=value['host'] if value['port']==22 else '[{}]:{}'.format(value['host'],value['port'])
+                client.get_host_keys().add(server_name,host_kind,trusted_key)
                 try:
-                    client.connect(value['host'],port=value['port'],username=value['username'],password=value.get('password') or None,pkey=key,allow_agent=False,look_for_keys=False,timeout=7,banner_timeout=7,auth_timeout=7)
+                    client.connect(value['host'],port=value['port'],username=value['username'],password=value.get('password') or None,pkey=key,allow_agent=False,look_for_keys=False,timeout=7,banner_timeout=7,auth_timeout=7,transport_factory=pinned_transport)
                     with client.open_sftp() as sftp:
                         sftp.get_channel().settimeout(10)
                         for entry in sftp.listdir_iter(value['path'],read_aheads=1):
                             scanned+=1
+                            subdirectories+=stat.S_ISDIR(entry.st_mode or 0)
                             if entry.filename.lower().endswith('.csv') and stat.S_ISREG(entry.st_mode or 0):rows.append(dict(name=entry.filename,size=entry.st_size,modified_at=entry.st_mtime))
                             if scanned>=maximum or len(rows)>=limit:break
+                except paramiko.BadHostKeyException:raise HdrError('The SFTP server host key does not match the saved public key. Verify its public key before reconnecting.',502) from None
+                except paramiko.AuthenticationException:raise HdrError('SFTP authentication failed. Check the username, password or client private key.',502) from None
+                except FileNotFoundError:raise HdrError('The remote CSV directory does not exist. Use the absolute path visible to this SFTP account.',502) from None
+                except PermissionError:raise HdrError('The SFTP account does not have permission to list the CSV directory.',502) from None
+                except TimeoutError:raise HdrError('The SFTP connection timed out. Check network access and the server response.',502) from None
                 finally:client.close()
         except HdrError:raise
         except Exception:raise HdrError('Could not list HDR files. Check the saved path, server identity, credentials, network access and directory permissions.',502) from None
-        return dict(files=sorted(rows,key=lambda r:r['name']),truncated=scanned>=maximum or len(rows)>=limit,checked_at=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),message='Connection verified. CSV contents are not imported or analysed yet.')
+        message='Connection verified. CSV contents are not imported or analysed yet.'
+        if not rows and subdirectories:message='Connection verified. No CSV files in this directory; {} subdirectories found. Enter the path to the directory containing CSV files. Subdirectories are not searched.'.format(subdirectories)
+        return dict(files=sorted(rows,key=lambda r:r['name']),subdirectories=subdirectories,truncated=scanned>=maximum or len(rows)>=limit,checked_at=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),message=message)
