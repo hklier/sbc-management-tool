@@ -1,0 +1,22 @@
+{
+  "apiVersion": "v1",
+  "kind": "PersistentVolumeClaim",
+  "metadata": {
+    "name": "registry-storage-shared",
+    "namespace": "registry",
+    "annotations": {
+      "argocd.argoproj.io/sync-options": "Prune=false,Delete=false"
+    }
+  },
+  "spec": {
+    "accessModes": [
+      "ReadWriteMany"
+    ],
+    "storageClassName": "registry-nfs-retain",
+    "resources": {
+      "requests": {
+        "storage": "50Gi"
+      }
+    }
+  }
+}
