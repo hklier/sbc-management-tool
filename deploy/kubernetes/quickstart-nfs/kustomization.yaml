@@ -1,0 +1,11 @@
+{
+  "apiVersion": "kustomize.config.k8s.io/v1beta1",
+  "kind": "Kustomization",
+  "resources": ["../quickstart"],
+  "patches": [
+    {
+      "target": {"kind": "PersistentVolumeClaim", "name": "sbc-console-state"},
+      "patch": "[{\"op\":\"add\",\"path\":\"/spec/storageClassName\",\"value\":\"nfs-csi\"}]"
+    }
+  ]
+}

@@ -8,13 +8,15 @@ The **existing lab profile**, `deploy/kubernetes/base`, also runs the SIPREC rec
 
 Application bootstrap needs no interactive answers. Cluster prerequisites—including a working image registry and storage provisioning—must already be available. Exposure of SIP/RTP, trap traffic, or an external HTTPS address is a cluster/network configuration task.
 
+For a new installation in the current lab, `deploy/kubernetes/quickstart-nfs` selects the existing `nfs-csi` StorageClass automatically. It uses the same zero-input application bootstrap. The generic `quickstart` profile uses the target cluster's default StorageClass.
+
 ## 2. Requirements and prerequisites
 
 | Area | Requirement |
 |---|---|
 | Cluster | A working Kubernetes cluster with DNS, CNI networking, and schedulable Linux AMD64 workers. This release is validated on Kubernetes 1.36. |
 | Access | `kubectl` configured for the target cluster; permissions to manage a namespace, PVC, Deployment, and Service. The app itself does not need Kubernetes API access. |
-| Storage | A default StorageClass that dynamically provisions a durable writable ReadWriteOnce PVC, or an administrator-provisioned PVC. The quick start requests 10 GiB. Keep one active replica. Use shared storage or correctly node-bound local storage; a hostPath PV without node affinity can appear empty when a pod moves to another node. |
+| Storage | A default StorageClass that dynamically provisions a durable writable ReadWriteOnce PVC, or an administrator-provisioned PVC. It must provide reliable POSIX locking and flush semantics. The quick start requests 10 GiB. Keep one active replica. Use shared storage or correctly node-bound local storage; a hostPath PV without node affinity can appear empty when a pod moves to another node. |
 | Filesystem permissions | A short initializer creates `/data/application` with group 10001 and mode 0770. Main containers run as UID/GID 10001 and create their private state beneath `/data/application/state`. The volume must allow this group preparation, including when NFS root-squash is enabled. |
 | Pod policy | The supplied initializer runs as UID 0, with a read-only container filesystem and limited filesystem capabilities. Main containers run without root or capabilities. If your policy prohibits root initializers, have the storage administrator prepare the parent directory for group 10001 and remove the initializer before installing. |
 | Images | Worker nodes must pull the referenced Linux AMD64 images. The supplied image reference uses the existing registry, `192.168.2.240:5000`; this is a private lab address, not a public image service. Outside this network, build or mirror the images to a registry reachable by your cluster and update the Kustomize image reference first. |
@@ -75,6 +77,12 @@ kubectl -n sbc-console get pods
 ```
 
 The PVC must become `Bound`; the pod should show **2/2 Running** for the console and traps. No application Secrets need to be created. If there is no default StorageClass, arrange storage before installation; do not work around an unbound PVC by using temporary storage for a production installation.
+
+In the current lab, use `kubectl apply -k deploy/kubernetes/quickstart-nfs` instead of the generic apply command. Its default `hostpath` StorageClass has no PV node affinity; the NFS profile avoids creating application state that could appear empty after a node move. The NFS StorageClass must exist first. For another cluster, choose a durable default StorageClass or adapt this small storage overlay.
+
+The profile deliberately avoids recursive pod `fsGroup` changes. With root-squashed NFS, kubelet cannot traverse the app's private UID-owned state directories during a later remount. The initializer prepares only a group-accessible parent; the application creates and owns the private state below it. Do not add recursive volume-ownership changes without testing rescheduling and permissions.
+
+The quick-start profiles set `SQLITE_JOURNAL_MODE=DELETE` for rollback journaling, including on shared NFS storage. [SQLite does not support WAL journaling on a network filesystem](https://sqlite.org/wal.html). The existing node-local lab profile retains WAL mode. Only `WAL` and `DELETE` are accepted; do not select WAL for a network-backed state volume. Keep one active replica and use a storage service with reliable locking and flush semantics.
 
 Open the initial endpoint privately:
 
@@ -195,7 +203,7 @@ Agree retention, recording capacity, RTP port ranges, and SBC SIPREC configurati
 
 ## 10. Backups, recovery, and upgrades
 
-Back up the complete persistent state consistently while the app is stopped, or use a storage snapshot/application-consistent backup method. SQLite uses WAL files; do not copy only a live `.sqlite3` file and assume it is complete.
+Back up the complete persistent state consistently while the app is stopped, or use a storage snapshot/application-consistent backup method. SQLite can have WAL or rollback-journal files; do not copy only a live `.sqlite3` file and assume it is complete.
 
 Retain these items together:
 

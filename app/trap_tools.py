@@ -1,4 +1,5 @@
 import devices_tools
+import database_tools
 """Bounded, persistent SNMPv1/v2c trap inbox; never sends configuration requests."""
 from contextlib import contextmanager
 from functools import lru_cache
@@ -95,7 +96,7 @@ class Store:
  def connect(self):
   self.path.parent.mkdir(parents=True,exist_ok=True)
   connection=sqlite3.connect(self.path,timeout=3);connection.row_factory=sqlite3.Row
-  connection.execute('PRAGMA journal_mode=WAL');connection.execute('PRAGMA busy_timeout=3000')
+  database_tools.configure(connection);connection.execute('PRAGMA busy_timeout=3000')
   connection.executescript('CREATE TABLE IF NOT EXISTS events(id INTEGER PRIMARY KEY AUTOINCREMENT, epoch REAL NOT NULL, severity TEXT NOT NULL, version TEXT NOT NULL, search TEXT NOT NULL, brief TEXT NOT NULL, payload TEXT NOT NULL); CREATE INDEX IF NOT EXISTS event_epoch ON events(epoch); CREATE TABLE IF NOT EXISTS receiver(id INTEGER PRIMARY KEY CHECK(id=1), payload TEXT NOT NULL);')
   self.path.chmod(0o600)
   try:

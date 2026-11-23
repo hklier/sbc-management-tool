@@ -120,6 +120,15 @@ class HdrTests(unittest.TestCase):
         with self.assertRaises(devices_tools.DeviceError):devices_tools.Store(self.root).initialize({})
 
 class QuickstartTests(unittest.TestCase):
+    def test_rollback_journal_mode_for_network_storage(self):
+        with tempfile.TemporaryDirectory() as directory,patch.dict(os.environ,{'SQLITE_JOURNAL_MODE':'DELETE'}):
+            root=Path(directory);users=users_tools.Store(root/'users.sqlite3');users.initialize();devices_tools.Store(root).initialize({})
+            import trap_tools
+            traps=trap_tools.Store(root/'traps.sqlite3');traps.overview()
+            for name in ('users.sqlite3','devices.sqlite3','traps.sqlite3'):
+                db=sqlite3.connect(root/name)
+                try:self.assertEqual(db.execute('PRAGMA journal_mode').fetchone()[0],'delete')
+                finally:db.close()
     def test_no_credentials_secrets_lab_storage_or_node_binding_required(self):
         path=Path(__file__).resolve().parents[1]/'deploy/kubernetes/quickstart/resources.json';resources=json.loads(path.read_text());payload=json.dumps(resources)
         for forbidden in ('secretKeyRef','secretRef','secretName','APP_PASSWORD_HASH','SBC_PASSWORD','hostPath','nodeSelector'):self.assertNotIn(forbidden,payload)

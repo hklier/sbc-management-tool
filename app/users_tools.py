@@ -1,6 +1,7 @@
 """Persistent console accounts, separate from the SBC account."""
 from contextlib import contextmanager
 import datetime, hashlib, hmac, os, re, secrets, sqlite3, threading
+import database_tools
 from pathlib import Path
 
 class UserError(Exception):
@@ -46,7 +47,7 @@ class Store:
 
     def initialize(self,initial_username='admin',initial_hash=None):
         with self.lock,self.connect() as db:
-            db.execute('PRAGMA journal_mode=WAL')
+            database_tools.configure(db)
             db.execute("CREATE TABLE IF NOT EXISTS users(username TEXT PRIMARY KEY,password_hash TEXT NOT NULL,role TEXT NOT NULL CHECK(role IN ('admin','user')),version INTEGER NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL)")
             if 'must_change_password' not in {r['name'] for r in db.execute('PRAGMA table_info(users)')}:
                 db.execute('ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0')

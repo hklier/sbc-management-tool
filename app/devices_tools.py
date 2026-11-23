@@ -1,5 +1,6 @@
 """Encrypted managed-device records and request-local connection state."""
 import base64, contextvars, datetime, hashlib, ipaddress, json, os, re, socket, sqlite3, struct, threading, uuid
+import database_tools
 from collections.abc import MutableMapping
 from contextlib import contextmanager
 from pathlib import Path
@@ -149,7 +150,7 @@ class Store:
     def initialize(self,environment=None):
         env=os.environ if environment is None else environment
         with self.lock,self.connect() as db:
-            db.execute('PRAGMA journal_mode=WAL')
+            database_tools.configure(db)
             db.execute('CREATE TABLE IF NOT EXISTS devices(id TEXT PRIMARY KEY,version INTEGER NOT NULL,payload BLOB NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS device_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)')
             if not self.key_path.exists():
