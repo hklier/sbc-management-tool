@@ -153,6 +153,7 @@ class Store:
             db.execute('CREATE TABLE IF NOT EXISTS devices(id TEXT PRIMARY KEY,version INTEGER NOT NULL,payload BLOB NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL)')
             db.execute('CREATE TABLE IF NOT EXISTS device_meta(key TEXT PRIMARY KEY,value TEXT NOT NULL)')
             if not self.key_path.exists():
+                if (self.directory/'settings.sqlite3').exists():raise DeviceError('Restore the missing encryption key before opening saved application settings.',503)
                 if db.execute('SELECT 1 FROM devices LIMIT 1').fetchone():raise DeviceError('Restore the missing device encryption key; existing credentials were not overwritten.',503)
                 fd=os.open(self.key_path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|getattr(os,'O_NOFOLLOW',0),0o600)
                 with os.fdopen(fd,'wb') as target:target.write(Fernet.generate_key())

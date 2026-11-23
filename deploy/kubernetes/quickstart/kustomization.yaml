@@ -1,0 +1,15 @@
+{
+  "apiVersion": "kustomize.config.k8s.io/v1beta1",
+  "kind": "Kustomization",
+  "namespace": "sbc-console",
+  "resources": [
+    "resources.json"
+  ],
+  "images": [
+    {
+      "name": "sbc-console",
+      "newName": "192.168.2.240:5000/sbc-management-tool/console",
+      "digest": "sha256:6de1099a8b832e6606b304ca2c258c0e71923741513f1648524863e35269a971"
+    }
+  ]
+}

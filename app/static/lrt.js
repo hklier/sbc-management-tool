@@ -3,9 +3,9 @@ let lrtTables=[],lrtSelected='',lrtOffset=0,lrtFiltered=0,lrtRequest=0,lrtSearch
 let lrtCurrent=null,lrtChange=null,lrtOverviewRequest=0,lrtEditEntry=null,lrtDraftContext=null;
 
 function showWorkspace(view){
-  ['config','history','lrt','diagnostics','traces','snmp','traps','cdr','recordings','users','devices'].forEach(name=>{$(name+'-view').hidden=name!==view;$('nav-'+name).classList.toggle('active',name===view)});
-  $('config-actions').hidden=view==='lrt'||view==='diagnostics'||view==='traces'||view==='snmp'||view==='traps'||view==='cdr'||view==='recordings'||view==='users'||view==='devices';
-  $('page-title').textContent={config:'Configuration',history:'History',lrt:'Local route tables',diagnostics:'Diagnostics',traces:'Packet captures',snmp:'SNMP diagnosis',traps:'SNMP traps',cdr:'Call detail records',recordings:'Recordings',users:'Users & passwords',devices:'Devices'}[view];
+  ['config','history','lrt','diagnostics','traces','snmp','traps','cdr','recordings','users','devices','hdr','certificates'].forEach(name=>{$(name+'-view').hidden=name!==view;$('nav-'+name).classList.toggle('active',name===view)});
+  $('config-actions').hidden=view==='lrt'||view==='diagnostics'||view==='traces'||view==='snmp'||view==='traps'||view==='cdr'||view==='recordings'||view==='users'||view==='devices'||view==='hdr'||view==='certificates';
+  $('page-title').textContent={config:'Configuration',history:'History',lrt:'Local route tables',diagnostics:'Diagnostics',traces:'Packet captures',snmp:'SNMP diagnosis',traps:'SNMP traps',cdr:'Call detail records',recordings:'Recordings',users:'Users & passwords',devices:'Devices',hdr:'HDR Reporting',certificates:'WebGUI certificate'}[view];
 }
 function lrtRunning(){return $('lrt-source').value==='running'}
 function renderLrtCards(){

@@ -21,6 +21,8 @@ import xml.etree.ElementTree as ET
 import rest_activity
 import users_tools
 import devices_tools
+import certificate_tools
+import hdr_tools
 from contextlib import contextmanager
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -37,6 +39,8 @@ USERS = users_tools.Store(STATE / 'users.sqlite3')
 DEVICES = devices_tools.Store(STATE)
 RUNTIMES = {}
 DEVICE_GATE = threading.RLock()
+CERTIFICATES = certificate_tools.Manager(STATE)
+HDR = None
 SNAPSHOTS = {}
 ATTEMPTS = {}
 LRT_CACHE = {}
@@ -1027,6 +1031,8 @@ class Handler(BaseHTTPRequestHandler):
         user = USERS.current(item.get('username'), item.get('auth_version'))
         if not user:
             raise Problem('Your session has expired. Sign in again.', 401)
+        if user.get('must_change_password') and urlsplit(self.path).path not in ('/api/session','/api/users/password','/api/logout'):
+            raise Problem('Change the initial password before using the application.',403,dict(password_change_required=True))
         item['user'] = user
         rest_activity.CONTEXT.session=sid
         rest_activity.CONTEXT.source=urlsplit(self.path).path
@@ -1040,7 +1046,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def guard_device(self,path,write=False):
         if not DEVICES.initialized:return
-        if path in ('/api/session','/api/login','/api/logout','/api/audit') or path.startswith(('/api/users','/api/recordings','/api/rest-activity')):return
+        if path in ('/api/session','/api/login','/api/logout','/api/audit') or path.startswith(('/api/users','/api/recordings','/api/rest-activity','/api/certificates','/api/hdr')):return
         current=devices_tools.CONTEXT.get()
         if current is None:raise Problem('Add or select a managed device first.',409)
         if write:
@@ -1086,12 +1092,18 @@ class Handler(BaseHTTPRequestHandler):
         try:
             parsed = urlsplit(self.path)
             p = parsed.path
-            if p in ('/', '/app.js', '/rest-activity.js', '/lrt.js', '/diagnostics.js', '/diagnostic-charts.js', '/traces.js', '/snmp.js', '/traps.js', '/cdr.js', '/recordings.js', '/users.js', '/devices.js', '/style.css'):
+            if p in ('/', '/app.js', '/rest-activity.js', '/lrt.js', '/diagnostics.js', '/diagnostic-charts.js', '/traces.js', '/snmp.js', '/traps.js', '/cdr.js', '/recordings.js', '/users.js', '/devices.js', '/setup.js', '/style.css'):
                 name = 'index.html' if p == '/' else p[1:]
-                mime = {'index.html': 'text/html', 'app.js': 'text/javascript', 'rest-activity.js':'text/javascript', 'lrt.js': 'text/javascript', 'diagnostics.js': 'text/javascript', 'diagnostic-charts.js': 'text/javascript', 'traces.js': 'text/javascript', 'snmp.js': 'text/javascript', 'traps.js': 'text/javascript', 'cdr.js': 'text/javascript', 'recordings.js': 'text/javascript', 'users.js': 'text/javascript', 'devices.js':'text/javascript', 'style.css': 'text/css'}[name]
+                mime = {'index.html': 'text/html', 'app.js': 'text/javascript', 'rest-activity.js':'text/javascript', 'lrt.js': 'text/javascript', 'diagnostics.js': 'text/javascript', 'diagnostic-charts.js': 'text/javascript', 'traces.js': 'text/javascript', 'snmp.js': 'text/javascript', 'traps.js': 'text/javascript', 'cdr.js': 'text/javascript', 'recordings.js': 'text/javascript', 'users.js': 'text/javascript', 'devices.js':'text/javascript', 'setup.js':'text/javascript', 'style.css': 'text/css'}[name]
                 return self.send(200, (BASE / 'static' / name).read_bytes(), content_type=mime + '; charset=utf-8')
             sid, session = self.session()
             q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
+            if p=='/api/certificates':
+                if session['user']['role']!='admin':raise Problem('Only administrators can manage the WebGUI certificate.',403)
+                return self.send(200,CERTIFICATES.status())
+            if p in ('/api/hdr','/api/hdr/files'):
+                if HDR is None:raise Problem('HDR sources are not initialized.',503)
+                return self.send(200,HDR.public() if p=='/api/hdr' else HDR.listing())
             if p in ('/api/devices','/api/devices/detail'):
                 if p.endswith('/detail'):
                     if session['user']['role']!='admin':raise Problem('Only administrators can edit devices.',403)
@@ -1192,7 +1204,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200,data)
             with GATE:
                 if p == '/api/session':
-                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host if not DEVICES.initialized or devices_tools.CONTEXT.get() else '', user=session['user']['username'], role=session['user']['role'], device=devices_tools.public(devices_tools.CONTEXT.get().record) if devices_tools.CONTEXT.get() else None)
+                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host if not DEVICES.initialized or devices_tools.CONTEXT.get() else '', user=session['user']['username'], role=session['user']['role'], must_change_password=session['user'].get('must_change_password',False), device=devices_tools.public(devices_tools.CONTEXT.get().record) if devices_tools.CONTEXT.get() else None)
                 elif p == '/api/status':
                     versions = SBC_CLIENT.get('configuration/versions')
                     data = dict(version=serial(SBC_CLIENT.get('system/version')), versions=serial(versions), workflow=configuration_workflow(versions), pending=SBC_CLIENT.pending, blocked=SBC_CLIENT.blocked)
@@ -1280,6 +1292,17 @@ class Handler(BaseHTTPRequestHandler):
             sid, session = self.session()
             if not hmac.compare_digest(self.headers.get('X-CSRF-Token', ''), session['csrf']):
                 raise Problem('Your editing session is not valid. Reload the page.', 403)
+            if path.startswith('/api/certificates') or path=='/api/hdr':
+                if session['user']['role']!='admin':raise Problem('Only administrators can change application settings.',403)
+                if path=='/api/certificates/csr':result=CERTIFICATES.generate(body)
+                elif path=='/api/certificates/remove':CERTIFICATES.remove(body.get('id'));result=dict(ok=True)
+                elif path=='/api/certificates/install':result=CERTIFICATES.install(body.get('id'),body.get('certificate_pem'))
+                elif path=='/api/hdr':
+                    if HDR is None:raise Problem('HDR sources are not initialized.',503)
+                    result=HDR.save(body)
+                else:raise Problem('Resource not found.',404)
+                audit('application.settings','success',user=session['user']['username'],path=path)
+                return self.send(200,result)
             if path.startswith('/api/devices'):
                 if path=='/api/devices/select':
                     record=DEVICES.get(body.get('id',''))
@@ -1445,7 +1468,7 @@ class Handler(BaseHTTPRequestHandler):
             self.fail(exc)
 
     def fail(self, exc):
-        if isinstance(exc,devices_tools.DeviceError):exc=Problem(str(exc),exc.code)
+        if isinstance(exc,(devices_tools.DeviceError,certificate_tools.CertificateError,hdr_tools.HdrError)):exc=Problem(str(exc),exc.code)
         code = exc.code if isinstance(exc, Problem) else 502
         message = str(exc) if isinstance(exc, Problem) else 'The request could not be completed: ' + type(exc).__name__
         if self.command == 'POST' and self.path != '/api/login':
@@ -1453,25 +1476,25 @@ class Handler(BaseHTTPRequestHandler):
         self.send(code, dict(error=message, **(exc.details if isinstance(exc, Problem) else {})))
 
 
+class TLSHTTPServer(ThreadingHTTPServer):
+    tls_context=None
+    def get_request(self):
+        connection,address=super().get_request()
+        try:
+            connection.settimeout(10)
+            if self.tls_context:connection=self.tls_context.wrap_socket(connection,server_side=True)
+            connection.settimeout(None)
+            return connection,address
+        except Exception:connection.close();raise
+
 def main():
-    for required in ('APP_PASSWORD_HASH',):
-        if not os.environ.get(required):
-            raise SystemExit('Missing environment variable ' + required)
-    USERS.initialize(os.environ.get('APP_USER','admin'),os.environ['APP_PASSWORD_HASH'])
+    global HDR
+    USERS.initialize(os.environ.get('APP_USER','admin'),os.environ.get('APP_PASSWORD_HASH'))
     DEVICES.initialize()
-    host = os.environ.get('BIND_HOST', '127.0.0.1')
-    cert = os.environ.get('TLS_CERT')
-    if host not in ('127.0.0.1', 'localhost') and not cert:
-        raise SystemExit('HTTPS is required to listen on the network.')
-    server = ThreadingHTTPServer((host, int(os.environ.get('PORT', '8443'))), Handler)
-    if cert:
-        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
-        context.minimum_version = ssl.TLSVersion.TLSv1_2
-        context.load_cert_chain(cert, os.environ['TLS_KEY'])
-        server.socket = context.wrap_socket(server.socket, server_side=True)
-    print('SBC Console ready', flush=True)
+    HDR=hdr_tools.Manager(STATE,os.environ.get('HDR_LOCAL_ROOT'))
+    server=TLSHTTPServer((os.environ.get('BIND_HOST','127.0.0.1'),int(os.environ.get('PORT','8443'))),Handler)
+    server.tls_context=CERTIFICATES.setup(os.environ);CERTIFICATES.server=server
+    print('SBC Console ready (HTTPS)',flush=True)
     server.serve_forever()
 
-
-if __name__ == '__main__':
-    main()
+if __name__ == '__main__':main()

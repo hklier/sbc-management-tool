@@ -2,6 +2,10 @@
 
 Oracle SBC HTTPS console, SIPREC recorder, offline transcription worker, and SNMP trap receiver. The original handoff is documented in [README.txt](README.txt) and [CONFIGURATION.txt](CONFIGURATION.txt). The recorder's GPL-3.0 license and attribution remain in `siprec/`.
 
+See the [Kubernetes deployment and user guide](docs/KUBERNETES-USER-GUIDE.md) for prerequisites, installation into another cluster, Argo CD, certificates, HDR sources, and recovery. The new `deploy/kubernetes/quickstart` profile needs no application bootstrap inputs: it generates HTTPS and creates **admin / oracle**, with an API-enforced password change at first sign-in. Cluster storage and image-pull prerequisites still apply. Existing installations retain their current accounts and certificates.
+
+**WebGUI certificate** provides custom subject/SAN CSR generation, CSR download, and signed PEM-chain validation/import. Private CSR keys remain on the persistent volume; activation changes new HTTPS connections without a pod restart. **HDR Reporting** configures a mounted directory or an SFTP CSV source with password/private-key authentication, encrypted credentials, server host-key verification, and a bounded read-only CSV inventory. HDR analysis is planned for a later release.
+
 ## Lab deployment
 
 - Console: **https://192.168.0.241**, username **admin**. The initial certificate is self-signed and valid for this IP address. The generated password and private trap community are kept outside this repository.

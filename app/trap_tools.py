@@ -167,7 +167,7 @@ def receiver_socket():
  return sock
 
 def run_receiver():
- allowed=communities();host=os.environ.get('SBC_HOST','192.168.226.193')
+ allowed=communities() if os.environ.get('SNMP_TRAP_COMMUNITIES') or os.environ.get('SNMP_COMMUNITY') else [];host=os.environ.get('SBC_HOST','192.168.226.193')
  profiles=None;devices=devices_tools.Store(Path(os.environ.get('STATE_DIR','/var/lib/sbc-console')))
  sock=receiver_socket();sock.settimeout(1)
  state=dict(status='listening',endpoint=sock.getsockname()[0]+':'+str(sock.getsockname()[1]),source=host,versions=['1','2c'],startedAt=timestamp(),accepted=0,rejected=0,malformed=0,storageErrors=0,error='')
