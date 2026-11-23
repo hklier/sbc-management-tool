@@ -73,11 +73,11 @@
                 "env": [
                   {
                     "name": "STATE_DIR",
-                    "value": "/data/state"
+                    "value": "/data/application/state"
                   },
                   {
                     "name": "RECORDING_DIR",
-                    "value": "/data/state/recordings"
+                    "value": "/data/application/state/recordings"
                   },
                   {
                     "name": "BIND_HOST",
@@ -191,11 +191,11 @@
                 "env": [
                   {
                     "name": "STATE_DIR",
-                    "value": "/data/state"
+                    "value": "/data/application/state"
                   },
                   {
                     "name": "RECORDING_DIR",
-                    "value": "/data/state/recordings"
+                    "value": "/data/application/state/recordings"
                   },
                   {
                     "name": "BIND_HOST",
@@ -310,6 +310,50 @@
                 "name": "tmp",
                 "emptyDir": {
                   "sizeLimit": "128Mi"
+                }
+              }
+            ],
+            "initContainers": [
+              {
+                "name": "state-permissions",
+                "image": "sbc-console",
+                "command": [
+                  "python",
+                  "-c",
+                  "import os; p='/data/application'; os.makedirs(p,mode=0o770,exist_ok=True); os.chown(p,-1,10001); os.chmod(p,0o770)"
+                ],
+                "securityContext": {
+                  "runAsUser": 0,
+                  "runAsGroup": 10001,
+                  "runAsNonRoot": false,
+                  "allowPrivilegeEscalation": false,
+                  "readOnlyRootFilesystem": true,
+                  "capabilities": {
+                    "drop": [
+                      "ALL"
+                    ],
+                    "add": [
+                      "CHOWN",
+                      "FOWNER",
+                      "DAC_OVERRIDE"
+                    ]
+                  }
+                },
+                "volumeMounts": [
+                  {
+                    "name": "state",
+                    "mountPath": "/data"
+                  }
+                ],
+                "resources": {
+                  "requests": {
+                    "cpu": "10m",
+                    "memory": "32Mi"
+                  },
+                  "limits": {
+                    "cpu": "100m",
+                    "memory": "64Mi"
+                  }
                 }
               }
             ]

@@ -9,17 +9,17 @@
     {
       "name": "sbc-console",
       "newName": "192.168.2.240:5000/sbc-management-tool/console",
-      "digest": "sha256:6de1099a8b832e6606b304ca2c258c0e71923741513f1648524863e35269a971"
+      "digest": "sha256:96596a307cf10d2b30ccc42ed5bb039d41ffa2e8ba711cd3de7161226225461f"
     },
     {
       "name": "sbc-recorder",
       "newName": "192.168.2.240:5000/sbc-management-tool/recorder",
-      "digest": "sha256:37c93d836841568794ee62b502462d6a25c96e03780fa79b4bfcfb796d2ffeac"
+      "digest": "sha256:18387bd86d5f9a41221c5e72721d92f5e13b146a4226ec879c7b8bdf7a82e4ba"
     },
     {
       "name": "sbc-transcription",
       "newName": "192.168.2.240:5000/sbc-management-tool/transcription",
-      "digest": "sha256:67fc3824baa33f101cf4354d823e3197378d570dbfe362eca4c3bb3406b62402"
+      "digest": "sha256:ccbfa40075910cb7d33ebec4c2ed8d5921414bd27c2448471563b31d6c679e9f"
     }
   ]
 }

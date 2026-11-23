@@ -14,9 +14,11 @@ Application bootstrap needs no interactive answers. Cluster prerequisites—incl
 |---|---|
 | Cluster | A working Kubernetes cluster with DNS, CNI networking, and schedulable Linux AMD64 workers. This release is validated on Kubernetes 1.36. |
 | Access | `kubectl` configured for the target cluster; permissions to manage a namespace, PVC, Deployment, and Service. The app itself does not need Kubernetes API access. |
-| Storage | A default StorageClass that dynamically provisions a writable ReadWriteOnce PVC, or an administrator-provisioned PVC. The quick start requests 10 GiB. Keep one active replica. |
-| Filesystem permissions | The volume driver must support `fsGroup: 10001`. Containers run as UID/GID 10001 and create private state beneath `/data/state`. Pre-provisioned storage must permit this UID/GID to create that directory. |
+| Storage | A default StorageClass that dynamically provisions a durable writable ReadWriteOnce PVC, or an administrator-provisioned PVC. The quick start requests 10 GiB. Keep one active replica. Use shared storage or correctly node-bound local storage; a hostPath PV without node affinity can appear empty when a pod moves to another node. |
+| Filesystem permissions | A short initializer creates `/data/application` with group 10001 and mode 0770. Main containers run as UID/GID 10001 and create their private state beneath `/data/application/state`. The volume must allow this group preparation, including when NFS root-squash is enabled. |
+| Pod policy | The supplied initializer runs as UID 0, with a read-only container filesystem and limited filesystem capabilities. Main containers run without root or capabilities. If your policy prohibits root initializers, have the storage administrator prepare the parent directory for group 10001 and remove the initializer before installing. |
 | Images | Worker nodes must pull the referenced Linux AMD64 images. The supplied image reference uses the existing registry, `192.168.2.240:5000`; this is a private lab address, not a public image service. Outside this network, build or mirror the images to a registry reachable by your cluster and update the Kustomize image reference first. |
+| Registry durability | Registry blobs and manifests need persistent, node-safe storage too. A registry backed by unbound node-local hostPath storage can lose access to its images after rescheduling. |
 | Registry transport | Use HTTPS for a production registry. The existing lab registry uses HTTP and requires an administrator's containerd registry configuration on every eligible node. Do not disable registry verification cluster-wide. |
 | Capacity | For the console and traps, start with 2 vCPU and 2 GiB free worker capacity and monitor usage. Recording/transcription require additional CPU, memory, and disk. The quick-start requests total 125m CPU and 192 MiB RAM, with higher limits. |
 | Browser | A current browser with JavaScript and access to the forwarded or externally exposed HTTPS endpoint. |
@@ -220,7 +222,7 @@ For upgrades, retain the PVC and namespace, back up state, update the image dige
 |---|---|
 | PVC stays Pending | Default StorageClass, storage capacity, provisioner events, and ReadWriteOnce support. |
 | ImagePullBackOff | Registry address, DNS/routing, image digest/tag, registry TLS, and imagePullSecret. |
-| Permission denied at startup | Volume fsGroup support and UID/GID 10001 write access; HDR mounts need traversal/read access. |
+| Permission denied at startup | Initializer permission to prepare the application parent directory, UID/GID 10001 access, and NFS export rules; HDR mounts need traversal/read access. |
 | Browser certificate warning | Expected initially for the generated self-signed certificate. For a replacement, check SAN coverage, chain, browser CA trust, and where TLS terminates. |
 | First login cannot reach Devices/HDR | Complete the mandatory initial password change. |
 | Existing installation rejects oracle | Expected after a password change or an upgrade preserving existing accounts. Use the current account credentials. |
