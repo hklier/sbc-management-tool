@@ -47,10 +47,10 @@ Skip this section when your cluster already reaches the supplied registry. For a
 ```sh
 git clone https://github.com/hklier/sbc-management-tool.git
 cd sbc-management-tool
-docker build --platform linux/amd64 --target console -f deploy/Dockerfile -t registry.example.com/sbc-console:0.4.2 .
-docker push registry.example.com/sbc-console:0.4.2
+docker build --platform linux/amd64 --target console -f deploy/Dockerfile -t registry.example.com/sbc-console:0.4.3 .
+docker push registry.example.com/sbc-console:0.4.3
 cd deploy/kubernetes/quickstart
-kustomize edit set image sbc-console=registry.example.com/sbc-console:0.4.2
+kustomize edit set image sbc-console=registry.example.com/sbc-console:0.4.3
 cd ../../..
 ```
 
