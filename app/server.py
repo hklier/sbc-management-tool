@@ -1046,7 +1046,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def guard_device(self,path,write=False):
         if not DEVICES.initialized:return
-        if path in ('/api/session','/api/login','/api/logout','/api/audit') or path.startswith(('/api/users','/api/recordings','/api/rest-activity','/api/certificates','/api/hdr')):return
+        if path in ('/api/session','/api/login','/api/logout','/api/audit','/api/preferences') or path.startswith(('/api/users','/api/recordings','/api/rest-activity','/api/certificates','/api/hdr')):return
         current=devices_tools.CONTEXT.get()
         if current is None:raise Problem('Add or select a managed device first.',409)
         if write:
@@ -1098,6 +1098,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200, (BASE / 'static' / name).read_bytes(), content_type=mime + '; charset=utf-8')
             sid, session = self.session()
             q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
+            if p=='/api/preferences':return self.send(200,USERS.preferences(session['user']['username']))
             if p=='/api/certificates':
                 if session['user']['role']!='admin':raise Problem('Only administrators can manage the WebGUI certificate.',403)
                 return self.send(200,CERTIFICATES.status())
@@ -1204,7 +1205,7 @@ class Handler(BaseHTTPRequestHandler):
                 return self.send(200,data)
             with GATE:
                 if p == '/api/session':
-                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host if not DEVICES.initialized or devices_tools.CONTEXT.get() else '', user=session['user']['username'], role=session['user']['role'], must_change_password=session['user'].get('must_change_password',False), device=devices_tools.public(devices_tools.CONTEXT.get().record) if devices_tools.CONTEXT.get() else None)
+                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host if not DEVICES.initialized or devices_tools.CONTEXT.get() else '', user=session['user']['username'], role=session['user']['role'], preferences=USERS.preferences(session['user']['username']), must_change_password=session['user'].get('must_change_password',False), device=devices_tools.public(devices_tools.CONTEXT.get().record) if devices_tools.CONTEXT.get() else None)
                 elif p == '/api/status':
                     versions = SBC_CLIENT.get('configuration/versions')
                     data = dict(version=serial(SBC_CLIENT.get('system/version')), versions=serial(versions), workflow=configuration_workflow(versions), pending=SBC_CLIENT.pending, blocked=SBC_CLIENT.blocked)
@@ -1292,6 +1293,9 @@ class Handler(BaseHTTPRequestHandler):
             sid, session = self.session()
             if not hmac.compare_digest(self.headers.get('X-CSRF-Token', ''), session['csrf']):
                 raise Problem('Your editing session is not valid. Reload the page.', 403)
+            if path=='/api/preferences':
+                try:return self.send(200,USERS.save_preferences(session['user']['username'],body))
+                except users_tools.UserError as exc:raise Problem(str(exc),exc.code) from None
             if path.startswith('/api/certificates') or path=='/api/hdr':
                 if session['user']['role']!='admin':raise Problem('Only administrators can change application settings.',403)
                 if path=='/api/certificates/csr':result=CERTIFICATES.generate(body)

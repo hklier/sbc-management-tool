@@ -1,6 +1,6 @@
 'use strict';
-let restActivityCursor=0,restActivityEvents=new Map(),restActivitySelected=null,restActivityTimer=null,restActivityGeneration=0,restActivityBusy=false;
-function resetRestActivity(){restActivityGeneration++;clearTimeout(restActivityTimer);restActivityCursor=0;restActivityEvents.clear();restActivitySelected=null;minimizeRestActivity(false);$('rest-activity-panel').hidden=true;$('rest-activity-toggle').hidden=true;$('rest-activity-list').replaceChildren();$('rest-activity-detail').replaceChildren();$('rest-activity-count').textContent='0';$('rest-activity-mini-count').textContent='0'}
+let restActivityCursor=0,restActivityEvents=new Map(),restActivitySelected=null,restActivityTimer=null,restActivityGeneration=0,restActivityBusy=false,restActivityAutoOpen=false;
+function resetRestActivity(){configureRestActivityPreferences({});restActivityGeneration++;clearTimeout(restActivityTimer);restActivityCursor=0;restActivityEvents.clear();restActivitySelected=null;minimizeRestActivity(false);$('rest-activity-panel').hidden=true;$('rest-activity-toggle').hidden=true;$('rest-activity-list').replaceChildren();$('rest-activity-detail').replaceChildren();$('rest-activity-count').textContent='0';$('rest-activity-mini-count').textContent='0'}
 function startRestActivity(){clearTimeout(restActivityTimer);$('rest-activity-toggle').hidden=false;restActivityTimer=setTimeout(pollRestActivity,100)}
 async function pollRestActivity(){
  if($('shell').hidden)return;if(restActivityBusy){restActivityTimer=setTimeout(pollRestActivity,250);return}const generation=restActivityGeneration;restActivityBusy=true;
@@ -14,7 +14,7 @@ async function pollRestActivity(){
   while(restActivityEvents.size>200)restActivityEvents.delete(restActivityEvents.keys().next().value);
   if(data.items.length){
    if(!restActivityEvents.has(restActivitySelected))restActivitySelected=data.items[data.items.length-1].id;
-   renderRestActivity();if(fresh&&$('rest-activity-auto').checked)$('rest-activity-panel').hidden=false;
+   renderRestActivity();if(fresh&&restActivityAutoOpen)$('rest-activity-panel').hidden=false;
   }
   $('rest-activity-state').textContent='Live · full values · current session only';
  }catch(error){if(generation===restActivityGeneration)$('rest-activity-state').textContent=error.message}
@@ -41,3 +41,21 @@ $('rest-activity-clear').onclick=async()=>{const generation=++restActivityGenera
 $('rest-activity-close').onclick=()=>$('rest-activity-panel').hidden=true;
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!$('shell').hidden)startRestActivity()});
 if(!$('shell').hidden)startRestActivity();
+
+function configureRestActivityPreferences(value={}){
+ restActivityAutoOpen=value.rest_activity_auto_open===true;
+ $('rest-activity-auto').checked=restActivityAutoOpen;
+ if(!restActivityAutoOpen)$('rest-activity-panel').hidden=true;
+}
+async function loadPreferences(){
+ const session=window.consoleSession;$('preferences-feedback').textContent='';
+ try{const data=await api('/api/preferences');if(window.consoleSession===session)configureRestActivityPreferences(data)}
+ catch(error){if(window.consoleSession===session)$('preferences-feedback').textContent=error.message}
+}
+$('nav-settings').onclick=()=>{if(!mayLeave())return;showWorkspace('settings');loadPreferences()};
+$('preferences-form').onsubmit=async event=>{
+ event.preventDefault();const session=window.consoleSession,button=$('preferences-save');button.disabled=true;
+ try{const data=await api('/api/preferences',{rest_activity_auto_open:$('rest-activity-auto').checked});if(window.consoleSession===session){configureRestActivityPreferences(data);$('preferences-feedback').textContent='Settings saved for your account.'}}
+ catch(error){if(window.consoleSession===session)$('preferences-feedback').textContent=error.message}
+ finally{button.disabled=false}
+};

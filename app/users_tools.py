@@ -51,6 +51,7 @@ class Store:
             db.execute("CREATE TABLE IF NOT EXISTS users(username TEXT PRIMARY KEY,password_hash TEXT NOT NULL,role TEXT NOT NULL CHECK(role IN ('admin','user')),version INTEGER NOT NULL,created_at TEXT NOT NULL,updated_at TEXT NOT NULL)")
             if 'must_change_password' not in {r['name'] for r in db.execute('PRAGMA table_info(users)')}:
                 db.execute('ALTER TABLE users ADD COLUMN must_change_password INTEGER NOT NULL DEFAULT 0')
+            db.execute('CREATE TABLE IF NOT EXISTS user_preferences(username TEXT PRIMARY KEY REFERENCES users(username),rest_activity_auto_open INTEGER NOT NULL DEFAULT 0 CHECK(rest_activity_auto_open IN (0,1)))')
             db.execute('BEGIN IMMEDIATE')
             if not db.execute('SELECT 1 FROM users LIMIT 1').fetchone():
                 name=username(initial_username)
@@ -72,6 +73,16 @@ class Store:
 
     def listing(self):
         with self.connect() as db:return [public(row) for row in db.execute('SELECT * FROM users ORDER BY role,username')]
+
+    def preferences(self,name):
+        with self.connect() as db:row=db.execute('SELECT rest_activity_auto_open FROM user_preferences WHERE username=?',(username(name),)).fetchone()
+        return dict(rest_activity_auto_open=bool(row[0]) if row else False)
+
+    def save_preferences(self,name,body):
+        if set(body)!={'rest_activity_auto_open'} or type(body['rest_activity_auto_open']) is not bool:raise UserError('Choose whether REST activity should open automatically.')
+        with self.connect() as db:
+            db.execute('INSERT INTO user_preferences VALUES(?,?) ON CONFLICT(username) DO UPDATE SET rest_activity_auto_open=excluded.rest_activity_auto_open',(username(name),int(body['rest_activity_auto_open'])))
+        return self.preferences(name)
 
     def create(self,name,password,role='user'):
         name=username(name)

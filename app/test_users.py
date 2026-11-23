@@ -20,6 +20,18 @@ class UserStoreTests(unittest.TestCase):
         self.assertTrue(reopened.authenticate('admin',PASSWORD));self.assertTrue(reopened.authenticate('alice','alice-private-password'))
         self.assertIsNone(reopened.authenticate('other-admin','different-password'))
 
+    def test_preferences_default_off_persist_per_user_and_do_not_invalidate_sessions(self):
+        self.store.create('alice','alice-private-password')
+        account=self.store.authenticate('admin',PASSWORD)
+        self.assertEqual(self.store.preferences('admin'),{'rest_activity_auto_open':False})
+        self.store.save_preferences('admin',{'rest_activity_auto_open':True})
+        reopened=users.Store(self.path);reopened.initialize('admin',existing.TEST_LOGIN_HASH)
+        self.assertTrue(reopened.preferences('admin')['rest_activity_auto_open'])
+        self.assertFalse(reopened.preferences('alice')['rest_activity_auto_open'])
+        self.assertTrue(reopened.current('admin',account['version']))
+        for body in ({'rest_activity_auto_open':'true'},{'rest_activity_auto_open':1},{'rest_activity_auto_open':True,'username':'alice'},{}):
+            with self.assertRaises(users.UserError):reopened.save_preferences('admin',body)
+
     def test_case_insensitive_duplicates_and_no_hashes_or_plaintext_in_profiles(self):
         self.store.create('Alice','alice-private-password')
         with self.assertRaises(users.UserError):self.store.create('ALICE','another-password')
@@ -77,6 +89,19 @@ class UserHttpTests(unittest.TestCase):
         self.assertEqual(self.api('POST','/api/users',dict(username='evil',password='another-password',role='admin'),cookie,csrf)[0],403)
         self.assertEqual(self.api('POST','/api/users/reset-password',dict(username='admin',current_password='alice-private-password',new_password='another-password'),cookie,csrf)[0],403)
         self.assertEqual(self.events,[])
+
+    def test_preferences_are_authenticated_csrf_protected_and_owned_by_the_session(self):
+        self.assertEqual(self.api('GET','/api/preferences',cookie='unknown')[0],401)
+        body={'rest_activity_auto_open':True}
+        self.assertEqual(self.api('POST','/api/preferences',body,csrf='wrong')[0],403)
+        self.assertEqual(self.api('POST','/api/preferences',body)[0],200)
+        self.assertTrue(self.api('GET','/api/session')[1]['preferences']['rest_activity_auto_open'])
+        server.USERS.create('alice','alice-private-password');cookie,csrf=self.login('alice','alice-private-password')
+        self.assertFalse(self.api('GET','/api/preferences',cookie=cookie)[1]['rest_activity_auto_open'])
+        self.assertEqual(self.api('POST','/api/preferences',body,cookie,csrf)[0],200)
+        self.assertEqual(self.api('POST','/api/preferences',dict(body,username='admin'),cookie,csrf)[0],400)
+        self.assertEqual(self.api('POST','/api/preferences',{'rest_activity_auto_open':False},cookie,csrf)[0],200)
+        self.assertTrue(self.api('GET','/api/preferences')[1]['rest_activity_auto_open'])
 
     def test_password_change_rotates_cookie_and_invalidates_all_old_sessions(self):
         first,csrf=self.login('admin',PASSWORD);second,_=self.login('admin',PASSWORD)

@@ -100,6 +100,8 @@ Sign in with **admin** and **oracle**. Enter the current password and choose a n
 
 There are initially no managed devices. Add them after signing in. No SBC connection is needed to complete the password change, manage the WebGUI certificate, or configure HDR access.
 
+Open **Settings** to configure personal preferences. **Automatically open REST API activity when new requests arrive** is disabled by default. Enable it and click **Save settings** to opt in. This preference is stored for the signed-in user and survives sign-out, browser changes, and application restarts. Other users keep their own choice. The toolbar's **REST activity** button always allows manual access.
+
 ## 5. Add an SBC
 
 Open **Devices → Add device** and provide:
@@ -163,7 +165,7 @@ Credentials and private keys are encrypted on the persistent state volume. The A
 
 The SFTP connection negotiates the saved public host key's algorithm. A server offering both RSA and Ed25519 keys can be verified using its saved RSA key; a genuinely different key is rejected before authentication. Authentication failures, missing directories, and directory permission errors have separate messages. The connection test displays a short error popup explaining failures, such as rejected credentials, an incorrect host key, a missing directory, a timeout, or insufficient permissions.
 
-Listings are read-only and search the saved base directory and all its subdirectories for `.csv`/`.CSV` regular files. Relative paths distinguish identical filenames in different folders. File and directory symlinks are not followed. Searches are bounded to 10,000 results, 100,000 examined entries, 5,000 directories and 30 seconds of traversal; the interface marks partial results and explains the limit. Keep the common parent as the saved base path. Listing success confirms access, not that CSV contents conform to an HDR schema. All signed-in users can list files; administrators change source settings.
+Listings are read-only and search the saved base directory and all its subdirectories for `.csv`/`.CSV` regular files. Results appear in collapsible folders matching the hierarchy beneath the base directory, with a CSV count beside each folder. Click a folder to expand or collapse it, or use **Expand all** and **Collapse all**. Files directly beneath the base appear at the top level. File and directory symlinks are not followed. Searches are bounded to 10,000 results, 100,000 examined entries, 5,000 directories and 30 seconds of traversal; the interface marks partial results and explains the limit. Keep the common parent as the saved base path. Listing success confirms access, not that CSV contents conform to an HDR schema. All signed-in users can list files; administrators change source settings.
 
 ## 8. GitHub and Argo CD
 
