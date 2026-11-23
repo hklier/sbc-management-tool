@@ -1,6 +1,6 @@
 # Copy OUTSIDE the repository; the completed file contains credentials.
 version: 1
-sbc:
+sbc:                                  # Initial managed device only. Later edits use Devices in the console.
   host: "192.0.2.51"                 # Numeric IPv4 address (also the trap-source filter).
   username: "admin"
   password: "REPLACE_ME"

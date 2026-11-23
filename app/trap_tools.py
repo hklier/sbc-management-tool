@@ -1,3 +1,4 @@
+import devices_tools
 """Bounded, persistent SNMPv1/v2c trap inbox; never sends configuration requests."""
 from contextlib import contextmanager
 from functools import lru_cache
@@ -114,6 +115,8 @@ class Store:
   with self.connect() as db:
    events=[json.loads(r[0]) for r in db.execute('SELECT brief FROM events ORDER BY id')]
    row=db.execute('SELECT payload FROM receiver WHERE id=1').fetchone()
+  current=devices_tools.CONTEXT.get()
+  if current:events=[e for e in events if e['source']==current.record['management_ip']]
   state=json.loads(row[0]) if row else dict(status='waiting',error='Receiver has not started yet.')
   state['listening']=state.get('status')=='listening' and clock-state.get('heartbeatEpoch',0)<20
   if state.get('status')=='listening' and not state['listening']:state['status']='offline';state['error']='Receiver heartbeat is stale. Check the trap receiver service.'
@@ -137,6 +140,8 @@ class Store:
    matches=[];needle=query.lower()[:300]
    for row in rows:
     event=present_event(dict(id=row['id'],**json.loads(row['brief'])))
+    current=devices_tools.CONTEXT.get()
+    if current and event['source']!=current.record['management_ip']:continue
     if not needle or needle in row['search'] or needle in (event['title']+' '+event['description']).lower():matches.append(event)
    events=matches[offset:offset+limit]
    if details:
@@ -144,7 +149,10 @@ class Store:
   return dict(events=events,filtered=len(matches),offset=offset,limit=limit)
  def event(self,event_id):
   with self.connect() as db:row=db.execute('SELECT payload FROM events WHERE id=?',(event_id,)).fetchone()
-  return present_event(dict(id=event_id,**json.loads(row[0]))) if row else None
+  if not row:return None
+  event=present_event(dict(id=event_id,**json.loads(row[0])))
+  current=devices_tools.CONTEXT.get()
+  return None if current and event['source']!=current.record['management_ip'] else event
 
 STORE=Store()
 
@@ -160,15 +168,22 @@ def receiver_socket():
 
 def run_receiver():
  allowed=communities();host=os.environ.get('SBC_HOST','192.168.226.193')
+ profiles=None;devices=devices_tools.Store(Path(os.environ.get('STATE_DIR','/var/lib/sbc-console')))
  sock=receiver_socket();sock.settimeout(1)
  state=dict(status='listening',endpoint=sock.getsockname()[0]+':'+str(sock.getsockname()[1]),source=host,versions=['1','2c'],startedAt=timestamp(),accepted=0,rejected=0,malformed=0,storageErrors=0,error='')
  last_beat=0
  while True:
-  if time.monotonic()-last_beat>=5:STORE.heartbeat(state);last_beat=time.monotonic()
+  if time.monotonic()-last_beat>=5:
+   try:
+    if devices.ready():profiles={r['management_ip']:r['snmp'].get('trap_communities',[]) for r in devices.records()};state['source']=', '.join(profiles) or 'No managed devices'
+    state['error']=''
+   except Exception:profiles={};state['error']='Device profiles could not be read; notifications are rejected until storage recovers.'
+   STORE.heartbeat(state);last_beat=time.monotonic()
   try:packet,source=sock.recvfrom(65535)
   except socket.timeout:continue
-  if source[0]!=host:state['rejected']+=1;continue
-  try:event,reply=decode_packet(packet,source,allowed)
+  accepted=profiles.get(source[0],[]) if profiles is not None else (allowed if source[0]==host else [])
+  if not accepted:state['rejected']+=1;continue
+  try:event,reply=decode_packet(packet,source,accepted)
   except Exception:state['malformed']+=1;continue
   try:
    STORE.append(event);state['accepted']+=1;state['error']=''

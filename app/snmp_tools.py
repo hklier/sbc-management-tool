@@ -52,26 +52,27 @@ def record(oid,value,type_name=None):
         except ValueError:pass
     return dict(oid=oid,type=kind,value=rendered[:4096],truncated=len(rendered)>4096,numeric=number,available=available,display=enum.get(rendered,rendered[:4096]),**metadata)
 
-def config():
-    version=os.environ.get('SNMP_VERSION','2c');host=os.environ.get('SBC_HOST','192.168.226.193')
-    if version not in ('2c','3'):raise SnmpError('Configure SNMP_VERSION as 2c or 3 on the application server.',503)
-    configured=bool(os.environ.get('SNMP_COMMUNITY')) if version=='2c' else all(os.environ.get(k) for k in ('SNMP_USER','SNMP_AUTH_KEY','SNMP_PRIV_KEY'))
-    return dict(host=host,port=int(os.environ.get('SNMP_PORT','161')),version=version,configured=configured)
+def config(env=None):
+    env=os.environ if env is None else env
+    version=env.get('SNMP_VERSION','2c');host=env.get('SBC_HOST','192.168.226.193')
+    if version not in ('disabled','1','2c','3'):raise SnmpError('Choose a supported SNMP version.',503)
+    level=env.get('SNMP_SECURITY_LEVEL','authPriv')
+    configured=bool(env.get('SNMP_COMMUNITY')) if version in ('1','2c') else (version=='3' and bool(env.get('SNMP_USER')) and (level=='noAuthNoPriv' or bool(env.get('SNMP_AUTH_KEY'))) and (level!='authPriv' or bool(env.get('SNMP_PRIV_KEY'))))
+    return dict(host=host,port=int(env.get('SNMP_PORT','161')),version=version,configured=configured)
 
 class Client:
+    def __init__(self,settings=None):self.settings=os.environ if settings is None else settings
     async def open(self):
         from pysnmp.hlapi.v3arch import asyncio as snmp
-        self.snmp=snmp;self.engine=snmp.SnmpEngine();settings=config()
-        if not settings['configured']:raise SnmpError('SNMP credentials are not configured on the application server.',503)
-        if settings['version']=='2c':
-            self.auth=snmp.CommunityData(os.environ['SNMP_COMMUNITY'],mpModel=1)
+        self.snmp=snmp;self.engine=snmp.SnmpEngine();env=self.settings;settings=config(env)
+        if not settings['configured']:raise SnmpError('SNMP is disabled or its credentials are missing. Edit the managed device.',503)
+        if settings['version'] in ('1','2c'):
+            self.auth=snmp.CommunityData(env['SNMP_COMMUNITY'],mpModel=0 if settings['version']=='1' else 1)
         else:
-            algorithms={'SHA256':snmp.USM_AUTH_HMAC192_SHA256,'SHA512':snmp.USM_AUTH_HMAC384_SHA512}
-            algorithm=os.environ.get('SNMP_AUTH_PROTOCOL','SHA256').upper().replace('-','')
-            privacy=os.environ.get('SNMP_PRIV_PROTOCOL','AES128').upper().replace('-','')
-            if algorithm not in algorithms or privacy!='AES128':
-                raise SnmpError('Supported SNMPv3 profiles are SHA256/SHA512 with AES128.',503)
-            self.auth=snmp.UsmUserData(os.environ['SNMP_USER'],os.environ['SNMP_AUTH_KEY'],os.environ['SNMP_PRIV_KEY'],authProtocol=algorithms[algorithm],privProtocol=snmp.USM_PRIV_CFB128_AES)
+            names={'MD5':'USM_AUTH_HMAC96_MD5','SHA1':'USM_AUTH_HMAC96_SHA','SHA224':'USM_AUTH_HMAC128_SHA224','SHA256':'USM_AUTH_HMAC192_SHA256','SHA384':'USM_AUTH_HMAC256_SHA384','SHA512':'USM_AUTH_HMAC384_SHA512'}
+            level=env.get('SNMP_SECURITY_LEVEL','authPriv');algorithm=env.get('SNMP_AUTH_PROTOCOL','SHA256').upper().replace('-','')
+            if algorithm not in names:raise SnmpError('Unsupported SNMP authentication protocol.',503)
+            self.auth=snmp.UsmUserData(env['SNMP_USER'],env.get('SNMP_AUTH_KEY') if level!='noAuthNoPriv' else None,env.get('SNMP_PRIV_KEY') if level=='authPriv' else None,authProtocol=getattr(snmp,names[algorithm]) if level!='noAuthNoPriv' else snmp.USM_AUTH_NONE,privProtocol=snmp.USM_PRIV_CFB128_AES if level=='authPriv' else snmp.USM_PRIV_NONE)
         self.target=await snmp.UdpTransportTarget.create((settings['host'],settings['port']),timeout=1.5,retries=1)
         self.context=snmp.ContextData()
         return self
@@ -87,7 +88,8 @@ class Client:
         s=self.snmp;cursor=root;rows=[];repetitions=30
         for _ in range(1000):
             if time.monotonic()>deadline or len(rows)>=remaining:return rows,False,'Discovery limit reached; the returned inventory is partial.'
-            err,status,index,bindings=await s.bulk_cmd(self.engine,self.auth,self.target,self.context,0,repetitions,s.ObjectType(s.ObjectIdentity(cursor)),lookupMib=False)
+            if config(self.settings)['version']=='1':err,status,index,bindings=await s.next_cmd(self.engine,self.auth,self.target,self.context,s.ObjectType(s.ObjectIdentity(cursor)),lookupMib=False)
+            else:err,status,index,bindings=await s.bulk_cmd(self.engine,self.auth,self.target,self.context,0,repetitions,s.ObjectType(s.ObjectIdentity(cursor)),lookupMib=False)
             if err:return rows,False,'SNMP discovery failed: '+str(err)
             if status:
                 if int(status)==1 and repetitions>5:repetitions=max(5,repetitions//2);continue
@@ -122,10 +124,11 @@ def build_tables(records):
     return dict(storage=storage,interfaces=interfaces,realms=realms,agents=agents)
 
 class Monitor:
-    def __init__(self):
+    def __init__(self,settings=None):
+        self.settings=settings
         self.lock=threading.RLock();self.busy=False;self.last_start=0;self.sample=None;self.inventory=[];self.inventory_at='';self.discovery_time=0;self.discovery_complete=False;self.discovery_errors=[];self.error='';self.stage='idle';self.generation=0;self.tables={};self.custom_lock=threading.Lock()
     def status(self,refresh=False,discover=False):
-        settings=config()
+        settings=config(self.settings)
         with self.lock:
             due=not self.sample or time.time()-self.last_start>=30
             if settings['configured'] and not self.busy and time.time()-self.last_start>=5 and (refresh or discover or due):
@@ -142,7 +145,7 @@ class Monitor:
         finally:
             with self.lock:self.busy=False;self.stage='idle'
     async def _collect(self,full):
-        client=Client()
+        client=Client(self.settings) if self.settings is not None else Client()
         try:
             await client.open();rows=await client.get(list(COMMON.values()));by_oid={r['oid']:r for r in rows}
             with self.lock:self.sample=dict(checkedAt=now(),values={name:by_oid.get(oid,dict(oid=oid,available=False,numeric=None,value='',display='Unavailable')) for name,oid in COMMON.items()})
@@ -162,12 +165,12 @@ class Monitor:
             needle=query.lower();rows=[r for r in self.inventory if (not module or r['module']==module) and (not needle or needle in (r['name']+' '+r['oid']+' '+r['value']+' '+r['module']).lower())]
             return dict(total=len(self.inventory),filtered=len(rows),offset=offset,limit=limit,objects=copy.deepcopy(rows[offset:offset+limit]),modules=sorted({r['module'] for r in self.inventory}),generation=self.generation,checkedAt=self.inventory_at)
     def export(self):
-        with self.lock:return dict(host=config()['host'],protocol='SNMP '+config()['version'],sample=copy.deepcopy(self.sample),checkedAt=self.inventory_at,complete=self.discovery_complete,errors=copy.deepcopy(self.discovery_errors),objects=copy.deepcopy(self.inventory))
+        with self.lock:return dict(host=config(self.settings)['host'],protocol='SNMP '+config(self.settings)['version'],sample=copy.deepcopy(self.sample),checkedAt=self.inventory_at,complete=self.discovery_complete,errors=copy.deepcopy(self.discovery_errors),objects=copy.deepcopy(self.inventory))
     def get_one(self,oid):
         oid=validate_oid(oid)
         if not self.custom_lock.acquire(blocking=False):raise SnmpError('Another OID lookup is in progress. Try again shortly.',429)
         async def run():
-            client=Client()
+            client=Client(self.settings) if self.settings is not None else Client()
             try:
                 await client.open();rows=await client.get([oid]);return dict(checkedAt=now(),object=rows[0])
             finally:client.close()

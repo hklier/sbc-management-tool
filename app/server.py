@@ -20,6 +20,7 @@ import time
 import xml.etree.ElementTree as ET
 import rest_activity
 import users_tools
+import devices_tools
 from contextlib import contextmanager
 from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -33,6 +34,9 @@ GATE = threading.RLock()
 SESSIONS = {}
 AUTH_GATE = threading.RLock()
 USERS = users_tools.Store(STATE / 'users.sqlite3')
+DEVICES = devices_tools.Store(STATE)
+RUNTIMES = {}
+DEVICE_GATE = threading.RLock()
 SNAPSHOTS = {}
 ATTEMPTS = {}
 LRT_CACHE = {}
@@ -109,6 +113,8 @@ def verification_report(root):
 
 
 def audit(action, outcome, **details):
+    current = devices_tools.CONTEXT.get()
+    if current:details['device_id']=current.record['id']
     record = dict(time=time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()), action=action, outcome=outcome, **details)
     with open(STATE / 'audit.jsonl', 'a', encoding='utf-8') as f:
         f.write(json.dumps(record, ensure_ascii=False) + '\n')
@@ -124,6 +130,8 @@ def configuration_workflow(versions):
                 record = json.loads(line)
             except ValueError:
                 continue
+            current=devices_tools.CONTEXT.get()
+            if current and record.get('device_id','bootstrap')!=current.record['id']:continue
             if record.get('outcome') not in ('success', 'attention'):
                 continue
             action = record.get('action')
@@ -137,9 +145,10 @@ def configuration_workflow(versions):
 
 
 class SBC:
-    def __init__(self):
-        self.host = os.environ.get('SBC_HOST', '192.168.226.193')
-        self.pin = os.environ.get('SBC_FINGERPRINT', '').replace(':', '').lower()
+    def __init__(self, settings=None):
+        self.settings = os.environ if settings is None else settings
+        self.host = self.settings.get('SBC_HOST', '192.168.226.193')
+        self.pin = self.settings.get('SBC_FINGERPRINT', '').replace(':', '').lower()
         self.token = ''
         self.token_at = 0
         self.pending = False
@@ -147,7 +156,8 @@ class SBC:
 
     def raw(self, method, path, body=None, auth=None):
         # A configured fingerprint authenticates the SBC even with a self-signed certificate.
-        context = ssl._create_unverified_context() if self.pin else ssl.create_default_context(cafile=os.environ.get('SBC_CA') or None)
+        ca=self.settings.get('SBC_CA_PEM','')
+        context = ssl.create_default_context(cadata=ca) if ca else (ssl._create_unverified_context() if self.pin else ssl.create_default_context(cafile=self.settings.get('SBC_CA') or None))
         conn = http.client.HTTPSConnection(self.host, timeout=25, context=context)
         headers = {'Accept': 'application/xml', 'Authorization': auth or 'Bearer ' + self.token}
         if body is not None:headers['Content-Type'] = 'application/xml'
@@ -155,7 +165,7 @@ class SBC:
         activity_status=None;activity_response=None;activity_failed=True
         try:
             conn.connect()
-            if self.pin and not hmac.compare_digest(hashlib.sha256(conn.sock.getpeercert(binary_form=True)).hexdigest(), self.pin):
+            if self.pin and not ca and not hmac.compare_digest(hashlib.sha256(conn.sock.getpeercert(binary_form=True)).hexdigest(), self.pin):
                 raise Problem('The SBC certificate has changed. Review its fingerprint before connecting.', 502)
             if body is not None:
                 body = body.encode('utf-8')
@@ -183,7 +193,7 @@ class SBC:
         if not self.token or (time.time() - self.token_at > 240 and not (self.pending or self.blocked)):
             if self.pending or self.blocked:
                 raise Problem('An operation or unresolved lock is pending. Check the SBC before continuing.', 409)
-            credentials = os.environ.get('SBC_USER', 'admin') + ':' + os.environ['SBC_PASSWORD']
+            credentials = self.settings.get('SBC_USER', 'admin') + ':' + self.settings['SBC_PASSWORD']
             _, root = self.raw('POST', 'auth/token', auth='Basic ' + base64.b64encode(credentials.encode()).decode())
             self.token = text(root, './/accessToken')
             if not self.token:
@@ -234,6 +244,32 @@ class SBC:
 
 
 SBC_CLIENT = SBC()
+
+class DeviceRuntime:
+    def __init__(self, record):
+        import snmp_tools
+        self.record=record;self.settings=devices_tools.environment(record)
+        self.client=SBC(self.settings);self.gate=threading.RLock()
+        self.snapshots={};self.lrt_cache={};self.lrt_plans={};self.cdr_cache={}
+        self.monitor=snmp_tools.Monitor(self.settings)
+
+def runtime(record):
+    with DEVICE_GATE:
+        current=RUNTIMES.get(record['id'])
+        if current is None or current.record['version']!=record['version']:
+            current=RUNTIMES[record['id']]=DeviceRuntime(record)
+        return current
+
+def device_settings():
+    current=devices_tools.CONTEXT.get()
+    return current.settings if current else os.environ
+
+SBC_CLIENT=devices_tools.ScopedObject('client',SBC_CLIENT)
+GATE=devices_tools.ScopedObject('gate',GATE)
+SNAPSHOTS=devices_tools.ScopedMap('snapshots',SNAPSHOTS)
+LRT_CACHE=devices_tools.ScopedMap('lrt_cache',LRT_CACHE)
+LRT_PLANS=devices_tools.ScopedMap('lrt_plans',LRT_PLANS)
+
 
 
 def element_types():
@@ -293,7 +329,7 @@ def parse_lrt(content):
 
 @contextmanager
 def lrt_sftp(purpose='LRT'):
-    pin = os.environ.get('SBC_SSH_FINGERPRINT', '')
+    pin = device_settings().get('SBC_SSH_FINGERPRINT', '')
     if not pin:
         raise Problem('The SBC SFTP host key has not been configured.', 502)
     try:
@@ -308,7 +344,7 @@ def lrt_sftp(purpose='LRT'):
     client = paramiko.SSHClient()
     client.set_missing_host_key_policy(PinnedHostKey())
     try:
-        client.connect(SBC_CLIENT.host, port=int(os.environ.get('SBC_SSH_PORT', '22')), username=os.environ.get('SBC_USER', 'admin'), password=os.environ['SBC_PASSWORD'], allow_agent=False, look_for_keys=False, timeout=12, auth_timeout=12, banner_timeout=12)
+        client.connect(SBC_CLIENT.host, port=int(device_settings().get('SBC_SSH_PORT', '22')), username=device_settings().get('SBC_USER', 'admin'), password=device_settings()['SBC_PASSWORD'], allow_agent=False, look_for_keys=False, timeout=12, auth_timeout=12, banner_timeout=12)
         with client.open_sftp() as sftp:
             sftp.get_channel().settimeout(15)
             yield sftp
@@ -603,7 +639,7 @@ def reload_lrt(body):
 
 
 CDR_GATE = threading.Lock()
-CDR_CACHE = {}
+CDR_CACHE = devices_tools.ScopedMap('cdr_cache',{})
 
 def cdr_list():
     import cdr_tools as cdr
@@ -942,6 +978,7 @@ class Handler(BaseHTTPRequestHandler):
         audit('trace-download', 'success', filename=query['name'])
 
     def session(self):
+        devices_tools.CONTEXT.set(None)
         rest_activity.CONTEXT.session=''
         try:
             cookie = SimpleCookie(self.headers.get('Cookie', ''))
@@ -957,7 +994,27 @@ class Handler(BaseHTTPRequestHandler):
         item['user'] = user
         rest_activity.CONTEXT.session=sid
         rest_activity.CONTEXT.source=urlsplit(self.path).path
+        if DEVICES.initialized:
+            records=DEVICES.records()
+            chosen=next((r for r in records if r['id']==item.get('device_id')),None)
+            if chosen is None:chosen=next((r for r in records if r['id']=='bootstrap'),records[0] if records else None)
+            item['device_id']=chosen['id'] if chosen else None
+            if chosen:devices_tools.CONTEXT.set(runtime(chosen))
         return sid, item
+
+    def guard_device(self,path,write=False):
+        if not DEVICES.initialized:return
+        if path in ('/api/session','/api/login','/api/logout','/api/audit') or path.startswith(('/api/users','/api/recordings','/api/rest-activity')):return
+        current=devices_tools.CONTEXT.get()
+        if current is None:raise Problem('Add or select a managed device first.',409)
+        if write:
+            try:latest=DEVICES.get(current.record['id'])
+            except devices_tools.DeviceError:raise Problem('The device was removed. Reload the page.',409) from None
+            if latest['version']!=current.record['version']:raise Problem('The device settings changed. Reload the page.',409)
+        identifier=self.headers.get('X-Device-ID')
+        version=self.headers.get('X-Device-Version')
+        if (write or identifier is not None) and (identifier!=current.record['id'] or version!=str(current.record['version'])):
+            raise Problem('The selected device changed. Reload the page before continuing.',409)
 
     def body(self):
         length = int(self.headers.get('Content-Length', '0'))
@@ -989,15 +1046,22 @@ class Handler(BaseHTTPRequestHandler):
             ATTEMPTS[key] = attempts+[now]
 
     def do_GET(self):
+        devices_tools.CONTEXT.set(None)
         try:
             parsed = urlsplit(self.path)
             p = parsed.path
-            if p in ('/', '/app.js', '/rest-activity.js', '/lrt.js', '/diagnostics.js', '/diagnostic-charts.js', '/traces.js', '/snmp.js', '/traps.js', '/cdr.js', '/recordings.js', '/users.js', '/style.css'):
+            if p in ('/', '/app.js', '/rest-activity.js', '/lrt.js', '/diagnostics.js', '/diagnostic-charts.js', '/traces.js', '/snmp.js', '/traps.js', '/cdr.js', '/recordings.js', '/users.js', '/devices.js', '/style.css'):
                 name = 'index.html' if p == '/' else p[1:]
-                mime = {'index.html': 'text/html', 'app.js': 'text/javascript', 'rest-activity.js':'text/javascript', 'lrt.js': 'text/javascript', 'diagnostics.js': 'text/javascript', 'diagnostic-charts.js': 'text/javascript', 'traces.js': 'text/javascript', 'snmp.js': 'text/javascript', 'traps.js': 'text/javascript', 'cdr.js': 'text/javascript', 'recordings.js': 'text/javascript', 'users.js': 'text/javascript', 'style.css': 'text/css'}[name]
+                mime = {'index.html': 'text/html', 'app.js': 'text/javascript', 'rest-activity.js':'text/javascript', 'lrt.js': 'text/javascript', 'diagnostics.js': 'text/javascript', 'diagnostic-charts.js': 'text/javascript', 'traces.js': 'text/javascript', 'snmp.js': 'text/javascript', 'traps.js': 'text/javascript', 'cdr.js': 'text/javascript', 'recordings.js': 'text/javascript', 'users.js': 'text/javascript', 'devices.js':'text/javascript', 'style.css': 'text/css'}[name]
                 return self.send(200, (BASE / 'static' / name).read_bytes(), content_type=mime + '; charset=utf-8')
             sid, session = self.session()
             q = {k: v[0] for k, v in parse_qs(parsed.query).items()}
+            if p in ('/api/devices','/api/devices/detail'):
+                if p.endswith('/detail'):
+                    if session['user']['role']!='admin':raise Problem('Only administrators can edit devices.',403)
+                    return self.send(200,dict(device=devices_tools.public(DEVICES.get(q.get('id','')),True)))
+                return self.send(200,dict(devices=DEVICES.listing(),selected=session.get('device_id')))
+            self.guard_device(p)
             if p == '/api/users':
                 if session['user']['role'] != 'admin':raise Problem('Only administrators can manage users.', 403)
                 return self.send(200, dict(users=USERS.listing()))
@@ -1079,20 +1143,20 @@ class Handler(BaseHTTPRequestHandler):
                 import snmp_tools
                 try:
                     if p == '/api/snmp':
-                        data=snmp_tools.MONITOR.status(refresh=q.get('refresh')=='true',discover=q.get('discover')=='true')
+                        data=(devices_tools.CONTEXT.get().monitor if devices_tools.CONTEXT.get() else snmp_tools.MONITOR).status(refresh=q.get('refresh')=='true',discover=q.get('discover')=='true')
                     elif p == '/api/snmp/objects':
                         try:offset,limit=int(q.get('offset','0')),int(q.get('limit','100'))
                         except ValueError:raise Problem('Invalid SNMP pagination.',400)
                         if offset<0 or not 1<=limit<=200:raise Problem('Invalid SNMP pagination.',400)
-                        data=snmp_tools.MONITOR.objects(q.get('q','')[:500],q.get('module','')[:100],offset,limit)
-                    elif p == '/api/snmp/get':data=snmp_tools.MONITOR.get_one(q.get('oid',''))
-                    elif p == '/api/snmp/export':data=snmp_tools.MONITOR.export()
+                        data=(devices_tools.CONTEXT.get().monitor if devices_tools.CONTEXT.get() else snmp_tools.MONITOR).objects(q.get('q','')[:500],q.get('module','')[:100],offset,limit)
+                    elif p == '/api/snmp/get':data=(devices_tools.CONTEXT.get().monitor if devices_tools.CONTEXT.get() else snmp_tools.MONITOR).get_one(q.get('oid',''))
+                    elif p == '/api/snmp/export':data=(devices_tools.CONTEXT.get().monitor if devices_tools.CONTEXT.get() else snmp_tools.MONITOR).export()
                     else:raise Problem('Resource not found.',404)
                 except snmp_tools.SnmpError as exc:raise Problem(str(exc),exc.code) from exc
                 return self.send(200,data)
             with GATE:
                 if p == '/api/session':
-                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host, user=session['user']['username'], role=session['user']['role'])
+                    data = dict(csrf=session['csrf'], host=SBC_CLIENT.host if not DEVICES.initialized or devices_tools.CONTEXT.get() else '', user=session['user']['username'], role=session['user']['role'], device=devices_tools.public(devices_tools.CONTEXT.get().record) if devices_tools.CONTEXT.get() else None)
                 elif p == '/api/status':
                     versions = SBC_CLIENT.get('configuration/versions')
                     data = dict(version=serial(SBC_CLIENT.get('system/version')), versions=serial(versions), workflow=configuration_workflow(versions), pending=SBC_CLIENT.pending, blocked=SBC_CLIENT.blocked)
@@ -1155,6 +1219,7 @@ class Handler(BaseHTTPRequestHandler):
             self.fail(exc)
 
     def do_POST(self):
+        devices_tools.CONTEXT.set(None)
         try:
             path = urlsplit(self.path).path
             body = self.body()
@@ -1179,6 +1244,29 @@ class Handler(BaseHTTPRequestHandler):
             sid, session = self.session()
             if not hmac.compare_digest(self.headers.get('X-CSRF-Token', ''), session['csrf']):
                 raise Problem('Your editing session is not valid. Reload the page.', 403)
+            if path.startswith('/api/devices'):
+                if path=='/api/devices/select':
+                    record=DEVICES.get(body.get('id',''))
+                    session['device_id']=record['id']
+                    return self.send(200,dict(ok=True))
+                if session['user']['role']!='admin':raise Problem('Only administrators can manage devices.',403)
+                if path=='/api/devices/read-ssh-key':
+                    key,fingerprint=devices_tools.read_ssh_key(body.get('management_ip'),body.get('ssh_port',22))
+                    return self.send(200,dict(public_key=key,fingerprint=fingerprint,verified=False))
+                with DEVICE_GATE:
+                    if path=='/api/devices':record=DEVICES.create(body)
+                    elif path in ('/api/devices/update','/api/devices/delete'):
+                        identifier=body.get('id','');previous=DEVICES.get(identifier);active=runtime(previous)
+                        with active.gate:
+                            if active.client.pending or active.client.blocked:raise Problem('Complete the pending SBC operation before changing this device.',409)
+                            if path.endswith('/delete'):
+                                DEVICES.delete(identifier,body.get('version'));record=None
+                            else:record=DEVICES.update(identifier,body,body.get('version'))
+                        RUNTIMES.pop(identifier,None)
+                    else:raise Problem('Resource not found.',404)
+                audit('device.'+('create' if path=='/api/devices' else path.rsplit('/',1)[1]),'success',user=session['user']['username'],target=record['id'] if record else identifier)
+                return self.send(201 if path=='/api/devices' else 200,dict(device=devices_tools.public(record) if record else None))
+            self.guard_device(path,write=True)
             if path in ('/api/users','/api/users/password','/api/users/reset-password'):
                 actor = session['user']
                 try:
@@ -1215,6 +1303,7 @@ class Handler(BaseHTTPRequestHandler):
                     return self.send(200,result)
                 except recordings.RecordingError as exc:raise Problem(str(exc),exc.code) from exc
             with GATE:
+                self.guard_device(path,write=True)
                 if path == '/api/logout':
                     SESSIONS.pop(sid,None)
                     result = {'ok': True}
@@ -1320,6 +1409,7 @@ class Handler(BaseHTTPRequestHandler):
             self.fail(exc)
 
     def fail(self, exc):
+        if isinstance(exc,devices_tools.DeviceError):exc=Problem(str(exc),exc.code)
         code = exc.code if isinstance(exc, Problem) else 502
         message = str(exc) if isinstance(exc, Problem) else 'The request could not be completed: ' + type(exc).__name__
         if self.command == 'POST' and self.path != '/api/login':
@@ -1328,10 +1418,11 @@ class Handler(BaseHTTPRequestHandler):
 
 
 def main():
-    for required in ('APP_PASSWORD_HASH', 'SBC_PASSWORD'):
+    for required in ('APP_PASSWORD_HASH',):
         if not os.environ.get(required):
             raise SystemExit('Missing environment variable ' + required)
     USERS.initialize(os.environ.get('APP_USER','admin'),os.environ['APP_PASSWORD_HASH'])
+    DEVICES.initialize()
     host = os.environ.get('BIND_HOST', '127.0.0.1')
     cert = os.environ.get('TLS_CERT')
     if host not in ('127.0.0.1', 'localhost') and not cert:

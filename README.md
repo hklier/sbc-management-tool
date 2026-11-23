@@ -13,7 +13,7 @@ Oracle SBC HTTPS console, SIPREC recorder, offline transcription worker, and SNM
 
 ## Console users and passwords
 
-Use **Users** in the header or **Users & passwords** in the sidebar. Every signed-in user can change their own password after confirming the current one. Administrators can list accounts, add console users or additional administrators, and reset a password after confirming their own administrator password. New passwords require 12–1024 characters; usernames are case-insensitive. Console users retain access to the existing SBC management features; the administrator role additionally controls console accounts.
+Your signed-in username appears at the top right. Open its dropdown for **Update password**, **Manage users**, **Manage devices**, or **Sign out**. Management entries appear for administrators. **Users & passwords** is also available in the sidebar. Every signed-in user can change their own password after confirming the current one. Administrators can list accounts, add console users or additional administrators, and reset a password after confirming their own administrator password. New passwords require 12–1024 characters; usernames are case-insensitive. Console users can operate managed SBCs; administrators also manage accounts and device profiles.
 
 Accounts and salted PBKDF2 password hashes are stored in `STATE_DIR/users.sqlite3` on the persistent volume. Passwords cannot be viewed. Password changes revoke previous sessions and rotate the current session cookie. UI account changes are recorded in the operation audit without passwords.
 
@@ -26,6 +26,18 @@ kubectl exec -n sbc-management-tool deploy/sbc-console -c console -- python user
 ```
 
 Other accounts remain intact; the recovered account's old sessions are invalidated. If you changed bootstrap credentials through YAML, complete that rollout before running recovery. Do not delete the account database to recover a password.
+
+## Managed devices
+
+Open **Devices** to add, edit, or delete a connection profile. The form includes a name, management IPv4 address, REST API username (default `admin`) and password, SSH port and public host key, a PEM CA certificate or bundle, and conditional SNMP settings. Polling supports disabled, v1, v2c, and v3; v3 supports noAuthNoPriv, authNoPriv, or authPriv, MD5/SHA1/SHA224/SHA256/SHA384/SHA512 authentication, and AES128 privacy. Trap reception remains v1/v2c; optional trap communities belong to each device. Receiver changes take effect within five seconds.
+
+To import the SBC's RSA public host key, run `show security public-host-key rsa` on the SBC and paste the public-key output or upload a public-key file. **Read key from SBC** reads an unverified RSA key without signing in; compare it with the trusted command output before saving. OpenSSH, wrapped SBC output, SSH2, and PEM public keys are accepted. Never import private keys. HTTPS connections validate the uploaded CA chain and the management IP against the server certificate. Blank password fields on edits preserve stored credentials; passwords and communities are never returned by the editing API.
+
+Choose the active device in the sidebar. Selection belongs to the login session; switching reloads the workspace. Configuration snapshots, route-table plans, CDR caches, SNMP clients, and REST/SFTP credentials are isolated by device. A stale tab cannot write to a newly selected or updated device. Complete pending SBC operations before editing or deleting its profile. Deleting a profile retains the SBC configuration, historical audit/trap data, and shared SIPREC recordings. The recording service and archive remain shared across devices.
+
+On the first upgrade, the existing YAML/environment SBC and SNMP settings initialize a `bootstrap` device, preserving the existing SSH fingerprint and HTTPS trust. Subsequent YAML changes do not overwrite managed-device edits or recreate deleted profiles. Continue using YAML for console, cluster, recording, and initial connection settings; use **Devices** for ongoing SBC connection changes. Existing fingerprint-only HTTPS trust is retained until a CA is supplied when editing.
+
+Device records are encrypted in `STATE_DIR/devices.sqlite3`; the encryption key is `STATE_DIR/device-encryption.key`, readable only by the application account. Back up the database and matching key together with application state, outside Git. A missing or mismatched key fails closed. This protects database-only copies; anyone with access to both files can decrypt credentials. Keep the deployment at one active replica on its retained persistent volume.
 
 ## Git and deployment
 
