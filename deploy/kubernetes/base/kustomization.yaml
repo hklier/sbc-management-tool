@@ -9,7 +9,7 @@
     {
       "name": "sbc-console",
       "newName": "192.168.2.240:5000/sbc-management-tool/console",
-      "digest": "sha256:e49deaa254bfdb3f3ab7f668523c7ff73f50f30b78debca778430fa91491b590"
+      "digest": "sha256:ba98fe7326d5f5365a9fdd5879b2f025600daf0b26b4dbb2df9d4995eaffddb6"
     },
     {
       "name": "sbc-recorder",
