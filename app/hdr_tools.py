@@ -1,12 +1,45 @@
 """HDR CSV source configuration and bounded, read-only file discovery."""
 import base64,io,os,re,stat,time
 from pathlib import Path,PurePosixPath
+from collections import deque
 import devices_tools,settings_tools
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa,ec,ed25519
 
 class HdrError(Exception):
     def __init__(self,message,code=400):super().__init__(message);self.code=code
+
+MAX_FILES=10000
+MAX_ENTRIES=100000
+MAX_DIRECTORIES=5000
+MAX_SEARCH_SECONDS=30
+
+def discover(entries):
+    """Breadth-first inventory; never follow links or accept path components from entries."""
+    pending=deque([()]);rows=[];scanned=0;directories=0;subdirectories=0;reason=''
+    deadline=time.monotonic()+MAX_SEARCH_SECONDS
+    while pending and not reason:
+        if time.monotonic()>=deadline:reason='Search time limit reached';break
+        parts=pending.popleft();directories+=1
+        iterator=entries(parts)
+        try:
+            for name,mode,size,modified in iterator:
+                scanned+=1
+                if name and name not in ('.','..') and '/' not in name and '\x00' not in name:
+                    relative=parts+(name,)
+                    if stat.S_ISDIR(mode):
+                        subdirectories+=1
+                        if subdirectories>=MAX_DIRECTORIES:reason='Directory limit reached'
+                        else:pending.append(relative)
+                    elif name.lower().endswith('.csv') and stat.S_ISREG(mode):
+                        rows.append(dict(name='/'.join(relative),size=size,modified_at=modified))
+                if len(rows)>=MAX_FILES:reason='CSV file limit reached'
+                elif scanned>=MAX_ENTRIES:reason='Directory entry limit reached'
+                elif time.monotonic()>=deadline:reason='Search time limit reached'
+                if reason:break
+        finally:
+            if hasattr(iterator,'close'):iterator.close()
+    return dict(files=sorted(rows,key=lambda r:r['name']),subdirectories=subdirectories,directories_searched=directories,scanned_entries=scanned,truncated=bool(reason),limit_reason=reason)
 def text(value,label,limit=4096):
     if not isinstance(value,str) or not value.strip() or len(value)>limit or '\x00' in value:raise HdrError('Enter a valid '+label+'.')
     return value.strip()
@@ -54,17 +87,19 @@ class Manager:
         else:raise HdrError('Choose a mounted directory or SFTP source.')
         self.store.save('hdr',value,body.get('version'));return self.public()
     def listing(self):
-        value=self.raw()['value'];rows=[];scanned=0;subdirectories=0;limit=200;maximum=2000
+        value=self.raw()['value']
         try:
             if value['mode']=='local':
                 path=self.local_path(value['path'])
-                with os.scandir(path) as entries:
-                    for entry in entries:
-                        scanned+=1
-                        subdirectories+=entry.is_dir(follow_symlinks=False)
-                        if entry.name.lower().endswith('.csv') and entry.is_file(follow_symlinks=False):
-                            info=entry.stat(follow_symlinks=False);rows.append(dict(name=entry.name,size=info.st_size,modified_at=info.st_mtime))
-                        if scanned>=maximum or len(rows)>=limit:break
+                def local_entries(parts):
+                    directory=path.joinpath(*parts)
+                    resolved=directory.resolve()
+                    if directory.is_symlink() or (resolved!=path and path not in resolved.parents):return
+                    with os.scandir(directory) as children:
+                        for entry in children:
+                            info=entry.stat(follow_symlinks=False)
+                            yield entry.name,info.st_mode,info.st_size,info.st_mtime
+                result=discover(local_entries)
             else:
                 import paramiko
                 host_kind,encoded=value['host_key'].split()[:2]
@@ -90,19 +125,22 @@ class Manager:
                     client.connect(value['host'],port=value['port'],username=value['username'],password=value.get('password') or None,pkey=key,allow_agent=False,look_for_keys=False,timeout=7,banner_timeout=7,auth_timeout=7,transport_factory=pinned_transport)
                     with client.open_sftp() as sftp:
                         sftp.get_channel().settimeout(10)
-                        for entry in sftp.listdir_iter(value['path'],read_aheads=1):
-                            scanned+=1
-                            subdirectories+=stat.S_ISDIR(entry.st_mode or 0)
-                            if entry.filename.lower().endswith('.csv') and stat.S_ISREG(entry.st_mode or 0):rows.append(dict(name=entry.filename,size=entry.st_size,modified_at=entry.st_mtime))
-                            if scanned>=maximum or len(rows)>=limit:break
+                        def remote_entries(parts):
+                            directory=str(PurePosixPath(value['path']).joinpath(*parts))
+                            for entry in sftp.listdir_iter(directory,read_aheads=1):
+                                yield entry.filename,entry.st_mode or 0,entry.st_size,entry.st_mtime
+                        result=discover(remote_entries)
                 except paramiko.BadHostKeyException:raise HdrError('The SFTP server host key does not match the saved public key. Verify its public key before reconnecting.',502) from None
                 except paramiko.AuthenticationException:raise HdrError('SFTP authentication failed. Check the username, password or client private key.',502) from None
                 except FileNotFoundError:raise HdrError('The remote CSV directory does not exist. Use the absolute path visible to this SFTP account.',502) from None
                 except PermissionError:raise HdrError('The SFTP account does not have permission to list the CSV directory.',502) from None
                 except TimeoutError:raise HdrError('The SFTP connection timed out. Check network access and the server response.',502) from None
+                except paramiko.ssh_exception.NoValidConnectionsError:raise HdrError('Could not reach the SFTP server. Check its address, SSH port and firewall.',502) from None
+                except paramiko.SSHException:raise HdrError('SSH negotiation failed. Check the saved server public key and the server SSH configuration.',502) from None
                 finally:client.close()
         except HdrError:raise
         except Exception:raise HdrError('Could not list HDR files. Check the saved path, server identity, credentials, network access and directory permissions.',502) from None
-        message='Connection verified. CSV contents are not imported or analysed yet.'
-        if not rows and subdirectories:message='Connection verified. No CSV files in this directory; {} subdirectories found. Enter the path to the directory containing CSV files. Subdirectories are not searched.'.format(subdirectories)
-        return dict(files=sorted(rows,key=lambda r:r['name']),subdirectories=subdirectories,truncated=scanned>=maximum or len(rows)>=limit,checked_at=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),message=message)
+        message='Connection verified. Searched {} directories, including subdirectories. CSV contents are not imported or analysed yet.'.format(result['directories_searched'])
+        if not result['files']:message+=' No CSV files found.'
+        result.update(checked_at=time.strftime('%Y-%m-%dT%H:%M:%SZ',time.gmtime()),message=message)
+        return result

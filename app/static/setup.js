@@ -1,6 +1,6 @@
 'use strict';
 let hdrVersion=0;
-function resetSetupView(){hdrVersion=0;$('hdr-form').reset();$('cert-csr-form').reset();$('cert-import-form').reset();$('hdr-files').replaceChildren();$('cert-requests').replaceChildren();$('first-password-form').reset()}
+function resetSetupView(){if($('hdr-error-dialog').open)$('hdr-error-dialog').close();hdrVersion=0;$('hdr-form').reset();$('cert-csr-form').reset();$('cert-import-form').reset();$('hdr-files').replaceChildren();$('cert-requests').replaceChildren();$('first-password-form').reset()}
 function showInitialPasswordChange(){for(const dialog of document.querySelectorAll('dialog[open]'))dialog.close();$('login').hidden=true;$('shell').hidden=true;$('first-password').hidden=false;$('first-password-form').reset();$('first-password-feedback').textContent=''}
 $('first-password-form').onsubmit=async event=>{event.preventDefault();const f=event.target.elements,button=event.submitter;$('first-password-feedback').textContent='';if(f.new_password.value!==f.confirm_password.value){$('first-password-feedback').textContent='The new passwords do not match.';return}button.disabled=true;try{const result=await api('/api/users/password',{current_password:f.current_password.value,new_password:f.new_password.value});csrf=result.csrf;event.target.reset();await start()}catch(error){$('first-password-feedback').textContent=error.message}finally{button.disabled=false}};
 $('first-password-logout').onclick=async()=>{try{await api('/api/logout',{})}finally{showLogin()}};
@@ -9,7 +9,19 @@ async function loadHdr(){try{const data=await api('/api/hdr');hdrVersion=data.ve
 $('hdr-form').elements.mode.onchange=hdrFields;
 $('nav-hdr').onclick=()=>{if(!mayLeave())return;showWorkspace('hdr');loadHdr()};
 $('hdr-form').onsubmit=async event=>{event.preventDefault();const f=event.target.elements,button=event.submitter;button.disabled=true;try{const body={version:hdrVersion,mode:f.mode.value,path:f.path.value};if(body.mode==='sftp'){for(const key of ['host','username','password','private_key','key_passphrase','host_key'])body[key]=f[key].value;body.port=Number(f.port.value);for(const key of ['clear_password','clear_private_key','clear_key_passphrase'])body[key]=f[key].checked}await api('/api/hdr',body);await loadHdr();$('hdr-feedback').textContent='HDR source saved. Use Test connection & list CSV files to verify access.'}catch(error){$('hdr-feedback').textContent=error.message}finally{button.disabled=false}};
-$('hdr-list').onclick=async()=>{const button=$('hdr-list');button.disabled=true;$('hdr-file-status').textContent='Checking the saved source…';try{const data=await api('/api/hdr/files');$('hdr-files').replaceChildren();for(const file of data.files){const row=el('tr');row.append(el('td',{},file.name),el('td',{},String(file.size)),el('td',{},file.modified_at?new Date(file.modified_at*1000).toLocaleString():''));$('hdr-files').append(row)}$('hdr-file-status').textContent=data.message+' '+data.files.length+' CSV files shown.'+(data.truncated?' Listing limit reached.':'')}catch(error){$('hdr-file-status').textContent=error.message}finally{button.disabled=false}};
+$('hdr-list').onclick=async()=>{
+  const button=$('hdr-list');button.disabled=true;
+  $('hdr-files').replaceChildren();$('hdr-file-status').textContent='Checking the saved source and searching subdirectories…';
+  try{
+    const data=await api('/api/hdr/files');
+    for(const file of data.files){const row=el('tr');row.append(el('td',{},file.name),el('td',{},String(file.size)),el('td',{},file.modified_at?new Date(file.modified_at*1000).toLocaleString():''));$('hdr-files').append(row)}
+    $('hdr-file-status').textContent=data.message+' '+data.files.length+' CSV files shown.'+(data.truncated?' Partial results: '+(data.limit_reason||'search limit reached')+'.':'');
+  }catch(error){
+    const message=error.message||'The source could not be reached. Check the saved connection settings.';
+    $('hdr-file-status').textContent=message;$('hdr-error-message').textContent=message;
+    if(!$('hdr-error-dialog').open)$('hdr-error-dialog').showModal();
+  }finally{button.disabled=false}
+};
 async function readTextFile(input,target,max){try{const file=input.files[0];if(!file)return;if(file.size>max)throw Error('The selected file is too large.');target.value=await file.text()}finally{input.value=''}}
 $('hdr-key-file').onchange=event=>readTextFile(event.target,$('hdr-form').elements.private_key,131072).catch(error=>$('hdr-feedback').textContent=error.message);
 function downloadText(name,text){const url=URL.createObjectURL(new Blob([text],{type:'application/x-pem-file'}));const link=el('a',{href:url,download:name});document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),1000)}

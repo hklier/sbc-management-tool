@@ -104,6 +104,14 @@ class HdrTests(unittest.TestCase):
         with self.assertRaises(hdr_tools.HdrError):self.hdr.save(dict(version=0,mode='local',path=str(self.root)))
         self.hdr.save(dict(version=0,mode='local',path=str(self.hdr.local_root)))
         with self.assertRaises(devices_tools.DeviceError):self.hdr.save(dict(version=0,mode='local',path=str(self.hdr.local_root)))
+    def test_recursive_local_paths_and_file_limit(self):
+        nested=self.hdr.local_root/'daily'/'system';nested.mkdir(parents=True)
+        (nested/'sample.CSV').write_text('nested');(self.hdr.local_root/'sample.csv').write_text('root')
+        result=self.hdr.listing()
+        self.assertEqual([f['name'] for f in result['files']],['daily/system/sample.CSV','sample.csv'])
+        self.assertEqual(result['directories_searched'],3);self.assertFalse(result['truncated'])
+        with patch.object(hdr_tools,'MAX_FILES',1):limited=self.hdr.listing()
+        self.assertEqual(len(limited['files']),1);self.assertTrue(limited['truncated']);self.assertIn('file limit',limited['limit_reason'])
     def config(self):return dict(version=0,mode='sftp',host='192.0.2.20',port=22,username='hdr-reader',path='/incoming/hdr',password='private-hdr-password',host_key=test_devices.PUBLIC)
     def test_credentials_encrypted_redacted_preserved_and_not_reused_for_new_host(self):
         body=self.config();value=self.hdr.save(body);self.assertTrue(value['has_password']);self.assertNotIn('private-hdr-password',json.dumps(value));self.assertNotIn(b'private-hdr-password',self.hdr.store.path.read_bytes())
@@ -155,9 +163,12 @@ class HdrSftpIntegrationTests(unittest.TestCase):
             def check_channel_request(self,kind,channel):return paramiko.OPEN_SUCCEEDED if kind=='session' else paramiko.OPEN_FAILED_ADMINISTRATIVELY_PROHIBITED
         class Files(paramiko.SFTPServerInterface):
             def list_folder(self,path):
-                if path!='/incoming/hdr':return paramiko.SFTP_NO_SUCH_FILE
+                if path=='/incoming/hdr':items=[('sample.csv',stat.S_IFREG),('ignore.txt',stat.S_IFREG),('link.csv',stat.S_IFLNK),('daily',stat.S_IFDIR),('link-folder',stat.S_IFLNK),('../escape.csv',stat.S_IFREG),('..',stat.S_IFDIR)]
+                elif path=='/incoming/hdr/daily':items=[('sample.csv',stat.S_IFREG),('archive',stat.S_IFDIR)]
+                elif path=='/incoming/hdr/daily/archive':items=[('old.CSV',stat.S_IFREG)]
+                else:return paramiko.SFTP_NO_SUCH_FILE
                 rows=[]
-                for name,mode in [('sample.csv',stat.S_IFREG),('ignore.txt',stat.S_IFREG),('link.csv',stat.S_IFLNK)]:
+                for name,mode in items:
                     item=paramiko.SFTPAttributes();item.filename=name;item.st_mode=mode|0o600;item.st_size=10;item.st_mtime=1;rows.append(item)
                 return rows
         self.socket=socket.socket();self.socket.bind(('127.0.0.1',0));self.socket.listen(4);self.socket.settimeout(.2);self.stop=threading.Event();self.transports=[]
@@ -179,8 +190,9 @@ class HdrSftpIntegrationTests(unittest.TestCase):
         self.thread.join(timeout=2)
     def config(self):return dict(version=0,mode='sftp',host='127.0.0.1',port=self.socket.getsockname()[1],username='hdr-reader',path='/incoming/hdr',password='private-hdr-password',host_key=test_devices.PUBLIC)
     def test_password_and_private_key_auth_list_only_csv_regular_files(self):
-        body=self.config();self.hdr.save(body);self.assertEqual([f['name'] for f in self.hdr.listing()['files']],['sample.csv'])
-        body.update(version=1,password='',clear_password=True,private_key=self.pem);self.hdr.save(body);self.assertEqual([f['name'] for f in self.hdr.listing()['files']],['sample.csv'])
+        expected=['daily/archive/old.CSV','daily/sample.csv','sample.csv']
+        body=self.config();self.hdr.save(body);self.assertEqual([f['name'] for f in self.hdr.listing()['files']],expected)
+        body.update(version=1,password='',clear_password=True,private_key=self.pem);self.hdr.save(body);self.assertEqual([f['name'] for f in self.hdr.listing()['files']],expected)
     def test_changed_host_key_is_rejected(self):
         from cryptography.hazmat.primitives.asymmetric import rsa
         key=rsa.generate_private_key(public_exponent=65537,key_size=2048).public_key().public_bytes(serialization.Encoding.OpenSSH,serialization.PublicFormat.OpenSSH).decode()
@@ -190,16 +202,16 @@ class HdrSftpIntegrationTests(unittest.TestCase):
     def test_saved_rsa_key_with_ed25519_and_only_rsa_sha256(self):
         self.host_algorithms=('ssh-ed25519','rsa-sha2-256')
         self.hdr.save(self.config())
-        self.assertEqual([f['name'] for f in self.hdr.listing()['files']],['sample.csv'])
+        self.assertEqual([f['name'] for f in self.hdr.listing()['files']],['daily/archive/old.CSV','daily/sample.csv','sample.csv'])
     def test_authentication_and_missing_directory_errors_are_actionable(self):
         body=self.config();body['password']='wrong';self.hdr.save(body)
         with self.assertRaisesRegex(hdr_tools.HdrError,'authentication failed'):self.hdr.listing()
         body.update(version=1,password='private-hdr-password',path='/missing');self.hdr.save(body)
         with self.assertRaisesRegex(hdr_tools.HdrError,'directory does not exist'):self.hdr.listing()
-    def test_empty_listing_with_subdirectories_explains_directory_scope(self):
+    def test_empty_listing_includes_searched_subdirectories(self):
         (self.hdr.local_root/'daily').mkdir()
         result=self.hdr.listing()
         self.assertEqual(result['files'],[]);self.assertEqual(result['subdirectories'],1)
-        self.assertIn('Enter the path',result['message'])
+        self.assertEqual(result['directories_searched'],2);self.assertIn('No CSV files found',result['message'])
 
 if __name__=='__main__':unittest.main()
